@@ -199,19 +199,95 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginBottom="8dp">
+
                     <EditText
                         android:id="@+id/input_details_des"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textMultiLine"
-                        android:drawableLeft="@drawable/ic_brief_intro"
+                        android:drawableLeft="@drawable/ic_detail_description"
                         android:drawableTint="#2196f3"
-                        android:hint="Brief Intro" />
+                        android:hint="Detail Description" />
                 </android.support.design.widget.TextInputLayout>
 
+                <TextView
+                    android:padding="5dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:drawableTint="#2196f3"
+                    android:text="Location"
+                    android:textSize="18sp"
+                    android:drawableLeft="@drawable/ic_location"/>
+
+                <RadioGroup
+                    android:padding="5dp"
+                    android:checkedButton="@+id/radio_floating"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:textColorHighlight="#2196f3"
+                        android:layout_weight="0.5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#2196f3"
+                        android:buttonTint="#2196f3"
+                        android:text="Fixed"/>
+
+                    <RadioButton
+                        android:id="@+id/radio_floating"
+                        android:layout_weight="0.5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="#2196f3"
+                        android:buttonTint="#2196f3"
+                        android:text="Floating"/>
+
+                </RadioGroup>
+
+                <LinearLayout
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginBottom="8dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+
+                        android:layout_weight="0.5"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="(For Retail, Shop, Hospital, Restaurant, Mall etc.)"/>
+
+                    <TextView
+
+                        android:text="(For Individual, Cabs etc)"
+                        android:layout_weight="0.5"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+
+                <Button
+                    android:layout_margin="30dp"
+                    android:textColor="#FFFFFF"
+                    android:text="Fill With Facebook"
+                    android:textAllCaps="false"
+                    android:background="@drawable/fb_btn_style"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
 
             </LinearLayout>
+
+            <Button
+                android:layout_gravity="bottom"
+                android:text="signup"
+                android:textColor="#FFFFFF"
+                android:background="#2196f3"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" />
 
 
 

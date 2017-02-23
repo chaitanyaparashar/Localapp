@@ -1,0 +1,221 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.fourway.localapp.ui.SignUpFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:background="#2196f3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:padding="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SignUp"
+                    android:textSize="25sp"
+                    android:textColor="#FFFFFF"
+                    android:textStyle="bold"
+                    android:layout_gravity="center"/>
+
+                <TextView
+                    android:padding="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="It's free and takes less then 30 second"
+                    android:textSize="17sp"
+                    android:textColor="#FFFFFF"
+                    android:layout_gravity="center"/>
+
+                <ImageView
+                    android:layout_margin="10dp"
+                    android:padding="10dp"
+                    android:layout_width="130dp"
+                    android:layout_height="130dp"
+                    android:src="@mipmap/ic_launcher"
+                    android:layout_gravity="center"
+                    android:background="@drawable/profile_circular_border_imageview"
+                    android:id="@+id/imageView" />
+
+                <Button
+                    android:layout_margin="10dp"
+                    android:padding="10dp"
+                    android:layout_width="160dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:text="Upload a Picture"
+                    android:textColor="#ffffff"
+                    android:textAllCaps="false"
+                    android:background="@drawable/signup_upload_pic_btn_shap" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:padding="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!--  Name Label -->
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp">
+                    <EditText
+                        android:id="@+id/input_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textCapWords"
+                        android:drawableLeft="@drawable/ic_name"
+                        android:drawableTint="#2196f3"
+                        android:hint="Name" />
+                </android.support.design.widget.TextInputLayout>
+
+                <!--  Phone Number Label -->
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp">
+                    <EditText android:id="@+id/input_phoneNumber"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="phone"
+                        android:drawableLeft="@drawable/ic_phone"
+                        android:drawableTint="#2196f3"
+                        android:hint="Phone Number" />
+                </android.support.design.widget.TextInputLayout>
+
+
+                <!--  Email Label -->
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp">
+                    <EditText android:id="@+id/input_email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"
+                        android:drawableLeft="@drawable/ic_email"
+                        android:drawableTint="#2196f3"
+                        android:hint="Email" />
+                </android.support.design.widget.TextInputLayout>
+
+
+                <!--  Profession Label -->
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="5">
+
+                    <ImageView
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:layout_width="35dp"
+                        android:layout_height="35dp"
+                        android:tint="#2196f3"
+                        app:srcCompat="@drawable/ic_profession"/>
+
+                    <Spinner
+                        android:layout_gravity="center"
+                        android:layout_weight="4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/spinner" />
+                </LinearLayout>
+
+                <!--  Password Label -->
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp">
+                    <EditText
+                        android:id="@+id/input_password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:drawableLeft="@drawable/ic_lock"
+                        android:drawableTint="#2196f3"
+                        android:hint="Password" />
+                </android.support.design.widget.TextInputLayout>
+
+
+                <!--  Password Label -->
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp">
+                    <EditText
+                        android:id="@+id/input_password_c"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword"
+                        android:drawableLeft="@drawable/ic_lock"
+                        android:drawableTint="#2196f3"
+                        android:hint="Confirm Password" />
+                </android.support.design.widget.TextInputLayout>
+
+
+                <!--  Brief Label -->
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp">
+                    <EditText
+                        android:id="@+id/input_brief_intro"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine"
+                        android:maxLines="2"
+                        android:drawableLeft="@drawable/ic_brief_intro"
+                        android:drawableTint="#2196f3"
+                        android:hint="Brief Intro" />
+                </android.support.design.widget.TextInputLayout>
+
+
+                <!--  Brief Label -->
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp">
+                    <EditText
+                        android:id="@+id/input_details_des"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textMultiLine"
+                        android:drawableLeft="@drawable/ic_brief_intro"
+                        android:drawableTint="#2196f3"
+                        android:hint="Brief Intro" />
+                </android.support.design.widget.TextInputLayout>
+
+
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>

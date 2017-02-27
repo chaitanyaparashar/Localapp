@@ -204,7 +204,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                 if (messages.size()>0) {
                     messages.clear();
                 }
-                messages = data.getMessageList();
+                messages.addAll(data.getMessageList());
                 adapter.notifyDataSetChanged();
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:

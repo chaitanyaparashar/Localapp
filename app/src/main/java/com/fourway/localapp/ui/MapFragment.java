@@ -10,10 +10,14 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -33,13 +37,10 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 
@@ -58,8 +59,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
     ImageView medicalBtn,officeBtn,
             carBtn,emergencyBtn,
             entertainmentBtn;
+    ImageView searchBtn;
 
     RelativeLayout uDetailLayout;
+
+    AutoCompleteTextView searchBoxView;
 
     public static String TAG = "MapFragment";
 
@@ -89,9 +93,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         carBtn = (ImageView)view.findViewById(R.id.car_iv);
         emergencyBtn = (ImageView)view.findViewById(R.id.emergency_iv);
         entertainmentBtn = (ImageView)view.findViewById(R.id.entertainment_iv);
+        searchBtn = (ImageView) view.findViewById(R.id.search_btn);
+        searchBoxView = (AutoCompleteTextView) view.findViewById(R.id.autoCompleteTextView);
 
         uDetailLayout = (RelativeLayout) view.findViewById(R.id.user_detail_rl);
 
+        searchBoxView.addTextChangedListener(textWatcherforSearchBox);
+
+        searchBtn.setOnClickListener(searchOnClickListener);
         officeBtn.setOnClickListener(filterClickListener);
         medicalBtn.setOnClickListener(filterClickListener);
         carBtn.setOnClickListener(filterClickListener);
@@ -102,6 +111,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(this);
 
+        /*
+            for testing only
+         */
         request(new LatLng(28.545623, 77.330507));
 
         // Create an instance of GoogleAPIClient.
@@ -120,7 +132,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         return view;
     }
 
-
+    /**
+     *
+     * @param googleMap
+     */
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         mMap = googleMap;
@@ -152,6 +167,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
 
     }
 
+    /**
+     * set potion of myLocationButton
+     */
     void setMyLocationButton() {
 
         if (mMapView != null &&
@@ -186,7 +204,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
     }
 
     /**
-     *
+     * add marker on map
      * @param latLng
      */
     private void addMarkerAtLocation(LatLng latLng, String tag) {
@@ -223,6 +241,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         mGoogleApiClient.disconnect();
     }
 
+    /**
+     * filter map marker
+     */
     View.OnClickListener filterClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -312,6 +333,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         Log.v(TAG, "onProviderDisabled");
     }
 
+    /**
+     * google play service connection
+     */
     public void ConnectToGooglePlayServices(){
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getContext())
@@ -361,6 +385,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
 //
 //    }
 
+    /**
+     * marker click listener
+     * @param marker
+     * @return
+     */
     @Override
     public boolean onMarkerClick(Marker marker) {
         if (uDetailLayout.getVisibility() != View.VISIBLE) {
@@ -419,8 +448,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
                     profileList.clear();
                 }
                 profileList = data.getProfileList();
-                addMarkerByProfile();
-                ArrayList<Integer> indexs = search(profileList, "AB1");
+                addMarkerByProfile(false, null);
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:
                 break;
@@ -434,23 +462,52 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         }
     }
 
-    void addMarkerByProfile() {
+    /**
+     * add marker by profile data
+     */
+    void addMarkerByProfile(boolean isFilter,ArrayList<Integer> filterIndex) {
+        mMap.clear();
         int size = profileList.size();
+        int filterIndexSize = 0;
         if (markerID.size()>0) {
             markerID.clear();
         }
-        for (int i = 0;i<size; i++) {
-            LatLng lng = profileList.get(i).getuLatLng();
-            if (lng != null) {
-                addMarkerAtLocation(lng,""+i);
-                markerID.add(i);
-                Log.v(TAG, "addMarkerByProfile: "+lng);
+
+        if (filterIndex != null) {
+             filterIndexSize = filterIndex.size();
+        }
+
+        if (!isFilter) {
+            for (int i = 0; i < size; i++) {
+                LatLng lng = profileList.get(i).getuLatLng();
+                if (lng != null) {
+                    addMarkerAtLocation(lng, "" + i);
+                    markerID.add(i);
+                    Log.v(TAG, "addMarkerByProfile: " + lng);
+                }
+            }
+        }else {
+            for (int i = 0; i < filterIndexSize; i++) {
+                int profileIndex = filterIndex.get(i);
+                LatLng lng = profileList.get(profileIndex).getuLatLng();
+                if (lng != null) {
+                    addMarkerAtLocation(lng, "" + i);
+                    markerID.add(i);
+                    Log.v(TAG, "addMarkerByProfile: " + lng);
+                }
             }
         }
     }
 
+    /**
+     *
+     * @param profileList
+     * @param searchString
+     * @return
+     */
 
     ArrayList<Integer> search(ArrayList<Profile> profileList, String searchString) {
+        searchString = searchString.toLowerCase();
         ArrayList<Integer> profileIndex = new ArrayList<>();
 
         int size = profileList.size();
@@ -476,6 +533,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
 
 
             dataString = pName + " " + pNotes + " " + pSpeciality;
+            dataString = dataString.toLowerCase();
 
             StringTokenizer st = new StringTokenizer(dataString);
             boolean isFound = false;
@@ -496,4 +554,38 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         Toast.makeText(getContext(), ""+profileIndex.size(), Toast.LENGTH_SHORT).show();
         return profileIndex;
     }
+
+    TextWatcher textWatcherforSearchBox = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            if (TextUtils.isEmpty(searchBoxView.getText()) && profileList != null) {
+                addMarkerByProfile(false, null);
+            }
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
+
+    View.OnClickListener searchOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            String searchQuery = searchBoxView.getText().toString();
+            if (!TextUtils.isEmpty(searchQuery)) {
+                ArrayList<Integer> indexs = search(profileList, searchQuery);
+                if (indexs != null && indexs.size() > 0) {
+                    addMarkerByProfile(true, indexs);
+                }
+            }
+
+        }
+    };
 }

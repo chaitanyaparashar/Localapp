@@ -112,12 +112,8 @@ public class BroadcastRequest {
         else if (errorMsg == VolleyErrorHelper.COMMON_NETWORK_ERROR_NO_INTERNET){
             resCode = COMMON_RES_FAILED_TO_CONNECT;
         }
-        else
-        {
-            resCode = COMMON_RES_SERVER_ERROR_WITH_MESSAGE;
-//            mProfile.setErrorMessage(errorMsg);
-        }
-//        mSaveProfileResponseCallback.onProfileSaveResponse (resCode, mProfile);
+
+        broadcastResponseCallback.onBroadcastResponce (resCode);
 
     }
 

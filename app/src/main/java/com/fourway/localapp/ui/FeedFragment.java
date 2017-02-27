@@ -1,6 +1,9 @@
 package com.fourway.localapp.ui;
 
+import android.content.Context;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,7 +13,9 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -37,6 +42,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView.Adapter adapter;
+    private GridView emojiGridView;
 
     EditText chatText;
     ImageView sendImageViewBtn, camShoutImgBtn;
@@ -64,6 +70,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
 
         //Initializing recyclerview
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        emojiGridView = (GridView) view.findViewById(R.id.shout_emiji);
         chatText = (EditText) view.findViewById(R.id.chat_text);
         camShoutImgBtn = (ImageView) view.findViewById(R.id.btn_cam_shout);
         sendImageViewBtn = (ImageView) view.findViewById(R.id.btn_send_speak);
@@ -78,6 +85,13 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
 
         //Initializing message arraylist
                 messages = new ArrayList<>();
+        adapter = new ThreadAdapter(getContext(),messages,"bieGrastGiOdkeoqusherCacmaw");//hardcoded token
+        recyclerView.setAdapter(adapter);
+
+        String[] en = {"k","k","k","k","k","k","k","k","k","k","k","k","k","k","k","k","k","k"};
+
+        EmojiGridAdapter adapter1  =  new EmojiGridAdapter(getContext(),android.R.layout.simple_gallery_item,en);
+        emojiGridView.setAdapter(adapter1);
 
         //test
         request();
@@ -124,6 +138,24 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         }
     };
 
+    View.OnClickListener dropDownClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (emojiGridView.getVisibility() == View.VISIBLE) {
+                emojiGridView.setVisibility(View.GONE);
+            }else {
+                emojiGridView.setVisibility(View.VISIBLE);
+            }
+        }
+    };
+
+    View.OnClickListener camaraClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+
+        }
+    };
+
     TextWatcher textWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -134,12 +166,15 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (TextUtils.isEmpty(chatText.getText())) {
                 sendImageViewBtn.setOnClickListener(sendVoiceClickListener);
-                sendImageViewBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_speak));
-                camShoutImgBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_camera));
+                sendImageViewBtn.setImageResource(R.drawable.ic_speak);
+                camShoutImgBtn.setImageResource(R.drawable.ic_camera);
+                camShoutImgBtn.setOnClickListener(camaraClickListener);
+                emojiGridView.setVisibility(View.GONE);
             }else {
                 sendImageViewBtn.setOnClickListener(sendTextClickListener);
-                sendImageViewBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_send));
-                camShoutImgBtn.setImageDrawable(getResources().getDrawable(R.drawable.ic_dropdown));
+                sendImageViewBtn.setImageResource(R.drawable.ic_send);
+                camShoutImgBtn.setImageResource(R.drawable.ic_dropdown);
+                camShoutImgBtn.setOnClickListener(dropDownClickListener);
             }
 
         }
@@ -170,10 +205,39 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                     messages.clear();
                 }
                 messages = data.getMessageList();
-                adapter = new ThreadAdapter(getContext(),messages,"bieGrastGiOdkeoqusherCacmaw");//hardcoded token
-                recyclerView.setAdapter(adapter);
+                adapter.notifyDataSetChanged();
+                break;
+            case COMMON_RES_CONNECTION_TIMEOUT:
+                break;
+            case COMMON_RES_FAILED_TO_CONNECT:
+                Toast.makeText(getContext(), "No internet connection", Toast.LENGTH_SHORT).show();
+                break;
+            case COMMON_RES_INTERNAL_ERROR:
+                break;
+            case COMMON_RES_SERVER_ERROR_WITH_MESSAGE:
+                break;
         }
 
+    }
+
+    class EmojiGridAdapter extends ArrayAdapter {
+        Context mContext;
+        int[] emojiID = {R.mipmap.ic_launcher,R.mipmap.ic_launcher,R.mipmap.ic_launcher,R.mipmap.ic_launcher,R.mipmap.ic_launcher,R.mipmap.ic_launcher};
+        public EmojiGridAdapter(Context context, int resource, String[] emoji_name) {
+            super(context, resource, emoji_name);
+            mContext = context;
+        }
+
+        @NonNull
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            View view = LayoutInflater.from(mContext).inflate(R.layout.emoticon_grid_layout,null);
+            ImageView imageView = (ImageView)view.findViewById(R.id.emoji_icon);
+            imageView.setImageResource(R.drawable.ic_smily);
+
+            return view;
+        }
     }
 
 }

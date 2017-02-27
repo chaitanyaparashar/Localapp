@@ -7,11 +7,17 @@ import android.widget.Toast;
 import com.android.volley.VolleyError;
 import com.fourway.localapp.data.GetUsersRequestData;
 import com.fourway.localapp.data.Profile;
+import com.fourway.localapp.request.helper.VolleyErrorHelper;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import static com.fourway.localapp.request.CommonRequest.ResponseCode.COMMON_RES_CONNECTION_TIMEOUT;
+import static com.fourway.localapp.request.CommonRequest.ResponseCode.COMMON_RES_FAILED_TO_CONNECT;
+import static com.fourway.localapp.request.CommonRequest.ResponseCode.COMMON_RES_INTERNAL_ERROR;
+import static com.fourway.localapp.request.CommonRequest.ResponseCode.COMMON_RES_SERVER_ERROR_WITH_MESSAGE;
 
 /**
  * Created by 4 way on 20-02-2017.
@@ -98,7 +104,32 @@ public class GetUsersRequest extends CommonRequest {
 
     @Override
     public void onErrorHandler(VolleyError error) {
-        Toast.makeText(mContext, "" + error.getMessage(), Toast.LENGTH_SHORT).show();
+        String errorMsg = VolleyErrorHelper.getMessage(error, mContext);
+        Log.v("onErrorHandler","error is" + error);
+
+        CommonRequest.ResponseCode resCode;
+
+        if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
+            resCode = COMMON_RES_CONNECTION_TIMEOUT;
+            mGetUsersResponseCallback.onGetUsersResponse (resCode, mRequestData);
+        }
+        if (errorMsg == VolleyErrorHelper.COMMON_NETWORK_ERROR_TIMEOUT)
+        {
+            resCode = COMMON_RES_CONNECTION_TIMEOUT;
+        }
+        else if (errorMsg == VolleyErrorHelper.COMMON_NETWORK_ERROR_UNKNOWN){
+            resCode = COMMON_RES_INTERNAL_ERROR;
+        }
+        else if (errorMsg == VolleyErrorHelper.COMMON_NETWORK_ERROR_NO_INTERNET){
+            resCode = COMMON_RES_FAILED_TO_CONNECT;
+        }else
+        {
+            resCode = COMMON_RES_SERVER_ERROR_WITH_MESSAGE;
+            mRequestData.setmErrorMessage(errorMsg);
+        }
+
+        mGetUsersResponseCallback.onGetUsersResponse (resCode, mRequestData);
+        
     }
 
 

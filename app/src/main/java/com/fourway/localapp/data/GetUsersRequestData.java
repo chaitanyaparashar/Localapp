@@ -10,6 +10,8 @@ public class GetUsersRequestData {
 
     private ArrayList<Profile> mProfileList;
 
+    private String mErrorMessage;
+
     public GetUsersRequestData() {
         mProfileList = new ArrayList<>();
     }
@@ -20,4 +22,12 @@ public class GetUsersRequestData {
 
     public ArrayList<Profile> getProfileList (){return mProfileList;}
     public int getTotalNumOfProfiles (){return mProfileList.size();}
+
+    public String getmErrorMessage() {
+        return mErrorMessage;
+    }
+
+    public void setmErrorMessage(String mErrorMessage) {
+        this.mErrorMessage = mErrorMessage;
+    }
 }

@@ -34,6 +34,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -121,7 +122,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
 
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(final GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setOnMarkerClickListener(this);
 
@@ -130,6 +131,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         mMap.getUiSettings().setZoomGesturesEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
+/*
+        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
+            @Override
+            public boolean onMyLocationButtonClick() {
+                if (mMap.getMyLocation()!=null) {
+                    Toast.makeText(getContext(), "ctn clicked" + mMap.getMyLocation(), Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+                return false;
+            }
+        });*/
 //        mMap.setOnMyLocationChangeListener(onMyLocationChangeListener);
 
         /*for (int i=0;i<mMapUsers.size();i++) {
@@ -409,6 +421,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
                 profileList = data.getProfileList();
                 addMarkerByProfile();
                 ArrayList<Integer> indexs = search(profileList, "AB1");
+                break;
+            case COMMON_RES_CONNECTION_TIMEOUT:
+                break;
+            case COMMON_RES_FAILED_TO_CONNECT:
+                Toast.makeText(getContext(), "No internet connection", Toast.LENGTH_SHORT).show();
+                break;
+            case COMMON_RES_INTERNAL_ERROR:
+                break;
+            case COMMON_RES_SERVER_ERROR_WITH_MESSAGE:
                 break;
         }
     }

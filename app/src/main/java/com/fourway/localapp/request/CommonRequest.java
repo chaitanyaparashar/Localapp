@@ -29,7 +29,7 @@ public abstract class CommonRequest {
 
     public enum RequestType {
         COMMON_REQUEST_LOGIN,
-        COMMON_REQUEST_SIGN_UP,
+        COMMON_REQUEST_SIGNUP,
         COMMON_REQUEST_USERS,
         COMMON_REQUEST_BROADCAST,
         COMMON_REQUEST_FEED
@@ -114,7 +114,7 @@ public abstract class CommonRequest {
                 url = LOGIN_REQUEST_URL;
                 break;
 
-            case COMMON_REQUEST_SIGN_UP:
+            case COMMON_REQUEST_SIGNUP:
                 url = SIGN_UP_REQUEST_URL;
                 break;
 

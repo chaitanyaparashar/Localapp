@@ -1,12 +1,13 @@
 package com.fourway.localapp.data;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
 
 /**
  * Created by 4 way on 20-02-2017.
  */
 
-public class Profile {
+public class Profile implements ClusterItem {
     public static String TAG = "Profile";
 
     private String uId;
@@ -21,6 +22,11 @@ public class Profile {
 
     public Profile(String uId ) {
         this.uId = uId;
+    }
+
+    public Profile(LatLng position, String name) {
+        this.uLatLng = position;
+        this.uName = name;
     }
 
 
@@ -97,5 +103,20 @@ public class Profile {
 
     public void setuNotes(String uNotes) {
         this.uNotes = uNotes;
+    }
+
+    @Override
+    public LatLng getPosition() {
+        return uLatLng;
+    }
+
+    @Override
+    public String getTitle() {
+        return null;
+    }
+
+    @Override
+    public String getSnippet() {
+        return null;
     }
 }

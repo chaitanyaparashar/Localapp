@@ -40,17 +40,19 @@
                     android:textColor="#FFFFFF"
                     android:layout_gravity="center"/>
 
-                <ImageView
+                <com.github.siyamed.shapeimageview.CircularImageView
                     android:layout_margin="10dp"
                     android:padding="10dp"
                     android:layout_width="130dp"
                     android:layout_height="130dp"
                     android:src="@mipmap/ic_launcher"
                     android:layout_gravity="center"
-                    android:background="@drawable/profile_circular_border_imageview"
-                    android:id="@+id/imageView" />
+                    app:siBorderWidth="3dp"
+                    app:siBorderColor="#FFFFFF"
+                    android:id="@+id/image_pic" />
 
                 <Button
+                    android:id="@+id/upload_btn"
                     android:layout_margin="10dp"
                     android:padding="10dp"
                     android:layout_width="160dp"
@@ -282,6 +284,7 @@
             </LinearLayout>
 
             <Button
+                android:id="@+id/_signUp"
                 android:layout_gravity="bottom"
                 android:text="signup"
                 android:textColor="#FFFFFF"

@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -30,6 +31,9 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
+import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
+import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -44,8 +48,8 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     private RecyclerView.Adapter adapter;
     private GridView emojiGridView;
 
-    EditText chatText;
-    ImageView sendImageViewBtn, camShoutImgBtn;
+    EmojiconEditText chatText;
+    ImageView sendImageViewBtn, camShoutImgBtn,emoticImgBtn;
 
     //ArrayList of messages to store the thread messages
     private ArrayList<Message> messages;
@@ -71,12 +75,19 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         //Initializing recyclerview
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         emojiGridView = (GridView) view.findViewById(R.id.shout_emiji);
-        chatText = (EditText) view.findViewById(R.id.chat_text);
+        chatText = (EmojiconEditText) view.findViewById(R.id.chat_text);
         camShoutImgBtn = (ImageView) view.findViewById(R.id.btn_cam_shout);
         sendImageViewBtn = (ImageView) view.findViewById(R.id.btn_send_speak);
+        emoticImgBtn = (ImageView) view.findViewById(R.id.btn_emoticon);
         recyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getContext());
 
+        emoticImgBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
 
         recyclerView.setLayoutManager(layoutManager);
         sendImageViewBtn.setOnClickListener(sendVoiceClickListener);
@@ -92,6 +103,12 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
 
         EmojiGridAdapter adapter1  =  new EmojiGridAdapter(getContext(),android.R.layout.simple_gallery_item,en);
         emojiGridView.setAdapter(adapter1);
+
+
+
+        EmojIconActions  emojIcon=new EmojIconActions(getActivity(),view,chatText,emoticImgBtn);
+        emojIcon.setIconsIds(R.drawable.ic_action_keyboard,R.drawable.ic_smily);
+        emojIcon.ShowEmojIcon();
 
         //test
         request();

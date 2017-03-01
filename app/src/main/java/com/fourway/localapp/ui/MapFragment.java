@@ -1,15 +1,20 @@
 package com.fourway.localapp.ui;
 
 
+import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -20,7 +25,6 @@ import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fourway.localapp.R;
@@ -30,24 +34,35 @@ import com.fourway.localapp.request.CommonRequest;
 import com.fourway.localapp.request.GetUsersRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
+//import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterItem;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
+import com.google.maps.android.ui.IconGenerator;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.StringTokenizer;
 
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, LocationListener,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener,GetUsersRequest.GetUsersResponseCallback{
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener, GetUsersRequest.GetUsersResponseCallback,
+        ClusterManager.OnClusterClickListener<Profile>, ClusterManager.OnClusterInfoWindowClickListener<Profile>, ClusterManager.OnClusterItemClickListener<Profile>, ClusterManager.OnClusterItemInfoWindowClickListener<Profile> {
 
+    private static final int REQUEST_LOCATION_CODE = 200;
     GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
     MapView mMapView;
@@ -56,8 +71,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
     ArrayList<Profile> profileList;
     ArrayList<Integer> markerID;
 
-    ImageView medicalBtn,officeBtn,
-            carBtn,emergencyBtn,
+    ImageView medicalBtn, officeBtn,
+            carBtn, emergencyBtn,
             entertainmentBtn;
     ImageView searchBtn;
 
@@ -88,11 +103,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
 
         profileList = new ArrayList<>();
         markerID = new ArrayList<>();
-        officeBtn = (ImageView)view.findViewById(R.id.office_iv);
-        medicalBtn = (ImageView)view.findViewById(R.id.medical_iv);
-        carBtn = (ImageView)view.findViewById(R.id.car_iv);
-        emergencyBtn = (ImageView)view.findViewById(R.id.emergency_iv);
-        entertainmentBtn = (ImageView)view.findViewById(R.id.entertainment_iv);
+        officeBtn = (ImageView) view.findViewById(R.id.office_iv);
+        medicalBtn = (ImageView) view.findViewById(R.id.medical_iv);
+        carBtn = (ImageView) view.findViewById(R.id.car_iv);
+        emergencyBtn = (ImageView) view.findViewById(R.id.emergency_iv);
+        entertainmentBtn = (ImageView) view.findViewById(R.id.entertainment_iv);
         searchBtn = (ImageView) view.findViewById(R.id.search_btn);
         searchBoxView = (AutoCompleteTextView) view.findViewById(R.id.autoCompleteTextView);
 
@@ -117,14 +132,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         request(new LatLng(28.545623, 77.330507));
 
         // Create an instance of GoogleAPIClient.
-        ConnectToGooglePlayServices();
+//        ConnectToGooglePlayServices();
 
 
-        mLocationManager  = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+        mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         try {
-            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0, this);
-        }catch (SecurityException se){
-            Log.v(TAG, "SecurityException: "+se.getMessage());
+            mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        } catch (SecurityException se) {
+            Log.v(TAG, "SecurityException: " + se.getMessage());
         }
 
         Log.v(TAG, "View ready");
@@ -139,13 +154,42 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         mMap = googleMap;
-        mMap.setOnMarkerClickListener(this);
+//        mMap.setOnMarkerClickListener(this);
 
-        mMap.setMyLocationEnabled(true);
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            //User has previously accepted this permission
+            if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                mMap.setMyLocationEnabled(true);
+            }
+        } else {
+            //Not in api-23, no need to prompt
+            mMap.setMyLocationEnabled(true);
+        }
+
+
 
         mMap.getUiSettings().setZoomGesturesEnabled(true);
-        mMap.getUiSettings().setCompassEnabled(true);
+        mMap.getUiSettings().setCompassEnabled(false);
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
+
+        mClusterManager = new ClusterManager<Profile>(getContext(), mMap);
+        mClusterManager.setRenderer(new ProfileRenderer());
+
+        mMap.setOnCameraIdleListener(mClusterManager);
+        mMap.setOnMarkerClickListener(mClusterManager);
+        mMap.setOnInfoWindowClickListener(mClusterManager);
+
+        mClusterManager.setOnClusterClickListener(this);
+        mClusterManager.setOnClusterInfoWindowClickListener(this);
+        mClusterManager.setOnClusterItemClickListener(this);
+        mClusterManager.setOnClusterItemInfoWindowClickListener(this);
+
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(28.545623, 77.330507), 9.5f));
+        addItems();
+        mClusterManager.cluster();
+
 /*
         mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
             @Override
@@ -165,6 +209,105 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         setMyLocationButton();
         Log.v(TAG, "Map Ready");
 
+    }
+
+    public boolean checkLocationPermission() {
+        if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Should we show an explanation?
+            if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an expanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+                //  TODO: Prompt with explanation!
+
+                //Prompt the user once explanation has been shown
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        REQUEST_LOCATION_CODE);
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(getActivity(),
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        REQUEST_LOCATION_CODE);
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private void addItems() {
+
+        /*************** data for testing ***********/
+
+        // http://www.flickr.com/photos/sdasmarchives/5036248203/
+        mClusterManager.addItem(new Profile(position(), "Walter"));
+        mClusterManager.addItem(new Profile(position(), "Walter"));
+        mClusterManager.addItem(new Profile(position(), "Walter"));
+        mClusterManager.addItem(new Profile(position(), "Walter"));
+        mClusterManager.addItem(new Profile(position(), "Walter"));
+        mClusterManager.addItem(new Profile(position(), "Walter"));
+
+        // http://www.flickr.com/photos/usnationalarchives/4726917149/
+        mClusterManager.addItem(new Profile(position(), "Gran"));
+
+        // http://www.flickr.com/photos/nypl/3111525394/
+        mClusterManager.addItem(new Profile(position(), "Ruth"));
+
+        // http://www.flickr.com/photos/smithsonian/2887433330/
+        mClusterManager.addItem(new Profile(position(), "Stefan"));
+        mClusterManager.addItem(new Profile(position(), "Stefan"));
+        mClusterManager.addItem(new Profile(position(), "Stefan"));
+        mClusterManager.addItem(new Profile(position(), "Stefan"));
+        mClusterManager.addItem(new Profile(position(), "Stefan"));
+        mClusterManager.addItem(new Profile(position(), "Stefan"));
+
+        // http://www.flickr.com/photos/library_of_congress/2179915182/
+        mClusterManager.addItem(new Profile(position(), "Mechanic"));
+        mClusterManager.addItem(new Profile(position(), "Mechanic"));
+        mClusterManager.addItem(new Profile(position(), "Mechanic"));
+        mClusterManager.addItem(new Profile(position(), "Mechanic"));
+        mClusterManager.addItem(new Profile(position(), "Mechanic"));
+        mClusterManager.addItem(new Profile(position(), "Mechanic"));
+        mClusterManager.addItem(new Profile(position(), "Mechanic"));
+        mClusterManager.addItem(new Profile(position(), "Mechanic"));
+        mClusterManager.addItem(new Profile(position(), "Mechanic"));
+
+        // http://www.flickr.com/photos/nationalmediamuseum/7893552556/
+        mClusterManager.addItem(new Profile(position(), "Yeats"));
+        mClusterManager.addItem(new Profile(position(), "Yeats"));
+        mClusterManager.addItem(new Profile(position(), "Yeats"));
+        mClusterManager.addItem(new Profile(position(), "Yeats"));
+        mClusterManager.addItem(new Profile(position(), "Yeats"));
+        mClusterManager.addItem(new Profile(position(), "Yeats"));
+        mClusterManager.addItem(new Profile(position(), "Yeats"));
+
+        // http://www.flickr.com/photos/sdasmarchives/5036231225/
+        mClusterManager.addItem(new Profile(position(), "John"));
+
+        // http://www.flickr.com/photos/anmm_thecommons/7694202096/
+        mClusterManager.addItem(new Profile(position(), "Trevor the Turtle"));
+
+        // http://www.flickr.com/photos/usnationalarchives/4726892651/
+        mClusterManager.addItem(new Profile(position(), "Teach"));
+        mClusterManager.addItem(new Profile(position(), "Teach"));
+        mClusterManager.addItem(new Profile(position(), "Teach"));
+        mClusterManager.addItem(new Profile(position(), "Teach"));
+        mClusterManager.addItem(new Profile(position(), "Teach"));
+        mClusterManager.addItem(new Profile(position(), "Teach"));
+        mClusterManager.addItem(new Profile(position(), "Teach"));
+        mClusterManager.addItem(new Profile(position(), "Teach"));
+        mClusterManager.addItem(new Profile(position(), "Teach"));
+        mClusterManager.addItem(new Profile(position(), "Teach"));
+
+        /* ========== For Real data ============*/
+//        mClusterManager.addItems(profileList);
     }
 
     /**
@@ -190,10 +333,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
     }
 
 
-
-    private void updateMapUI(Location location)  {
+    private void updateMapUI(Location location) {
 //        mMap.clear();
-        LatLng position = new LatLng(location.getLatitude(),location.getLongitude());
+        LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
 //        request(position);
 
 //        mMap.addMarker(new MarkerOptions().position(position));
@@ -210,20 +352,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
     private void addMarkerAtLocation(LatLng latLng, String tag) {
         mMap.addMarker(new MarkerOptions().position(latLng).title(tag));
 
-        Log.v(TAG, "Add marker At: "+latLng);
+        Log.v(TAG, "Add marker At: " + latLng);
     }
 
     @Override
-    public void onLowMemory()
-    {
+    public void onLowMemory() {
         super.onLowMemory();
         mMapView.onLowMemory();
     }
+
     @Override
     public void onResume() {
         super.onResume();
         mMapView.onResume();
     }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
@@ -232,13 +375,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
     @Override
     public void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
+//        mGoogleApiClient.connect();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mGoogleApiClient.disconnect();
+//        mGoogleApiClient.disconnect();
     }
 
     /**
@@ -267,17 +410,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
 
             }
 
-        }
-    };
-
-    GoogleMap.OnMyLocationChangeListener onMyLocationChangeListener = new GoogleMap.OnMyLocationChangeListener() {
-        @Override
-        public void onMyLocationChange(Location location) {
-            mCurrentLocation = location;
-//            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-//            addMarkerAtLocation(latLng);
-//            updateMapUI(location);
-            Log.v(TAG, "onMyLocationChange");
         }
     };
 
@@ -336,19 +468,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
     /**
      * google play service connection
      */
-    public void ConnectToGooglePlayServices(){
+    public void ConnectToGooglePlayServices() {
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(getContext())
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
-                    .addApi(LocationServices.API)
                     .build();
         }
     }
 
     @Override
     public void onConnected(Bundle bundle) {
-        Log.v(TAG, "onConnected");
+        /*Log.v(TAG, "onConnected");
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
         if (mLastLocation != null) {
@@ -357,7 +488,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
 //            request(position);
 //            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
 //            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
-        }
+        }*/
 
     }
 
@@ -372,8 +503,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
         Log.v(TAG, "onConnectionFailed");
 
     }
-
-
 
 
 //    void prepaireMapData() {
@@ -392,7 +521,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
      */
     @Override
     public boolean onMarkerClick(Marker marker) {
-        if (uDetailLayout.getVisibility() != View.VISIBLE) {
+        /*if (uDetailLayout.getVisibility() != View.VISIBLE) {
             int index= Integer.parseInt(marker.getTitle());
             Profile profile = profileList.get(index);
             String pName = profile.getuName();
@@ -429,13 +558,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
             uDetailLayout.setVisibility(View.VISIBLE);
         }else {
             uDetailLayout.setVisibility(View.GONE);
-        }
-        return true;
+        }*/
+        return false;
     }
 
     //test
     void request(LatLng latLng) {
-        GetUsersRequest usersRequest = new GetUsersRequest(getActivity(),latLng,MapFragment.this);
+        GetUsersRequest usersRequest = new GetUsersRequest(getActivity(), latLng, MapFragment.this);
         usersRequest.executeRequest();
     }
 
@@ -444,11 +573,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
     public void onGetUsersResponse(CommonRequest.ResponseCode res, GetUsersRequestData data) {
         switch (res) {
             case COMMON_RES_SUCCESS:
-                if (profileList.size()>0){
+                if (profileList.size() > 0) {
                     profileList.clear();
                 }
                 profileList = data.getProfileList();
-                addMarkerByProfile(false, null);
+//                addMarkerByProfile(false, null);
+                /*addItems();
+                mClusterManager.cluster();*/
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:
                 break;
@@ -465,16 +596,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
     /**
      * add marker by profile data
      */
-    void addMarkerByProfile(boolean isFilter,ArrayList<Integer> filterIndex) {
+    void addMarkerByProfile(boolean isFilter, ArrayList<Integer> filterIndex) {
         mMap.clear();
         int size = profileList.size();
         int filterIndexSize = 0;
-        if (markerID.size()>0) {
+        if (markerID.size() > 0) {
             markerID.clear();
         }
 
         if (filterIndex != null) {
-             filterIndexSize = filterIndex.size();
+            filterIndexSize = filterIndex.size();
         }
 
         if (!isFilter) {
@@ -486,7 +617,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
                     Log.v(TAG, "addMarkerByProfile: " + lng);
                 }
             }
-        }else {
+        } else {
             for (int i = 0; i < filterIndexSize; i++) {
                 int profileIndex = filterIndex.get(i);
                 LatLng lng = profileList.get(profileIndex).getuLatLng();
@@ -517,7 +648,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
             String dataString = "";
             String pName = profile.getuName();
             String pNotes = profile.getuNotes();
-            String pSpeciality  = profile.getuSpeciality();
+            String pSpeciality = profile.getuSpeciality();
 
             if (pName.equals("null")) {
                 pName = "";
@@ -543,7 +674,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
                 }
             }
 
-            if (isFound){
+            if (isFound) {
                 profileIndex.add(i);
                 isFound = false;
             }
@@ -551,7 +682,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
 
         }
 
-        Toast.makeText(getContext(), ""+profileIndex.size(), Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "" + profileIndex.size(), Toast.LENGTH_SHORT).show();
         return profileIndex;
     }
 
@@ -588,4 +719,173 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
 
         }
     };
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_LOCATION_CODE:
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay!
+                    if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                            Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        mMap.setMyLocationEnabled(true);
+                    }
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(getApplicationContext(), "permission denied", Toast.LENGTH_LONG).show();
+                }
+                return;
+
+        }
+
+    }
+
+    protected Context getApplicationContext() {
+        return getActivity().getApplicationContext();
+    }
+
+
+    protected GoogleMap getMap() {
+        return mMap;
+    }
+
+    /**
+     * Demonstrates heavy customisation of the look of rendered clusters.
+     */
+
+
+    /**
+     * Draws profile photos inside markers (using IconGenerator).
+     * When there are multiple people in the cluster, draw multiple photos (using MultiDrawable).
+     */
+
+    private ClusterManager<Profile> mClusterManager;
+
+
+    private class ProfileRenderer extends DefaultClusterRenderer<Profile> {
+
+        private IconGenerator mIconGenerator = new IconGenerator(getActivity().getApplication());
+        private IconGenerator mClusterIconGenerator = new IconGenerator(getActivity().getApplication());
+        private ImageView mImageView;
+        private ImageView mClusterImageView;
+        private int mDimension;
+
+        public ProfileRenderer() {
+            super(getApplicationContext(), getMap(), mClusterManager);
+
+            View multiProfile = getActivity().getLayoutInflater().inflate(R.layout.multi_profile, null);
+            mClusterIconGenerator.setContentView(multiProfile);
+            mClusterImageView = (ImageView) multiProfile.findViewById(R.id.cluster_image);
+
+            mImageView = new ImageView(getApplicationContext());
+            mDimension = (int) getResources().getDimension(R.dimen.custom_profile_image);
+            mImageView.setLayoutParams(new ViewGroup.LayoutParams(mDimension, mDimension));
+            int padding = (int) getResources().getDimension(R.dimen.custom_profile_padding);
+            mImageView.setPadding(padding, padding, padding, padding);
+            mIconGenerator.setContentView(mImageView);
+        }
+
+        @Override
+        protected void onBeforeClusterItemRendered(Profile profile, MarkerOptions markerOptions) {
+            // Draw a single person.
+            // Set the info window to show their name.
+//            mImageView.setImageResource(profile.profilePhoto);
+            mImageView.setImageResource(R.mipmap.ic_launcher);
+            Bitmap icon = mIconGenerator.makeIcon();
+            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(profile.getuName());
+        }
+
+        @Override
+        protected void onBeforeClusterRendered(Cluster<Profile> cluster, MarkerOptions markerOptions) {
+            // Draw multiple people.
+            // Note: this method runs on the UI thread. Don't spend too much time in here (like in this example).
+
+            List<Drawable> profilePhotos = new ArrayList<Drawable>(Math.min(4, cluster.getSize()));
+            int width = mDimension;
+            int height = mDimension;
+
+            for (Profile p : cluster.getItems()) {
+                // Draw 4 at most.
+                if (profilePhotos.size() == 4) break;
+                Drawable drawable = getResources().getDrawable(R.mipmap.ic_launcher);
+//                Drawable drawable = getResources().getDrawable(p.profilePhoto);
+                drawable.setBounds(0, 0, width, height);
+                profilePhotos.add(drawable);
+            }
+
+            MultiDrawable multiDrawable = new MultiDrawable(profilePhotos);
+            multiDrawable.setBounds(0, 0, width, height);
+
+            mClusterImageView.setImageDrawable(multiDrawable);
+            Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
+            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
+        }
+
+        @Override
+        protected boolean shouldRenderAsCluster(Cluster<Profile> cluster) {
+            // Always render clusters.
+            return cluster.getSize() > 1;
+        }
+    }
+
+    @Override
+    public boolean onClusterClick(Cluster<Profile> cluster) {
+        // Show a toast with some info when the cluster is clicked.
+        String firstName = cluster.getItems().iterator().next().getuName();
+        Toast.makeText(getContext(), cluster.getSize() + " (including " + firstName + ")", Toast.LENGTH_SHORT).show();
+
+        // Zoom in the cluster. Need to create LatLngBounds and including all the cluster items
+        // inside of bounds, then animate to center of the bounds.
+
+        // Create the builder to collect all essential cluster items for the bounds.
+        LatLngBounds.Builder builder = LatLngBounds.builder();
+        for (ClusterItem item : cluster.getItems()) {
+            builder.include(item.getPosition());
+        }
+        // Get the LatLngBounds
+        final LatLngBounds bounds = builder.build();
+
+        // Animate camera to the bounds
+        try {
+            getMap().animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return true;
+    }
+
+    @Override
+    public void onClusterInfoWindowClick(Cluster<Profile> cluster) {
+        // Does nothing, but you could go to a list of the users.
+    }
+
+    @Override
+    public boolean onClusterItemClick(Profile profile) {
+        // Does nothing, but you could go into the user's profile page, for example.
+        return false;
+    }
+
+    @Override
+    public void onClusterItemInfoWindowClick(Profile profile) {
+        // Does nothing, but you could go into the user's profile page, for example.
+
+    }
+
+    /**
+     * For testing
+     */
+
+    private Random mRandom = new Random(1984);
+    private LatLng position() {
+        return new LatLng(random(28.545623, 28.28494009999999), random(77.330507, 76.3514683));
+    }
+
+    private double random(double min, double max) {
+        return mRandom.nextDouble() * (max - min) + min;
+    }
 }

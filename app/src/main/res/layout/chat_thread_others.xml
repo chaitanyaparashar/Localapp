@@ -10,10 +10,12 @@
     android:layout_height="wrap_content">
 
     <ImageView
+        android:background="@drawable/user_circular_border"
         android:id="@+id/imageView3"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginTop="0dp"
+        android:scaleType="centerCrop"
         android:layout_weight=".5"
         android:src="@mipmap/ic_launcher" />
 

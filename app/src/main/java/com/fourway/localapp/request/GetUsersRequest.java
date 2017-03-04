@@ -43,6 +43,7 @@ public class GetUsersRequest extends CommonRequest {
         String url = getRequestTypeURL(RequestType.COMMON_REQUEST_USERS);
         url += "latitude=" + String.valueOf(latLng.latitude);
         url += "&longitude=" + String.valueOf(latLng.longitude);
+        url += "&radius=" + String.valueOf("1");// hardcode radius 1 km
         super.setURL(url);
 
         mGetUsersResponseCallback = cb;

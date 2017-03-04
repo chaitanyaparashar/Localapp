@@ -2,10 +2,12 @@ package com.fourway.localapp.ui;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
@@ -14,6 +16,9 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,11 +27,28 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.AccessToken;
+import com.facebook.AccessTokenTracker;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
+import com.facebook.Profile;
+import com.facebook.ProfileTracker;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.fourway.localapp.R;
+import com.fourway.localapp.data.LoginData;
 import com.fourway.localapp.data.SignUpData;
+import com.fourway.localapp.login_session.SessionManager;
 import com.fourway.localapp.request.CommonRequest;
+import com.fourway.localapp.request.LoginRequest;
 import com.fourway.localapp.request.SignUpRequest;
 import com.github.siyamed.shapeimageview.CircularImageView;
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -35,19 +57,33 @@ import com.google.i18n.phonenumbers.Phonenumber;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
+import com.facebook.FacebookSdk;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import javax.net.ssl.HttpsURLConnection;
+
 import static android.app.Activity.RESULT_OK;
+
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  */
-public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResponseCallback {
+public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResponseCallback, LoginRequest.LoginResponseCallback {
 
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 111;
     public static int PICK_IMAGE_REQUEST = 100;
+
+    SessionManager session;
 
     EditText mNameView, mNumberView, mEmailView,
             mPasswordView, cPasswordView, mInfoView,
@@ -55,6 +91,13 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
 
     Spinner spinner;
     CircularImageView profilePic;
+
+    LoginButton fb_LoginButton;
+    CallbackManager fbCallbackManager;
+    AccessTokenTracker fbTokenTracker;
+    ProfileTracker fbProfileTracker;
+
+    TextView mSignInView;
 
     Button signUpBtn, picUploadBtn;
     File imgFile;
@@ -83,6 +126,40 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         View view = inflater.inflate(R.layout.fragment_sign_up, container, false);
 
         signUpBtn = (Button) view.findViewById(R.id._signUp);
+
+        session = new SessionManager(getActivity());
+
+        /***************** fb login *****************/
+        List<String> fbPermissions = new ArrayList<>();
+        fbPermissions.add("public_profile");
+        fbPermissions.add("email");
+        fbPermissions.add("user_about_me");
+        fbPermissions.add("user_birthday");
+        fbPermissions.add("user_location");
+        fbPermissions.add("user_relationships");
+        fbPermissions.add("user_work_history");
+
+        fb_LoginButton = (LoginButton) view.findViewById(R.id.fb_login_button);
+        fb_LoginButton.setReadPermissions(fbPermissions);
+        fb_LoginButton.setFragment(this);
+        fbCallbackManager = CallbackManager.Factory.create();
+        fb_LoginButton.registerCallback(fbCallbackManager, fbCallback);
+        LoginManager.getInstance().registerCallback(fbCallbackManager, fbCallback);
+        fbTokenTracker = new AccessTokenTracker() {
+            @Override
+            protected void onCurrentAccessTokenChanged(AccessToken oldAccessToken, AccessToken currentAccessToken) {
+                AccessToken.setCurrentAccessToken(currentAccessToken);
+            }
+        };
+
+        fbProfileTracker = new ProfileTracker() {
+            @Override
+            protected void onCurrentProfileChanged(Profile oldProfile, Profile currentProfile) {
+                com.facebook.Profile.setCurrentProfile(currentProfile);
+
+            }
+        };
+
         picUploadBtn = (Button) view.findViewById(R.id.upload_btn);
 
         profilePic = (CircularImageView) view.findViewById(R.id.image_pic);
@@ -94,6 +171,8 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         cPasswordView = (EditText) view.findViewById(R.id.input_password_c);
         mInfoView = (EditText) view.findViewById(R.id.input_brief_intro);
         mDetailView = (EditText) view.findViewById(R.id.input_details_des);
+        mSignInView = (TextView) view.findViewById(R.id.sign_in_text);
+
 
         spinner = (Spinner) view.findViewById(R.id.spinner);
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_spinner_item,professionString);
@@ -118,6 +197,12 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
                 signUp();
             }
         });
+        mSignInView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                signInDialog();
+            }
+        });
 
         picUploadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -136,6 +221,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         // Inflate the layout for this fragment
         return view;
     }
+
 
     void permissionsRequestReadExternalStorage()
     {
@@ -175,6 +261,8 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
                 e.printStackTrace();
             }
         }
+
+        fbCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
 
@@ -333,7 +421,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
             mPasswordView.setError(null);
         }
 
-        if (cPassword.equals(password) == false) {
+        if (!cPassword.equals(password)) {
             cPasswordView.setError("Password not matched");
             valid = false;
             return valid;
@@ -354,12 +442,13 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
 
     public void signUp() {
         if (!validate()) {
-            onSignupFailed("Check input field");
+            onSignUpFailed("Check input field");
             return;
         }
 
         if (imgFile == null) {
             Toast.makeText(getContext(), "Please select a pic", Toast.LENGTH_SHORT).show();
+            return;
         }
 
         mProgressDialog = new ProgressDialog(getActivity());
@@ -387,7 +476,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
 
     }
 
-    private void onSignupFailed(String errorMsg) {
+    private void onSignUpFailed(String errorMsg) {
         signUpBtn.setEnabled(true);
         Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
     }
@@ -402,10 +491,10 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
                 onSignUpSuccess();
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:
-                onSignupFailed("Connection timeout");
+                onSignUpFailed("Connection timeout");
                 break;
             case COMMON_RES_FAILED_TO_CONNECT:
-                onSignupFailed("No internet connection");
+                onSignUpFailed("No internet connection");
                 break;
             case COMMON_RES_INTERNAL_ERROR:
                 break;
@@ -416,6 +505,160 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
     }
 
     private void onSignUpSuccess() {
-        //TODO: Implement signup success login here
+        //TODO: Implement signup success logic here
     }
+
+    private AlertDialog mSignInDialog;
+    private void signInDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        final EditText _email, _password;
+
+        View mDialogView = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_sign_in,null);
+        _email = (EditText) mDialogView.findViewById(R.id.input_email);
+        _password = (EditText) mDialogView.findViewById(R.id.input_password);
+        builder.setView(mDialogView);
+        builder.setCancelable(false);
+        builder.setTitle("Log in to Localapp");
+
+        builder.setPositiveButton("SIGNIN", null);
+        builder.setNegativeButton("CANCEL",null);
+
+        mSignInDialog = builder.create();
+        mSignInDialog.show();
+
+        mSignInDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String mEmail = _email.getText().toString();
+                String mPassword = _password.getText().toString();
+
+                if (mEmail.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(mEmail).matches()) {
+                    _email.setError("enter a valid email address");
+                    return;
+                }else if (mPassword.isEmpty() || mPassword.length() <6 || mPassword.length() >16) {
+                    _password.setError("enter a valid password");
+                    return;
+                }
+
+                LoginData loginData = new LoginData(mEmail, mPassword);
+                LoginRequest request = new LoginRequest(getActivity(),loginData,SignUpFragment.this);
+                request.executeRequest();
+            }
+        });
+
+
+    }
+
+    @Override
+    public void onLoginResponse(CommonRequest.ResponseCode responseCode, LoginData data) {
+        switch (responseCode) {
+            case COMMON_RES_SUCCESS:
+                mSignInDialog.dismiss();
+                HomeActivity.mLoginToken = data.getAccessToken();
+                session.createLoginSession(HomeActivity.mLoginToken, HomeActivity.mLastKnownLocation);
+                Toast.makeText(getActivity(), "Registration successfully", Toast.LENGTH_SHORT).show();
+                onSignUpSuccess();
+                break;
+            case COMMON_RES_CONNECTION_TIMEOUT:
+                onLoginFailed("Connection timeout");
+                break;
+            case COMMON_RES_FAILED_TO_CONNECT:
+                onLoginFailed("No internet connection");
+                break;
+            case COMMON_RES_INTERNAL_ERROR:
+                break;
+            case COMMON_RES_SERVER_ERROR_WITH_MESSAGE:
+                break;
+        }
+    }
+
+    private void onLoginFailed(String msg) {
+        Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
+    }
+
+    FacebookCallback<LoginResult> fbCallback = new FacebookCallback<LoginResult>() {
+        @Override
+        public void onSuccess(LoginResult loginResult) {
+
+            if (!fbTokenTracker.isTracking()) {
+                fbTokenTracker.startTracking();
+            }
+
+            GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+
+                @Override
+                public void onCompleted(JSONObject object, GraphResponse response) {
+                    // Get facebook data from login
+                    try {
+                        String fbName = object.getString("name");
+                        String fbEmail = object.getString("email");
+                        String fbGender = object.getString("gender");
+                        String fbAbout = object.getString("about");
+                        String fbRelationship_status = object.getString("relationship_status");
+                        String fbBirthaday = object.getString("birthday");
+
+
+                        com.facebook.Profile fbProfile = Profile.getCurrentProfile();
+                        Uri picUrl = fbProfile.getProfilePictureUri(200,150);
+                        URL url = null;
+                        try {
+                            url = new URL(picUrl.toString());
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        }
+
+
+/*
+                        Bitmap profilePicBitmap= null;
+                        try {
+                            HttpsURLConnection conn1 = (HttpsURLConnection) url.openConnection();
+                            HttpsURLConnection.setFollowRedirects(true);
+                            conn1.setInstanceFollowRedirects(true);
+                            profilePicBitmap = BitmapFactory.decodeStream(conn1.getInputStream());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }*/
+
+
+                        mNameView.setText(fbName);
+                        mEmailView.setText(fbEmail);
+                        mDetailView.setText(fbAbout);
+//                        profilePic.setImageBitmap(profilePicBitmap);
+
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+
+
+            });
+
+            Bundle parameters = new Bundle();
+            parameters.putString("fields", "id, name, email, gender, birthday, location, about, relationship_status, work"); // Parámetros que pedimos a facebook
+            request.setParameters(parameters);
+            request.executeAsync();
+
+
+
+
+        }
+
+
+
+        @Override
+        public void onCancel() {
+
+        }
+
+        @Override
+        public void onError(FacebookException error) {
+            Toast.makeText(getActivity(), ""+error.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    };
+
+
 }

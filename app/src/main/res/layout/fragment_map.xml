@@ -34,7 +34,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:tint="#2196f3"
-                    app:srcCompat="@drawable/ic_office"/>
+                    android:src="@drawable/ic_office"/>
 
                 <ImageView
                     android:id="@+id/medical_iv"
@@ -44,7 +44,7 @@
                     android:layout_width="43dp"
                     android:layout_height="50dp"
                     android:tint="@android:color/darker_gray"
-                    app:srcCompat="@drawable/ic_medical"/>
+                    android:src="@drawable/ic_medical" />
 
                 <ImageView
                     android:id="@+id/car_iv"
@@ -54,7 +54,7 @@
                     android:layout_width="44dp"
                     android:layout_height="50dp"
                     android:tint="@android:color/darker_gray"
-                    app:srcCompat="@drawable/ic_car"/>
+                    android:src="@drawable/ic_car"/>
 
                 <ImageView
                     android:id="@+id/emergency_iv"
@@ -64,7 +64,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:tint="@android:color/darker_gray"
-                    app:srcCompat="@drawable/ic_emergency"/>
+                    android:src="@drawable/ic_emergency" />
                 <ImageView
                     android:id="@+id/entertainment_iv"
                     android:layout_marginTop="5dp"
@@ -73,7 +73,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:tint="@android:color/darker_gray"
-                    app:srcCompat="@drawable/ic_entertainment"/>
+                    android:src="@drawable/ic_entertainment" />
 
 
 

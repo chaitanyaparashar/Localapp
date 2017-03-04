@@ -56,7 +56,7 @@ public class SignUpRequest {
         mContext = context;
         mSignUpData = data;
         mParams = new HashMap<>();
-        mParams.put("Content-Type", "multipart/form-data");
+        /*mParams.put("Content-Type", "multipart/form-data");*/
         mParams.put(JSON_FIELD_NAME, data.getmName());
         mParams.put(JSON_FIELD_EMAIL_ID, data.getmEmail());
         mParams.put(JSON_FIELD_MOBILE_NUMBER, data.getmMobile());
@@ -70,7 +70,7 @@ public class SignUpRequest {
 
 
     public void executeRequest() {
-        String url = "http://52.172.157.120:8080/uploadPic";
+        String url = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/registerPic";
 
         Response.Listener<NetworkResponse> listener = new Response.Listener<NetworkResponse>() {
             @Override

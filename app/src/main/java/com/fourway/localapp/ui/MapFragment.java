@@ -384,6 +384,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, Locatio
 //        mGoogleApiClient.disconnect();
     }
 
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        super.onHiddenChanged(hidden);
+    }
+
+
     /**
      * filter map marker
      */

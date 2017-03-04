@@ -24,7 +24,7 @@
             android:layout_height="30dp"
             android:layout_weight=".5"
             android:tint="@android:color/darker_gray"
-            app:srcCompat="@drawable/ic_smily" />
+            android:src="@drawable/ic_smily" />
 
         <LinearLayout
             android:background="@drawable/chat_style_editext"
@@ -54,7 +54,7 @@
                 android:id="@+id/btn_cam_shout"
                 android:layout_gravity="center"
                 android:tint="#706b6b"
-                app:srcCompat="@drawable/ic_camera"
+                android:src="@drawable/ic_camera"
                 android:layout_weight="1.5"
                 android:padding="2dp"
                 android:layout_width="0dp"
@@ -71,6 +71,6 @@
             android:layout_width="35dp"
             android:layout_weight=".5"
             android:layout_height="35dp"
-            app:srcCompat="@drawable/ic_speak" />
+            android:src="@drawable/ic_speak"/>
     </LinearLayout>
 </RelativeLayout>

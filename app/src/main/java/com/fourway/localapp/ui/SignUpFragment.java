@@ -2,12 +2,10 @@ package com.fourway.localapp.ui;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.DocumentsContract;
@@ -17,7 +15,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,7 +34,6 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.facebook.HttpMethod;
 import com.facebook.Profile;
 import com.facebook.ProfileTracker;
 import com.facebook.login.LoginManager;
@@ -50,7 +46,7 @@ import com.fourway.localapp.login_session.SessionManager;
 import com.fourway.localapp.request.CommonRequest;
 import com.fourway.localapp.request.LoginRequest;
 import com.fourway.localapp.request.SignUpRequest;
-import com.github.siyamed.shapeimageview.CircularImageView;
+import com.fourway.localapp.request.helper.VolleySingleton;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
@@ -63,12 +59,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.facebook.FacebookSdk;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -90,7 +82,9 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
             mDetailView,mLocationTypeView;
 
     Spinner spinner;
-    CircularImageView profilePic;
+
+    // Custom ImageView: with extended CircularImageView and customize like NetworkImageView
+    CircularNetworkImageView profilePic;
 
     LoginButton fb_LoginButton;
     CallbackManager fbCallbackManager;
@@ -162,7 +156,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
 
         picUploadBtn = (Button) view.findViewById(R.id.upload_btn);
 
-        profilePic = (CircularImageView) view.findViewById(R.id.image_pic);
+        profilePic = (CircularNetworkImageView) view.findViewById(R.id.image_pic);
 
         mNameView = (EditText) view.findViewById(R.id.input_name);
         mNumberView = (EditText) view.findViewById(R.id.input_phoneNumber);
@@ -194,7 +188,23 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                signUp();
+                if (!session.isLoggedIn()) {
+                    signUp();
+                }else {
+                    session.logoutUser();
+                    signUpBtn.setText("SignUp");
+                    mNameView.setEnabled(true);
+                    mNumberView.setEnabled(true);
+                    mEmailView.setEnabled(true);
+                    mInfoView.setEnabled(true);
+                    mDetailView.setEnabled(true);
+
+                    mNameView.getText().clear();
+                    mNumberView.getText().clear();
+                    mEmailView.getText().clear();
+                    mInfoView.getText().clear();
+                    mDetailView.getText().clear();
+                }
             }
         });
         mSignInView.setOnClickListener(new View.OnClickListener() {
@@ -556,10 +566,8 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         switch (responseCode) {
             case COMMON_RES_SUCCESS:
                 mSignInDialog.dismiss();
-                HomeActivity.mLoginToken = data.getAccessToken();
-                session.createLoginSession(HomeActivity.mLoginToken, HomeActivity.mLastKnownLocation);
+                onLoginSuccess(data);
                 Toast.makeText(getActivity(), "Registration successfully", Toast.LENGTH_SHORT).show();
-                onSignUpSuccess();
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:
                 onLoginFailed("Connection timeout");
@@ -572,6 +580,28 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
             case COMMON_RES_SERVER_ERROR_WITH_MESSAGE:
                 break;
         }
+    }
+
+    private void onLoginSuccess(LoginData data) {
+        //TODO: -----
+        HomeActivity.mLoginToken = data.getAccessToken();
+        session.createLoginSession(HomeActivity.mLoginToken, HomeActivity.mLastKnownLocation);
+
+        mNameView.setText(data.getmName());
+        mNumberView.setText(data.getmMobile());
+        mEmailView.setText(data.getEmail());
+        mInfoView.setText(data.getmSpeciality());
+//        mDetailView.setText(data.getmName());
+
+        mNameView.setEnabled(false);
+        mNumberView.setEnabled(false);
+        mEmailView.setEnabled(false);
+        mInfoView.setEnabled(false);
+        mDetailView.setEnabled(false);
+
+        signUpBtn.setText("LogOut");
+
+
     }
 
     private void onLoginFailed(String msg) {
@@ -625,6 +655,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
                         mNameView.setText(fbName);
                         mEmailView.setText(fbEmail);
                         mDetailView.setText(fbAbout);
+                        profilePic.setImageUrl(picUrl.toString(), VolleySingleton.getInstance(getActivity()).getImageLoader());
 //                        profilePic.setImageBitmap(profilePicBitmap);
 
 
@@ -646,8 +677,6 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
 
 
         }
-
-
 
         @Override
         public void onCancel() {

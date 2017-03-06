@@ -70,7 +70,7 @@ public class SignUpRequest {
 
 
     public void executeRequest() {
-        String url = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/registerPic";
+        String url = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/registerPic";//url for registration with pic
 
         Response.Listener<NetworkResponse> listener = new Response.Listener<NetworkResponse>() {
             @Override

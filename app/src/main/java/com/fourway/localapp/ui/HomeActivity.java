@@ -233,10 +233,17 @@ public class HomeActivity extends AppCompatActivity {
     void getLastLoginDetails() {
 
         HashMap<String, String> user = session.getUserDetails();
-        Double lat = Double.valueOf(user.get(SessionManager.KEY_LAT));
-        Double lng = Double.valueOf(user.get(SessionManager.KEY_LNG));
         mLoginToken = user.get(SessionManager.KEY_LOGIN_TOKEN);
-        mLastKnownLocation = new LatLng(lat,lng);
+        try {
+            Double lat = Double.valueOf(user.get(SessionManager.KEY_LAT));
+            Double lng = Double.valueOf(user.get(SessionManager.KEY_LNG));
+
+            mLastKnownLocation = new LatLng(lat,lng);
+        }catch (NullPointerException e){
+
+        }
+
+
 
     }
 }

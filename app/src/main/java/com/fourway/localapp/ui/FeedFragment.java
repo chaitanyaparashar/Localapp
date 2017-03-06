@@ -1,27 +1,23 @@
 package com.fourway.localapp.ui;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.fourway.localapp.R;
-import com.fourway.localapp.data.BroadcastRequestData;
 import com.fourway.localapp.data.GetFeedRequestData;
 import com.fourway.localapp.data.Message;
 import com.fourway.localapp.request.BroadcastRequest;
@@ -72,7 +68,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
 
 
-        //Initializing recyclerview
+        //Initializing recyclerView
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         emojiGridView = (GridView) view.findViewById(R.id.shout_emiji);
         chatText = (EmojiconEditText) view.findViewById(R.id.chat_text);
@@ -133,6 +129,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
 
                 Message messageData = new Message();
                 messageData.setToken("bieGrastGiOdkeoqusherCacmaw");
+//                messageData.setToken(HomeActivity.mLoginToken);
                 messageData.setmText(text);
 
                 messages.add(messageData);
@@ -166,7 +163,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         }
     };
 
-    View.OnClickListener camaraClickListener = new View.OnClickListener() {
+    View.OnClickListener cameraClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
 
@@ -185,7 +182,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                 sendImageViewBtn.setOnClickListener(sendVoiceClickListener);
                 sendImageViewBtn.setImageResource(R.drawable.ic_speak);
                 camShoutImgBtn.setImageResource(R.drawable.ic_camera);
-                camShoutImgBtn.setOnClickListener(camaraClickListener);
+                camShoutImgBtn.setOnClickListener(cameraClickListener);
                 emojiGridView.setVisibility(View.GONE);
             }else {
                 sendImageViewBtn.setOnClickListener(sendTextClickListener);

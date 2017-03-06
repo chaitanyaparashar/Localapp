@@ -55,7 +55,13 @@ public class LoginRequest extends CommonRequest {
     public void onResponseHandler(JSONObject response) {
         //TODO: Need to change parsing as per response from server
         try {
-            mLoginData.setAccessToken(response.getString("token"));
+            JSONObject jsonObject = response.getJSONObject("obj");
+            mLoginData.setAccessToken(jsonObject.getString("token"));
+            mLoginData.setmName(jsonObject.getString("name"));
+            mLoginData.setmMobile(jsonObject.getString("mobile"));
+            mLoginData.setmSpeciality(jsonObject.getString("speciality"));
+            mLoginData.setPicUrl(jsonObject.getString("picUrl"));
+
             mLoginResponseCallback.onLoginResponse(COMMON_RES_SUCCESS, mLoginData);
         } catch (JSONException e) {
             e.printStackTrace();

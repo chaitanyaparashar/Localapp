@@ -41,7 +41,7 @@
                     android:gravity="center"
                     android:layout_gravity="center"/>
 
-                <com.github.siyamed.shapeimageview.CircularImageView
+                <com.fourway.localapp.ui.CircularNetworkImageView
                     android:layout_margin="10dp"
                     android:padding="10dp"
                     android:layout_width="130dp"

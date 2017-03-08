@@ -1,6 +1,7 @@
 package com.fourway.localapp.ui;
 
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +27,12 @@ import com.fourway.localapp.request.CommonRequest;
 import com.fourway.localapp.request.GetFeedRequest;
 import com.google.android.gms.maps.model.LatLng;
 
+
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
@@ -37,6 +45,9 @@ import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
  * create an instance of this fragment.
  */
 public class FeedFragment extends Fragment implements BroadcastRequest.BroadcastResponseCallback, GetFeedRequest.GetFeedRequestCallback {
+
+
+    private WebSocketClient mWebSocketClient;
 
     //Recyclerview objects
     private RecyclerView recyclerView;
@@ -106,9 +117,49 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         emojIcon.setIconsIds(R.drawable.ic_action_keyboard,R.drawable.ic_smily);
         emojIcon.ShowEmojIcon();
 
+        //
+//        connectWebSocket();
+
         //test
         request();
         return view;
+    }
+
+    private void connectWebSocket() {
+        URI uri;
+        try {
+            uri = new URI("ws://10.0.2.2:8888");
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+            Log.v("Websocket", "URISyntaxException : "+e.getMessage());
+            return;
+        }
+
+        mWebSocketClient = new WebSocketClient(uri) {
+            @Override
+            public void onOpen(ServerHandshake serverHandshake) {
+                Log.v("Websocket", "Opened");
+                mWebSocketClient.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
+            }
+
+            @Override
+            public void onMessage(String s) {
+                Log.v("Websocket", s);
+                Toast.makeText(getActivity(), ""+s, Toast.LENGTH_SHORT).show();
+
+            }
+
+            @Override
+            public void onClose(int i, String s, boolean b) {
+                Log.v("Websocket", "onClose: "+s);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.v("Websocket", "Error: "+e.getMessage());
+            }
+        };
+        mWebSocketClient.connect();
     }
 
     /**

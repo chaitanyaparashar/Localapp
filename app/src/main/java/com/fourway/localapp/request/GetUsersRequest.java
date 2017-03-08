@@ -2,7 +2,6 @@ package com.fourway.localapp.request;
 
 import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.android.volley.VolleyError;
 import com.fourway.localapp.data.GetUsersRequestData;
@@ -13,6 +12,9 @@ import com.google.android.gms.maps.model.LatLng;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.fourway.localapp.request.CommonRequest.ResponseCode.COMMON_RES_CONNECTION_TIMEOUT;
 import static com.fourway.localapp.request.CommonRequest.ResponseCode.COMMON_RES_FAILED_TO_CONNECT;
@@ -33,18 +35,26 @@ public class GetUsersRequest extends CommonRequest {
     private GetUsersResponseCallback mGetUsersResponseCallback;
     private GetUsersRequestData mRequestData;
     private Context mContext;
+    private Map<String, String> mParams;
+    private Map<String, String> mHeaders;
+    private String mToken;
 
-    public GetUsersRequest(Context context, LatLng latLng, GetUsersResponseCallback cb) {
-        super(context, RequestType.COMMON_REQUEST_USERS, CommonRequestMethod.COMMON_REQUEST_METHOD_GET, null);
+    public GetUsersRequest(Context context, LatLng latLng, String mToken, GetUsersResponseCallback cb) {
+        super(context, RequestType.COMMON_REQUEST_MAP, CommonRequestMethod.COMMON_REQUEST_METHOD_POST, null);
         mContext = context;
 
         mRequestData = new GetUsersRequestData();
 
-        String url = getRequestTypeURL(RequestType.COMMON_REQUEST_USERS);
-        url += "latitude=" + String.valueOf(latLng.latitude);
-        url += "&longitude=" + String.valueOf(latLng.longitude);
-        url += "&radius=" + String.valueOf("1");// hardcode radius 1 km
-        super.setURL(url);
+        this.mToken = mToken;
+
+        mParams = new HashMap<>();
+        mParams.put("latitude", String.valueOf(latLng.latitude));
+        mParams.put("longitude", String.valueOf(latLng.longitude));
+        super.setParams(mParams);
+
+        mHeaders = new HashMap<>();
+        mHeaders.put("token", mToken);
+        super.setPostHeader(mHeaders);
 
         mGetUsersResponseCallback = cb;
 
@@ -56,7 +66,7 @@ public class GetUsersRequest extends CommonRequest {
     public void onResponseHandler(JSONObject response)  {
         JSONArray profileList = null;
         try {
-            profileList = response.getJSONArray("obj");
+            profileList = response.getJSONArray("data");
             int size = profileList.length();
             for (int i = 0; i < size; i++) {
                 JSONObject profile = profileList.getJSONObject(i);
@@ -92,7 +102,9 @@ public class GetUsersRequest extends CommonRequest {
                 mProfile.setuLatLng(latLng);
 
 
-                mRequestData.addProfile(mProfile);
+//                if (mProfile.getuPictureURL() != "null") {
+                    mRequestData.addProfile(mProfile);
+//                }
 
 
             }

@@ -26,7 +26,6 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
@@ -44,6 +43,7 @@ import com.fourway.localapp.data.LoginData;
 import com.fourway.localapp.data.SignUpData;
 import com.fourway.localapp.login_session.SessionManager;
 import com.fourway.localapp.request.CommonRequest;
+import com.fourway.localapp.request.ForgetPasswordRequest;
 import com.fourway.localapp.request.LoginRequest;
 import com.fourway.localapp.request.SignUpRequest;
 import com.fourway.localapp.request.helper.VolleySingleton;
@@ -63,6 +63,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import static android.app.Activity.RESULT_OK;
+import org.java_websocket.client.WebSocketClient;
 
 
 
@@ -70,7 +71,8 @@ import static android.app.Activity.RESULT_OK;
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
  */
-public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResponseCallback, LoginRequest.LoginResponseCallback {
+public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResponseCallback, LoginRequest.LoginResponseCallback,
+        ForgetPasswordRequest.ForgetPasswordRequestCallback {
 
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 111;
     public static int PICK_IMAGE_REQUEST = 100;
@@ -188,7 +190,8 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!session.isLoggedIn()) {
+                /*!session.isLoggedIn()*/
+                if (true) {
                     signUp();
                 }else {
                     session.logoutUser();
@@ -493,7 +496,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
 
 
     @Override
-    public void onSignUpResponse(CommonRequest.ResponseCode res) {
+    public void onSignUpResponse(CommonRequest.ResponseCode res, SignUpData data) {
         mProgressDialog.dismiss();
         switch (res) {
             case COMMON_RES_SUCCESS:
@@ -509,6 +512,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
             case COMMON_RES_INTERNAL_ERROR:
                 break;
             case COMMON_RES_SERVER_ERROR_WITH_MESSAGE:
+                onSignUpFailed(data.getmErrorMessage());
                 break;
         }
 
@@ -552,9 +556,12 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
                     return;
                 }
 
+
+
                 LoginData loginData = new LoginData(mEmail, mPassword);
                 LoginRequest request = new LoginRequest(getActivity(),loginData,SignUpFragment.this);
                 request.executeRequest();
+//                forgetPassword("Vijayicfaics@gmail.com");
             }
         });
 
@@ -567,7 +574,6 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
             case COMMON_RES_SUCCESS:
                 mSignInDialog.dismiss();
                 onLoginSuccess(data);
-                Toast.makeText(getActivity(), "Registration successfully", Toast.LENGTH_SHORT).show();
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:
                 onLoginFailed("Connection timeout");
@@ -578,6 +584,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
             case COMMON_RES_INTERNAL_ERROR:
                 break;
             case COMMON_RES_SERVER_ERROR_WITH_MESSAGE:
+                onLoginFailed(data.getErrorMessage());
                 break;
         }
     }
@@ -591,6 +598,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         mNumberView.setText(data.getmMobile());
         mEmailView.setText(data.getEmail());
         mInfoView.setText(data.getmSpeciality());
+        profilePic.setImageUrl(data.getPicUrl(), VolleySingleton.getInstance(getActivity()).getImageLoader());
 //        mDetailView.setText(data.getmName());
 
         mNameView.setEnabled(false);
@@ -689,5 +697,19 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         }
     };
 
+    private void forgetPassword(String mEmail) {
+        ForgetPasswordRequest passwordRequest = new ForgetPasswordRequest(getActivity(),mEmail,this);
+        passwordRequest.executeRequest();
+    }
 
+
+    @Override
+    public void ForgetPasswordResponse(CommonRequest.ResponseCode responseCode) {
+        if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
+            Toast.makeText(getActivity(), "Check your email", Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(getActivity(), "Something went wrong \\u1F1EB", Toast.LENGTH_SHORT).show();
+
+        }
+    }
 }

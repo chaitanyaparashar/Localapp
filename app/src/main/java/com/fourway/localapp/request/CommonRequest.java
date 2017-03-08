@@ -10,7 +10,6 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.fourway.localapp.request.helper.CustomRequest;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Map;
@@ -23,16 +22,18 @@ public abstract class CommonRequest {
 
     private static final String SIGN_UP_REQUEST_URL = "";
     private static final String LOGIN_REQUEST_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/login";
-    private static final String USERS_REQUEST_URL = "http://52.172.157.120:8080/users?";
+    private static final String MAP_REQUEST_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/pinOnMap";
     private static final String FEED_REQUEST_URL = "http://52.172.157.120:8080/feed?";
     private static final String BROADCAST_REQUEST_URL = "http://52.172.157.120:8080/broadcast";
+    private static final String PASSWORD_REQUEST_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/forgot/password?";
 
     public enum RequestType {
         COMMON_REQUEST_LOGIN,
         COMMON_REQUEST_SIGNUP,
-        COMMON_REQUEST_USERS,
+        COMMON_REQUEST_MAP,
         COMMON_REQUEST_BROADCAST,
-        COMMON_REQUEST_FEED
+        COMMON_REQUEST_FEED,
+        COMMON_REQUEST_PASSWORD
     }
 
     public enum ResponseCode  {
@@ -118,8 +119,8 @@ public abstract class CommonRequest {
                 url = SIGN_UP_REQUEST_URL;
                 break;
 
-            case COMMON_REQUEST_USERS:
-                url = USERS_REQUEST_URL;
+            case COMMON_REQUEST_MAP:
+                url = MAP_REQUEST_URL;
                 break;
             case COMMON_REQUEST_BROADCAST:
                 url = BROADCAST_REQUEST_URL;
@@ -127,6 +128,9 @@ public abstract class CommonRequest {
 
             case COMMON_REQUEST_FEED:
                 url = FEED_REQUEST_URL;
+                break;
+            case COMMON_REQUEST_PASSWORD:
+                url = PASSWORD_REQUEST_URL;
                 break;
 
         }

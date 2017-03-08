@@ -1,14 +1,17 @@
 package com.fourway.localapp.ui;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.ImageLoader;
 import com.fourway.localapp.R;
 import com.fourway.localapp.data.Message;
+import com.fourway.localapp.request.helper.VolleySingleton;
 
 import java.util.ArrayList;
 
@@ -79,8 +82,13 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         Message message = messages.get(position);
         String text = message.getmText();
         String mURL = message.getMediaURL();
+        String userPicUrl = "https://s3-us-west-1.amazonaws.com/com.fourway.localapp.profileimage/vijay@gmail.com";
         holder.textViewMessage.setText(text);
+        if (userPicUrl!=null) {
+            holder.proPic.setImageUrl(userPicUrl, VolleySingleton.getInstance(context).getImageLoader());
+        }
     }
+
 
     @Override
     public int getItemCount() {
@@ -90,11 +98,13 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
     //Initializing views
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView textViewMessage;
+        public CircularNetworkImageView proPic;
 //        public TextView textViewTimeime;
 
         public ViewHolder(View itemView) {
             super(itemView);
             textViewMessage = (TextView) itemView.findViewById(R.id.textViewMsg);
+            proPic = (CircularNetworkImageView) itemView.findViewById(R.id.msg_pic);
 //            textViewTime = (TextView) itemView.findViewById(R.id.textViewTime);
         }
     }

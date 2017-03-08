@@ -11,6 +11,7 @@ import com.fourway.localapp.data.SignUpData;
 import com.fourway.localapp.request.helper.CommonFileUpload;
 import com.fourway.localapp.request.helper.VolleyErrorHelper;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
@@ -20,6 +21,7 @@ import java.util.Map;
 import static com.fourway.localapp.request.CommonRequest.ResponseCode.COMMON_RES_CONNECTION_TIMEOUT;
 import static com.fourway.localapp.request.CommonRequest.ResponseCode.COMMON_RES_FAILED_TO_CONNECT;
 import static com.fourway.localapp.request.CommonRequest.ResponseCode.COMMON_RES_INTERNAL_ERROR;
+import static com.fourway.localapp.request.CommonRequest.ResponseCode.COMMON_RES_SERVER_ERROR_WITH_MESSAGE;
 
 /**
  * Created by 4 way on 27-02-2017.
@@ -47,7 +49,7 @@ public class SignUpRequest {
     private CommonFileUpload mFileUpload;
 
     public interface SignUpResponseCallback {
-        void onSignUpResponse(CommonRequest.ResponseCode res);
+        void onSignUpResponse(CommonRequest.ResponseCode res, SignUpData data);
     }
     private SignUpResponseCallback mSignUpResponseCallback;
 
@@ -77,9 +79,16 @@ public class SignUpRequest {
             public void onResponse(NetworkResponse response) {
                 String jsonStr = new String(response.data);
 
-                if (jsonStr.equals("file saved successfully")) {
-                    mSignUpResponseCallback.onSignUpResponse(CommonRequest.ResponseCode.COMMON_RES_SUCCESS);
+                JSONObject jsonObject;
+                try {
+                    jsonObject = new JSONObject(jsonStr);
+                    JSONObject dataObject = new JSONObject(jsonObject.getString("data"));
+                    String token = dataObject.getString("token");
+                    String picUrl = dataObject.getString("picUrl");
+                } catch (JSONException e) {
+                    e.printStackTrace();
                 }
+                mSignUpResponseCallback.onSignUpResponse(CommonRequest.ResponseCode.COMMON_RES_SUCCESS, mSignUpData);
             }
         };
 
@@ -91,7 +100,8 @@ public class SignUpRequest {
                 CommonRequest.ResponseCode resCode = COMMON_RES_INTERNAL_ERROR;
                 if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
                     resCode = COMMON_RES_CONNECTION_TIMEOUT;
-                    mSignUpResponseCallback.onSignUpResponse(resCode);
+                    mSignUpResponseCallback.onSignUpResponse(resCode,mSignUpData);
+                    return;
                 }
                 if (errorMsg == VolleyErrorHelper.COMMON_NETWORK_ERROR_TIMEOUT)
                 {
@@ -102,9 +112,13 @@ public class SignUpRequest {
                 }
                 else if (errorMsg == VolleyErrorHelper.COMMON_NETWORK_ERROR_NO_INTERNET){
                     resCode = COMMON_RES_FAILED_TO_CONNECT;
+                }else
+                {
+                    resCode = COMMON_RES_SERVER_ERROR_WITH_MESSAGE;
+                    mSignUpData.setmErrorMessage(errorMsg);
                 }
 
-                mSignUpResponseCallback.onSignUpResponse (resCode);
+                mSignUpResponseCallback.onSignUpResponse (resCode, mSignUpData);
             }
         };
 

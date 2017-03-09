@@ -33,6 +33,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.fourway.localapp.R;
 import com.fourway.localapp.data.GetUsersRequestData;
@@ -41,7 +42,6 @@ import com.fourway.localapp.login_session.SessionManager;
 import com.fourway.localapp.request.CommonRequest;
 import com.fourway.localapp.request.GetUsersRequest;
 import com.fourway.localapp.request.helper.VolleySingleton;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 //import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -53,7 +53,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
@@ -67,24 +66,24 @@ import java.util.Random;
 import java.util.StringTokenizer;
 
 
-public class MapFragment extends Fragment implements OnMapReadyCallback,
-        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, GoogleMap.OnMarkerClickListener, GetUsersRequest.GetUsersResponseCallback,
+public class MapFragment extends Fragment implements OnMapReadyCallback, GetUsersRequest.GetUsersResponseCallback,
         ClusterManager.OnClusterClickListener<Profile>, ClusterManager.OnClusterInfoWindowClickListener<Profile>, ClusterManager.OnClusterItemClickListener<Profile>, ClusterManager.OnClusterItemInfoWindowClickListener<Profile> {
 
     SessionManager session;
+    private ImageLoader mImageLoader;
+    private VolleySingleton mVolleySingleton;
     private static final int REQUEST_LOCATION_CODE = 200;
-    final static String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+    final static String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CALL_PHONE};
     GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
     MapView mMapView;
     Location mCurrentLocation, mLastLocation;
     LocationManager mLocationManager;
     ArrayList<Profile> profileList;
-    ArrayList<Integer> markerID;
 
-    ImageView medicalBtn, officeBtn,
-            carBtn, emergencyBtn,
-            entertainmentBtn;
+    ImageView professionalBtn, studentBtn,
+            repairBtn, emergencyBtn,
+            notice_boardBtn;
     ImageView searchBtn;
 
     RelativeLayout uDetailLayout;
@@ -113,12 +112,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
         session = new SessionManager(getActivity());
         profileList = new ArrayList<>();
-        markerID = new ArrayList<>();
-        officeBtn = (ImageView) view.findViewById(R.id.office_iv);
-        medicalBtn = (ImageView) view.findViewById(R.id.medical_iv);
-        carBtn = (ImageView) view.findViewById(R.id.car_iv);
+        studentBtn = (ImageView) view.findViewById(R.id.student_iv);
+        professionalBtn = (ImageView) view.findViewById(R.id.professionals_iv);
+        repairBtn = (ImageView) view.findViewById(R.id.repair_iv);
         emergencyBtn = (ImageView) view.findViewById(R.id.emergency_iv);
-        entertainmentBtn = (ImageView) view.findViewById(R.id.entertainment_iv);
+        notice_boardBtn = (ImageView) view.findViewById(R.id.notice_board_iv);
         searchBtn = (ImageView) view.findViewById(R.id.search_btn);
         searchBoxView = (AutoCompleteTextView) view.findViewById(R.id.autoCompleteTextView);
 
@@ -127,11 +125,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         searchBoxView.addTextChangedListener(textWatcherforSearchBox);
 
         searchBtn.setOnClickListener(searchOnClickListener);
-        officeBtn.setOnClickListener(filterClickListener);
-        medicalBtn.setOnClickListener(filterClickListener);
-        carBtn.setOnClickListener(filterClickListener);
+        studentBtn.setOnClickListener(filterClickListener);
+        professionalBtn.setOnClickListener(filterClickListener);
+        repairBtn.setOnClickListener(filterClickListener);
         emergencyBtn.setOnClickListener(filterClickListener);
-        entertainmentBtn.setOnClickListener(filterClickListener);
+        notice_boardBtn.setOnClickListener(filterClickListener);
 
         mMapView = (MapView) view.findViewById(R.id.map_view);
         mMapView.onCreate(savedInstanceState);
@@ -205,22 +203,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 //        addItems();
 //        mClusterManager.cluster();
 
-/*
-        mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
-            @Override
-            public boolean onMyLocationButtonClick() {
-                if (mMap.getMyLocation()!=null) {
-                    Toast.makeText(getContext(), "ctn clicked" + mMap.getMyLocation(), Toast.LENGTH_SHORT).show();
-                    return true;
-                }
-                return false;
-            }
-        });*/
-//        mMap.setOnMyLocationChangeListener(onMyLocationChangeListener);
-
-        /*for (int i=0;i<mMapUsers.size();i++) {
-            addMarkerAtLocation(mMapUsers.get(i));
-        }*/
         setMyLocationButton();
         Log.v(TAG, "Map Ready");
 
@@ -230,30 +212,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     private void addItems() {
 
         /*************** data for testing ***********/
-
-        // http://www.flickr.com/photos/sdasmarchives/5036248203/
         mClusterManager.addItem(new Profile(position(), "Walter"));
         mClusterManager.addItem(new Profile(position(), "Walter"));
         mClusterManager.addItem(new Profile(position(), "Walter"));
         mClusterManager.addItem(new Profile(position(), "Walter"));
         mClusterManager.addItem(new Profile(position(), "Walter"));
         mClusterManager.addItem(new Profile(position(), "Walter"));
-
-        // http://www.flickr.com/photos/usnationalarchives/4726917149/
         mClusterManager.addItem(new Profile(position(), "Gran"));
-
-        // http://www.flickr.com/photos/nypl/3111525394/
         mClusterManager.addItem(new Profile(position(), "Ruth"));
-
-        // http://www.flickr.com/photos/smithsonian/2887433330/
         mClusterManager.addItem(new Profile(position(), "Stefan"));
         mClusterManager.addItem(new Profile(position(), "Stefan"));
         mClusterManager.addItem(new Profile(position(), "Stefan"));
         mClusterManager.addItem(new Profile(position(), "Stefan"));
         mClusterManager.addItem(new Profile(position(), "Stefan"));
         mClusterManager.addItem(new Profile(position(), "Stefan"));
-
-        // http://www.flickr.com/photos/library_of_congress/2179915182/
         mClusterManager.addItem(new Profile(position(), "Mechanic"));
         mClusterManager.addItem(new Profile(position(), "Mechanic"));
         mClusterManager.addItem(new Profile(position(), "Mechanic"));
@@ -263,8 +235,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         mClusterManager.addItem(new Profile(position(), "Mechanic"));
         mClusterManager.addItem(new Profile(position(), "Mechanic"));
         mClusterManager.addItem(new Profile(position(), "Mechanic"));
-
-        // http://www.flickr.com/photos/nationalmediamuseum/7893552556/
         mClusterManager.addItem(new Profile(position(), "Yeats"));
         mClusterManager.addItem(new Profile(position(), "Yeats"));
         mClusterManager.addItem(new Profile(position(), "Yeats"));
@@ -272,14 +242,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         mClusterManager.addItem(new Profile(position(), "Yeats"));
         mClusterManager.addItem(new Profile(position(), "Yeats"));
         mClusterManager.addItem(new Profile(position(), "Yeats"));
-
-        // http://www.flickr.com/photos/sdasmarchives/5036231225/
         mClusterManager.addItem(new Profile(position(), "John"));
-
-        // http://www.flickr.com/photos/anmm_thecommons/7694202096/
         mClusterManager.addItem(new Profile(position(), "Trevor the Turtle"));
-
-        // http://www.flickr.com/photos/usnationalarchives/4726892651/
         mClusterManager.addItem(new Profile(position(), "Teach"));
         mClusterManager.addItem(new Profile(position(), "Teach"));
         mClusterManager.addItem(new Profile(position(), "Teach"));
@@ -291,8 +255,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         mClusterManager.addItem(new Profile(position(), "Teach"));
         mClusterManager.addItem(new Profile(position(), "Teach"));
 
-        /* ========== For Real data ============*/
-//        mClusterManager.addItems(profileList);
     }
 
     /**
@@ -317,28 +279,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         }
     }
 
-
-    private void updateMapUI(Location location) {
-//        mMap.clear();
-        LatLng position = new LatLng(location.getLatitude(), location.getLongitude());
-//        request(position);
-
-//        mMap.addMarker(new MarkerOptions().position(position));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(position));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(position, 14));
-
-        Log.v(TAG, "Update UI");
-    }
-
-    /**
-     * add marker on map
-     * @param latLng
-     */
-    private void addMarkerAtLocation(LatLng latLng, String tag) {
-        mMap.addMarker(new MarkerOptions().position(latLng).title(tag));
-
-        Log.v(TAG, "Add marker At: " + latLng);
-    }
 
     @Override
     public void onLowMemory() {
@@ -383,20 +323,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         public void onClick(View v) {
 
             switch (v.getId()) {
-                case R.id.office_iv:
-                    Toast.makeText(getContext(), "office_iv", Toast.LENGTH_SHORT).show();
-                    break;
-                case R.id.medical_iv:
-                    Toast.makeText(getContext(), "medical_iv", Toast.LENGTH_SHORT).show();
-                    break;
-                case R.id.car_iv:
-                    Toast.makeText(getContext(), "car_iv", Toast.LENGTH_SHORT).show();
-                    break;
                 case R.id.emergency_iv:
                     Toast.makeText(getContext(), "emergency_iv", Toast.LENGTH_SHORT).show();
-                    break;
-                case R.id.entertainment_iv:
-                    Toast.makeText(getContext(), "entertainment_iv", Toast.LENGTH_SHORT).show();
                     break;
 
             }
@@ -404,7 +332,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         }
     };
 
-
+    /**
+     * locationListener
+     */
     LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
@@ -460,8 +390,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
     private boolean isPermissionGrated() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (getActivity().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+            if ((getActivity().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED || getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) && getActivity().checkSelfPermission(Manifest.permission.CALL_PHONE)
                     == PackageManager.PERMISSION_GRANTED) {
                 Log.v("", "Permission is grated");
                 return true;
@@ -510,102 +441,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
     }
 
 
-    /**
-     * google play service connection
-     */
-    public void ConnectToGooglePlayServices() {
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(getContext())
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .build();
-        }
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {
-        /*Log.v(TAG, "onConnected");
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        if (mLastLocation != null) {
-            updateMapUI(mLastLocation);
-            LatLng position = new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude());
-//            request(position);
-//            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
-//            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
-        }*/
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-        Log.v(TAG, "onConnectionSuspended");
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        Log.v(TAG, "onConnectionFailed");
-
-    }
-
-
-//    void prepaireMapData() {
-//        mMapUsers.add(new LatLng(28.545623, 77.330507));
-//        mMapUsers.add(new LatLng(28.546066, 77.329938));
-//        mMapUsers.add(new LatLng(28.544304, 77.331773));
-//        mMapUsers.add(new LatLng(28.542834, 77.331312));
-//        mMapUsers.add(new LatLng(28.544747, 77.332374));
-//
-//    }
-
-    /**
-     * marker click listener
-     * @param marker
-     * @return
-     */
-    @Override
-    public boolean onMarkerClick(Marker marker) {
-        /*if (uDetailLayout.getVisibility() != View.VISIBLE) {
-            int index= Integer.parseInt(marker.getTitle());
-            Profile profile = profileList.get(index);
-            String pName = profile.getuName();
-            final String pEmail = profile.getuEmail();
-            final String mMobile = profile.getuMobile();
-
-            TextView textView = (TextView)getView().findViewById(R.id.user_name);
-            ImageView actionEmail = (ImageView) getView().findViewById(R.id.action_email);
-            ImageView actionCall = (ImageView) getView().findViewById(R.id.action_call);
-            if (pName != null) {
-                textView.setText(pName);
-            }
-            actionCall.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent callIntent = new Intent(Intent.ACTION_CALL);
-                    callIntent.setData(Uri.parse(mMobile));
-                    startActivity(callIntent);
-                }
-            });
-
-            actionEmail.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent Email = new Intent(Intent.ACTION_SEND);
-                    Email.setType("text/email");
-                    Email.putExtra(Intent.EXTRA_EMAIL,
-                            new String[]{pEmail});  //developer 's email
-
-                    startActivity(Intent.createChooser(Email, "Send Email:"));
-                }
-            });
-
-            uDetailLayout.setVisibility(View.VISIBLE);
-        }else {
-            uDetailLayout.setVisibility(View.GONE);
-        }*/
-        return false;
-    }
 
     //test
     void request(LatLng latLng) {
@@ -644,12 +479,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
      * add marker by profile data
      */
     void addMarkerByProfile(boolean isFilter, ArrayList<Integer> filterIndex) {
-//        mMap.clear();
-        int size = profileList.size();
         int filterIndexSize = 0;
-        if (markerID.size() > 0) {
-            markerID.clear();
-        }
 
         mClusterManager.clearItems();
 
@@ -658,25 +488,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         }
 
         if (!isFilter) {
-            /*for (int i = 0; i < size; i++) {
-                LatLng lng = profileList.get(i).getuLatLng();
-                if (lng != null) {
-                    addMarkerAtLocation(lng, "" + i);
-                    markerID.add(i);
-                    Log.v(TAG, "addMarkerByProfile: " + lng);
-                }
-            }*/
             mClusterManager.addItems(profileList);
         } else {
             for (int i = 0; i < filterIndexSize; i++) {
                 int profileIndex = filterIndex.get(i);
                 mClusterManager.addItem(profileList.get(profileIndex));
-                /*LatLng lng = profileList.get(profileIndex).getuLatLng();
-                if (lng != null) {
-                    addMarkerAtLocation(lng, "" + i);
-                    markerID.add(i);
-                    Log.v(TAG, "addMarkerByProfile: " + lng);
-                }*/
             }
         }
         mClusterManager.cluster();
@@ -805,12 +621,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         return mMap;
     }
 
-    private void markerClickWindow(Profile profile) {
+    private void markerClickWindow(final Profile profile) {
 
         if (uDetailLayout.getVisibility() != View.VISIBLE) {
             String pName = profile.getuName();
             final String pEmail = profile.getuEmail();
-            final String mMobile = profile.getuMobile();
+
 
             TextView textView = (TextView)getView().findViewById(R.id.user_name);
             ImageView actionEmail = (ImageView) getView().findViewById(R.id.action_email);
@@ -823,9 +639,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             actionCall.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    String mMobile = profile.getuMobile();
                     if (mMobile != "null") {
-                        Intent callIntent = new Intent(Intent.ACTION_CALL);
-                        callIntent.setData(Uri.parse("tel " + mMobile));
+                        mMobile = "+91"+mMobile;
+                        Intent callIntent = new Intent(Intent.ACTION_CALL,Uri.fromParts("tel", mMobile, null));
                         startActivity(callIntent);
                     }
                 }
@@ -865,7 +682,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
 
         private IconGenerator mIconGenerator = new IconGenerator(getActivity().getApplication());
         private IconGenerator mClusterIconGenerator = new IconGenerator(getActivity().getApplication());
-        private ImageView mImageView;
+        private NetworkImageView mImageView;
+        private NetworkImageView mImageViewC;
         private ImageView mClusterImageView;
         private int mDimension;
 
@@ -876,7 +694,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             mClusterIconGenerator.setContentView(multiProfile);
             mClusterImageView = (ImageView) multiProfile.findViewById(R.id.cluster_image);
 
-            mImageView = new ImageView(getApplicationContext());
+            mImageView = new NetworkImageView(getApplicationContext());
             mDimension = (int) getResources().getDimension(R.dimen.custom_profile_image);
             mImageView.setLayoutParams(new ViewGroup.LayoutParams(mDimension, mDimension));
             int padding = (int) getResources().getDimension(R.dimen.custom_profile_padding);
@@ -889,7 +707,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             // Draw a single person.
             // Set the info window to show their name.
 //            mImageView.setImageResource(profile.profilePhoto);
-            mImageView.setImageResource(R.mipmap.ic_launcher);
+            mImageLoader = VolleySingleton.getInstance(getApplicationContext()).getImageLoader();
+            mImageLoader.get(profile.getuPictureURL(),ImageLoader.getImageListener(mImageView,R.mipmap.ic_launcher,android.R.drawable.ic_dialog_alert));
+//            mImageView.setImageResource(R.mipmap.ic_launcher);
+            mImageView.setImageUrl(profile.getuPictureURL(), mImageLoader);
+            mImageView.setTag(profile.getuEmail());
 
             Bitmap icon = mIconGenerator.makeIcon();
             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(profile.getuName());
@@ -904,14 +726,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             int width = mDimension;
             int height = mDimension;
 
+
+
             for (Profile p : cluster.getItems()) {
                 // Draw 4 at most.
                 if (profilePhotos.size() == 4) break;
+                mImageViewC = (NetworkImageView)getView().findViewWithTag(p.getuEmail());
                 Drawable drawable = getResources().getDrawable(R.mipmap.ic_launcher);
+                try {
+                    drawable = mImageViewC.getDrawable();
+                }catch (NullPointerException e){
+                    e.printStackTrace();
+                }
+
 //                Drawable drawable = getResources().getDrawable(p.profilePhoto);
                 drawable.setBounds(0, 0, width, height);
                 profilePhotos.add(drawable);
             }
+
+//            Bitmap bmp = mVolleySingleton.
 
             MultiDrawable multiDrawable = new MultiDrawable(profilePhotos);
             multiDrawable.setBounds(0, 0, width, height);

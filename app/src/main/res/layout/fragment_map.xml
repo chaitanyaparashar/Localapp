@@ -27,53 +27,53 @@
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:id="@+id/office_iv"
+                    android:id="@+id/emergency_iv"
                     android:layout_marginTop="5dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="10dp"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:tint="#2196f3"
-                    android:src="@drawable/ic_office"/>
+                    android:src="@drawable/ic_emergency"/>
 
                 <ImageView
-                    android:id="@+id/medical_iv"
+                    android:id="@+id/student_iv"
                     android:layout_marginTop="5dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:layout_width="43dp"
                     android:layout_height="50dp"
                     android:tint="@android:color/darker_gray"
-                    android:src="@drawable/ic_medical" />
+                    android:src="@drawable/ic_student" />
 
                 <ImageView
-                    android:id="@+id/car_iv"
+                    android:id="@+id/professionals_iv"
                     android:layout_marginTop="5dp"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="8dp"
                     android:layout_width="44dp"
                     android:layout_height="50dp"
                     android:tint="@android:color/darker_gray"
-                    android:src="@drawable/ic_car"/>
+                    android:src="@drawable/ic_professionals"/>
 
                 <ImageView
-                    android:id="@+id/emergency_iv"
+                    android:id="@+id/repair_iv"
                     android:layout_marginTop="5dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="8dp"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:tint="@android:color/darker_gray"
-                    android:src="@drawable/ic_emergency" />
+                    android:src="@drawable/ic_repair_and_maintainance" />
                 <ImageView
-                    android:id="@+id/entertainment_iv"
+                    android:id="@+id/notice_board_iv"
                     android:layout_marginTop="5dp"
                     android:layout_marginLeft="8dp"
                     android:layout_marginRight="10dp"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:tint="@android:color/darker_gray"
-                    android:src="@drawable/ic_entertainment" />
+                    android:src="@drawable/ic_notice_board" />
 
 
 
@@ -85,7 +85,7 @@
                 android:visibility="gone"
                 android:background="#FFF"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
                 android:elevation="10dp">
 
@@ -103,17 +103,19 @@
                     android:layout_toRightOf="@+id/user_pic"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textColor="@android:color/background_dark"
                     android:text="Dr.Khilah Bharti"/>
                 <TextView
                     android:id="@+id/user_title"
-                    android:layout_margin="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:textSize="18sp"
                     android:layout_toRightOf="@+id/user_pic"
                     android:layout_below="@+id/user_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="M.B.B.S"/>
                 <RatingBar
-                    android:layout_marginBottom="1dp"
                     android:layout_toRightOf="@+id/user_pic"
                     android:layout_below="@+id/user_title"
                     android:layout_width="wrap_content"
@@ -121,19 +123,20 @@
 
                 <ImageView
                     android:id="@+id/action_call"
-                    android:layout_width="55dp"
-                    android:layout_height="55dp"
-                    android:tint="#2196f3"
-                    android:src="@android:drawable/sym_action_call"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:src="@drawable/ic_phone"
+                    android:layout_marginTop="5dp"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentEnd="true" />
 
                 <ImageView
-                    android:layout_width="55dp"
-                    android:layout_height="55dp"
-                    android:src="@android:drawable/sym_action_email"
-                    android:tint="#2196f3"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:src="@drawable/ic_email"
                     android:id="@+id/action_email"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginTop="5dp"
                     android:layout_alignParentTop="true"
                     android:layout_toStartOf="@+id/action_call" />
             </RelativeLayout>

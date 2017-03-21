@@ -89,6 +89,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
     CircularNetworkImageView profilePic;
 
     LoginButton fb_LoginButton;
+    Button fb_FillBtn;
     CallbackManager fbCallbackManager;
     AccessTokenTracker fbTokenTracker;
     ProfileTracker fbProfileTracker;
@@ -155,6 +156,14 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
 
             }
         };
+
+        fb_FillBtn = (Button) view.findViewById(R.id.fb_fill_btn);
+        fb_FillBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fb_LoginButton.performClick();
+            }
+        });
 
         picUploadBtn = (Button) view.findViewById(R.id.upload_btn);
 

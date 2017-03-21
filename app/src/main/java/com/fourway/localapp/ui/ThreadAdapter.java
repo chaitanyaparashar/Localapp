@@ -6,6 +6,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
@@ -14,6 +15,8 @@ import com.fourway.localapp.data.Message;
 import com.fourway.localapp.request.helper.VolleySingleton;
 
 import java.util.ArrayList;
+
+import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
 
 /**
  * Created by 4 way on 21-02-2017.
@@ -84,8 +87,12 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         String mURL = message.getMediaURL();
         String userPicUrl = "https://s3-us-west-1.amazonaws.com/com.fourway.localapp.profileimage/vijay@gmail.com";
         holder.textViewMessage.setText(text);
+        if (message.getMessageType() != null) {
+            holder.messageTypeImageView.setImageResource(getEmojiResourceIdByMsgType(message.getMessageType()));
+        }
         if (userPicUrl!=null) {
             holder.proPic.setImageUrl(userPicUrl, VolleySingleton.getInstance(context).getImageLoader());
+//            holder.proPic.setImageBitmap(message.getImgBitmap());
         }
     }
 
@@ -97,15 +104,39 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
 
     //Initializing views
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView textViewMessage;
+        public EmojiconTextView textViewMessage;
         public CircularNetworkImageView proPic;
+        public ImageView messageTypeImageView;
 //        public TextView textViewTimeime;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            textViewMessage = (TextView) itemView.findViewById(R.id.textViewMsg);
+            textViewMessage = (EmojiconTextView) itemView.findViewById(R.id.textViewMsg);
             proPic = (CircularNetworkImageView) itemView.findViewById(R.id.msg_pic);
+            messageTypeImageView = (ImageView) itemView.findViewById(R.id.msg_emoji);
 //            textViewTime = (TextView) itemView.findViewById(R.id.textViewTime);
         }
     }
+
+    public int getEmojiResourceIdByMsgType(FeedFragment.MessageType messageType){
+        switch (messageType) {
+            case STRAIGHT:
+                    return FeedFragment.emojiResourceID[0];
+            case SHOUT:
+                return FeedFragment.emojiResourceID[1];
+            case WHISPER:
+                return FeedFragment.emojiResourceID[2];
+            case GOSSIP:
+                return FeedFragment.emojiResourceID[3];
+            case MURMUR:
+                return FeedFragment.emojiResourceID[4];
+            case MUMBLE:
+                return FeedFragment.emojiResourceID[5];
+            case EMERGENCY:
+                return FeedFragment.emojiResourceID[6];
+        }
+        return FeedFragment.emojiResourceID[0];
+    }
+
+
 }

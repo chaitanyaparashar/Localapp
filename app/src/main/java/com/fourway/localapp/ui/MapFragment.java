@@ -342,6 +342,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 //            addMarkerAtLocation(latLng);
+            HomeActivity.mLastKnownLocation = latLng;
             Toast.makeText(getApplicationContext(), "" + latLng, Toast.LENGTH_SHORT).show();
             session.saveLastLocation(latLng);
             request(latLng);

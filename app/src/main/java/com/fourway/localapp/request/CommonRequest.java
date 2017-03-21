@@ -22,6 +22,7 @@ public abstract class CommonRequest {
 
     private static final String SIGN_UP_REQUEST_URL = "";
     private static final String LOGIN_REQUEST_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/login";
+//    private static final String LOGIN_REQUEST_URL = "http://192.172.3.78:8080/login";//local
     private static final String MAP_REQUEST_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/pinOnMap";
     private static final String FEED_REQUEST_URL = "http://52.172.157.120:8080/feed?";
     private static final String BROADCAST_REQUEST_URL = "http://52.172.157.120:8080/broadcast";

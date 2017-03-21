@@ -1,5 +1,8 @@
 package com.fourway.localapp.data;
 
+import android.graphics.Bitmap;
+
+import com.fourway.localapp.ui.FeedFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 /**
@@ -12,13 +15,33 @@ public class Message {
     private String mMobile;
     private String mEmail;
     private String mText;
-    private String sentAt;
     private String name;
     private String timeStamp;
     private String mediaURL;
     private String speciality;
     private LatLng mLatLng;
     private String emoji;
+    private FeedFragment.MessageType messageType;
+
+    private Bitmap imgBitmap;
+
+    public FeedFragment.MessageType getMessageType() {
+        return messageType;
+    }
+
+    public void setMessageType(FeedFragment.MessageType messageType) {
+        this.messageType = messageType;
+    }
+
+    public Bitmap getImgBitmap() {
+        return imgBitmap;
+    }
+
+    public void setImgBitmap(Bitmap imgBitmap) {
+        this.imgBitmap = imgBitmap;
+    }
+
+
 
     public Message() {
 
@@ -36,9 +59,6 @@ public class Message {
         this.mEmail = mEmail;
     }
 
-    public void setSentAt(String sentAt) {
-        this.sentAt = sentAt;
-    }
 
     public void setName(String name) {
         this.name = name;
@@ -76,9 +96,6 @@ public class Message {
         return mText;
     }
 
-    public String getSentAt() {
-        return sentAt;
-    }
 
     public String getName() {
         return name;

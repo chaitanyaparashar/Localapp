@@ -10,16 +10,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recyclerView"
-            android:background="#ffffff"
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh_layout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/msg_layout"
-            android:scrollbars="vertical">
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/msg_layout">
+            
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:background="#ffffff"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbars="vertical">
 
-        </android.support.v7.widget.RecyclerView>
+            </android.support.v7.widget.RecyclerView>
+
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+
+
 
         <LinearLayout
             android:id="@+id/msg_layout"
@@ -39,9 +48,8 @@
 
             <GridView
                 android:visibility="gone"
-                android:numColumns="6"
+                android:numColumns="4"
                 android:padding="5dp"
-                android:layout_marginLeft="15dp"
                 android:layout_gravity="center"
                 android:id="@+id/shout_emiji"
                 android:verticalSpacing="10dp"

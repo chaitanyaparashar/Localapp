@@ -12,17 +12,22 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+
 import com.fourway.localapp.R;
 import com.fourway.localapp.login_session.SessionManager;
 import com.google.android.gms.maps.model.LatLng;
 
+
+
 import java.util.HashMap;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity{
 
     FragmentManager fragmentManager;
     FragmentTransaction transaction;
     Fragment fragmentToLaunch;
+
 
     SessionManager session;
     public static String mLoginToken = "";
@@ -49,6 +54,7 @@ public class HomeActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(getResources().getColor(R.color.titleColor));
         setSupportActionBar(toolbar);
+
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -109,6 +115,8 @@ public class HomeActivity extends AppCompatActivity {
 
         tabLayout.getTabAt(0).getIcon().setColorFilter(Color.parseColor("#2196f3"), PorterDuff.Mode.SRC_IN);
     }
+
+
 
    /* @Override
     public boolean onCreateOptionsMenu(Menu menu) {

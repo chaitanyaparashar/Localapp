@@ -20,6 +20,11 @@ public class Profile implements ClusterItem {
     private String uSpeciality;
     private String uNotes;
 
+
+    private String uPrivacy;
+
+    private String profession;
+
     public Profile(String uId ) {
         this.uId = uId;
     }
@@ -29,9 +34,22 @@ public class Profile implements ClusterItem {
         this.uName = name;
     }
 
+    public String getuPrivacy() {
+        return uPrivacy;
+    }
+
+    public void setuPrivacy(String uPrivacy) {
+        this.uPrivacy = uPrivacy;
+    }
 
 
+    public String getProfession() {
+        return profession;
+    }
 
+    public void setProfession(String profession) {
+        this.profession = profession;
+    }
     public String getuToken() {
         return uToken;
     }

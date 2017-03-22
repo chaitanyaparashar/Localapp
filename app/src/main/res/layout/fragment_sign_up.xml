@@ -102,6 +102,7 @@
                         android:layout_height="wrap_content"
                         android:inputType="phone"
                         android:drawableLeft="@drawable/ic_phone"
+                        android:drawableRight="@drawable/ic_password_visible"
                         android:hint="Phone Number" />
                 </android.support.design.widget.TextInputLayout>
 
@@ -180,8 +181,7 @@
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp">
+                    android:layout_marginTop="8dp">
                     <EditText
                         android:id="@+id/input_brief_intro"
                         android:layout_width="match_parent"
@@ -191,14 +191,19 @@
                         android:drawableLeft="@drawable/ic_brief_intro"
                         android:hint="Brief Intro" />
                 </android.support.design.widget.TextInputLayout>
+                <TextView
+                    android:layout_gravity="right"
+                    android:textColor="#2196f3"
+                    android:layout_marginBottom="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Maximum 10 words"/>
 
 
-                <!--  Brief Label -->
+                <!--  Details Label -->
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp">
+                    android:layout_height="wrap_content">
 
                     <EditText
                         android:id="@+id/input_details_des"
@@ -208,6 +213,14 @@
                         android:drawableLeft="@drawable/ic_detail_description"
                         android:hint="Detail Description" />
                 </android.support.design.widget.TextInputLayout>
+
+                <TextView
+                    android:layout_gravity="right"
+                    android:textColor="#2196f3"
+                    android:layout_marginBottom="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Optional"/>
 
 
 
@@ -237,6 +250,7 @@
                     android:layout_marginTop="30dp"
                     android:layout_marginBottom="30dp"
                     android:background="@drawable/fb_btn_shap"
+                    android:drawableLeft="@drawable/ic_1490122800_facebook_color"
                     android:layout_gravity="center_horizontal"
                     android:text="Fill With Facebook"
                     android:textColor="#ffffff"

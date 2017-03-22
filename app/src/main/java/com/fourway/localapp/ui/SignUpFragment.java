@@ -17,6 +17,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.util.Patterns;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -82,6 +83,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
     EditText mNameView, mNumberView, mEmailView,
             mPasswordView, cPasswordView, mInfoView,
             mDetailView,mLocationTypeView;
+    boolean numberVisibility = true;
 
     Spinner spinner;
 
@@ -101,7 +103,8 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
 
     ProgressDialog mProgressDialog;
 
-    String[] professionString = {"Select Profession", "A", "B", "C", "D"};
+    String[] professionString = {"Select Profession", "Student", "Housewife", "Helth and wellness", "Repair and Maintenance",
+    "Professionals","Wedding Events","Skills","Beauty"};
 
 
 
@@ -195,6 +198,34 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
             }
         });
 
+        mNumberView.setTag("0");//privacy 0 means visible and 1 means hide
+        mNumberView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if(event.getRawX() >= (mNumberView.getRight() - mNumberView.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        // your action here
+                        if (numberVisibility) {
+                            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_hidden, 0);
+                            numberVisibility = false;
+                            mNumberView.setTag("1");
+                        }else {
+                            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_visible, 0);
+                            numberVisibility = true;
+                            mNumberView.setTag("0");
+                        }
+
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
 
         signUpBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -434,6 +465,12 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
             mEmailView.setError(null);
         }
 
+        if (spinner.getSelectedItemPosition() == 0){
+            onSignUpFailed("Please select your profession");
+            valid = false;
+            return valid;
+        }
+
 
         if (password.isEmpty() || password.length() < 6 || password.length() > 16) {
             mPasswordView.setError("between 6 and 16 alphanumeric characters");
@@ -484,13 +521,14 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         String name = mNameView.getText().toString();
         String number = mNumberView.getText().toString();
         String email = mEmailView.getText().toString();
-        String profession = mNameView.getText().toString();
+        String profession = spinner.getSelectedItem().toString();
         String password = mPasswordView.getText().toString();
         String brifIntro = mInfoView.getText().toString();
         String detail = mDetailView.getText().toString();
+        String privacy = mNumberView.getTag().toString();
 
 
-        SignUpData data = new SignUpData(name, email,password, number, brifIntro, detail, null,null, null,imgFile);
+        SignUpData data = new SignUpData(name, email,profession,password, number,privacy, brifIntro, detail, null,null, null,imgFile);
         SignUpRequest request = new SignUpRequest(getContext(),data,this);
 
         request.executeRequest();
@@ -510,7 +548,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         switch (res) {
             case COMMON_RES_SUCCESS:
                 Toast.makeText(getActivity(), "Registration successfully", Toast.LENGTH_SHORT).show();
-                onSignUpSuccess();
+                onSignUpSuccess(data);
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:
                 onSignUpFailed("Connection timeout");
@@ -527,8 +565,19 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
 
     }
 
-    private void onSignUpSuccess() {
+    private void onSignUpSuccess(SignUpData data) {
         //TODO: Implement signup success logic here
+        HomeActivity.mLoginToken = data.getmToken();
+        HomeActivity.mUserId = data.getmUserId();
+        session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mLastKnownLocation);
+
+        mNameView.setEnabled(false);
+        mNumberView.setEnabled(false);
+        mEmailView.setEnabled(false);
+        mInfoView.setEnabled(false);
+        mDetailView.setEnabled(false);
+
+        signUpBtn.setText("LogOut");
     }
 
     private AlertDialog mSignInDialog;
@@ -601,7 +650,8 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
     private void onLoginSuccess(LoginData data) {
         //TODO: -----
         HomeActivity.mLoginToken = data.getAccessToken();
-        session.createLoginSession(HomeActivity.mLoginToken, HomeActivity.mLastKnownLocation);
+        HomeActivity.mUserId = data.getUserId();
+        session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mLastKnownLocation);
 
         mNameView.setText(data.getmName());
         mNumberView.setText(data.getmMobile());

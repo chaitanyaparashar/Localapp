@@ -32,7 +32,9 @@ public class SignUpRequest {
     private static final String JSON_FIELD_NAME = "name";
     private static final String JSON_FIELD_PASSWORD = "password";
     private static final String JSON_FIELD_EMAIL_ID = "email";
+    private static final String JSON_FIELD_PROFESSION = "profession";
     private static final String JSON_FIELD_MOBILE_NUMBER = "mobile";
+    private static final String JSON_FIELD_MOBILE_PRIVACY = "mobilePrivacy";
     private static final String JSON_FIELD_SPECIALITY = "speciality";
     private static final String JSON_FIELD_NOTES = "notes";
     private static final String JSON_FIELD_FILE = "file";
@@ -65,6 +67,8 @@ public class SignUpRequest {
         mParams.put(JSON_FIELD_PASSWORD, data.getmPassword());
         mParams.put(JSON_FIELD_SPECIALITY, data.getmSpeciality());
         mParams.put(JSON_FIELD_NOTES, data.getmDetails());
+        mParams.put(JSON_FIELD_PROFESSION, data.getProfession());
+        mParams.put(JSON_FIELD_MOBILE_PRIVACY, data.getmPrivacy());
 //        mParams.put(JSON_FIELD_TYPE, data.getmType());
 
         mSignUpResponseCallback = cb;
@@ -85,6 +89,10 @@ public class SignUpRequest {
                     JSONObject dataObject = new JSONObject(jsonObject.getString("data"));
                     String token = dataObject.getString("token");
                     String picUrl = dataObject.getString("picUrl");
+                    String userID = dataObject.getString("userId");
+                    mSignUpData.setPicUrl(picUrl);
+                    mSignUpData.setmToken(token);
+                    mSignUpData.setmUserId(userID);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }

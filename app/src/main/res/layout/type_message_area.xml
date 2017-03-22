@@ -53,7 +53,6 @@
                 android:layout_marginRight="5dp"
                 android:id="@+id/btn_cam_shout"
                 android:layout_gravity="center"
-                android:tint="#706b6b"
                 android:src="@drawable/ic_camera"
                 android:layout_weight="1.5"
                 android:padding="2dp"

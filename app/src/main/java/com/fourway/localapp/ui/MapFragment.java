@@ -71,10 +71,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
     SessionManager session;
     private ImageLoader mImageLoader;
-    private VolleySingleton mVolleySingleton;
     private static final int REQUEST_LOCATION_CODE = 200;
     final static String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CALL_PHONE};
-    GoogleApiClient mGoogleApiClient;
     private GoogleMap mMap;
     MapView mMapView;
     Location mCurrentLocation, mLastLocation;
@@ -321,10 +319,34 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     View.OnClickListener filterClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
+            ArrayList<Integer> indexs;
             switch (v.getId()) {
                 case R.id.emergency_iv:
-                    Toast.makeText(getContext(), "emergency_iv", Toast.LENGTH_SHORT).show();
+
+                    break;
+                case R.id.student_iv:
+                    indexs = filterIndexByProfession(profileList, "Student");
+                    if (indexs != null && indexs.size() > 0) {
+                        addMarkerByProfile(true, indexs);
+                    }
+                    break;
+                case R.id.professionals_iv:
+                    indexs = filterIndexByProfession(profileList, "Professionals");
+                    if (indexs != null && indexs.size() > 0) {
+                        addMarkerByProfile(true, indexs);
+                    }
+                    break;
+                case R.id.repair_iv:
+                    indexs = filterIndexByProfession(profileList, "Repair and Maintenance");
+                    if (indexs != null && indexs.size() > 0) {
+                        addMarkerByProfile(true, indexs);
+                    }
+                    break;
+                case R.id.notice_board_iv:
+                    /*indexs = filterIndexByProfession(profileList, "Student");
+                    if (indexs != null && indexs.size() > 0) {
+                        addMarkerByProfile(true, indexs);
+                    }*/
                     break;
 
             }
@@ -555,6 +577,30 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         return profileIndex;
     }
 
+    /**
+     * filter index by by profession
+     * @param profileList
+     * @param profession
+     * @return
+     */
+    ArrayList<Integer> filterIndexByProfession(ArrayList<Profile> profileList, String profession) {
+        profession = profession.toLowerCase();
+        ArrayList<Integer> profileIndex = new ArrayList<>();
+
+        int size = profileList.size();
+
+        for (int i = 0; i < size; i++) {
+            Profile profile = profileList.get(i);
+            String profileProfession = profile.getProfession();
+
+            if (profession.equals(profileProfession.toLowerCase())) {
+                profileIndex.add(i);
+            }
+        }
+        Toast.makeText(getContext(), "" + profileIndex.size(), Toast.LENGTH_SHORT).show();
+        return profileIndex;
+    }
+
     TextWatcher textWatcherforSearchBox = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -626,16 +672,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
         if (uDetailLayout.getVisibility() != View.VISIBLE) {
             String pName = profile.getuName();
+            String pTitle = profile.getProfession();
+            String pPrivacy = profile.getuPrivacy();
             final String pEmail = profile.getuEmail();
 
 
             TextView textView = (TextView)getView().findViewById(R.id.user_name);
+            TextView titleView = (TextView)getView().findViewById(R.id.user_title);
             ImageView actionEmail = (ImageView) getView().findViewById(R.id.action_email);
             ImageView actionCall = (ImageView) getView().findViewById(R.id.action_call);
             NetworkImageView proPicNetworkImageView = (NetworkImageView)getView().findViewById(R.id.user_pic);
             proPicNetworkImageView.setImageUrl(profile.getuPictureURL(), VolleySingleton.getInstance(getApplicationContext()).getImageLoader());
             if (pName != null) {
                 textView.setText(pName);
+            }
+            if (pTitle != null) {
+                titleView.setText(pTitle);
+            }
+            if (pPrivacy != null && pPrivacy.equals("1")) {
+                actionCall.setVisibility(View.GONE);
             }
             actionCall.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -734,10 +789,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 if (profilePhotos.size() == 4) break;
                 mImageViewC = (NetworkImageView)getView().findViewWithTag(p.getuEmail());
                 Drawable drawable = getResources().getDrawable(R.mipmap.ic_launcher);
-                try {
+                /*try {
                     drawable = mImageViewC.getDrawable();
                 }catch (NullPointerException e){
                     e.printStackTrace();
+                }*/
+                if (p.getProfession() != null){
+                    drawable = getResources().getDrawable(getClusterDrawable(p.getProfession()));
                 }
 
 //                Drawable drawable = getResources().getDrawable(p.profilePhoto);
@@ -787,6 +845,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         }
 
         return true;
+    }
+
+    public int getClusterDrawable(String profession) {
+        switch (profession){
+            case "Student":return R.drawable.ic_student;
+            case "Repair and Maintenance":return R.drawable.ic_repair_and_maintainance;
+            case "Professionals":return R.drawable.ic_professionals;
+        }
+        return R.mipmap.ic_launcher;
     }
 
     @Override

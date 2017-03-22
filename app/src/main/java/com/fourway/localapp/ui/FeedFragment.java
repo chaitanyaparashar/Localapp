@@ -60,11 +60,11 @@ import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 public class FeedFragment extends Fragment implements BroadcastRequest.BroadcastResponseCallback, GetFeedRequest.GetFeedRequestCallback {
 
     private final String TAG = "FeedFragment";
-//    private static final String sAddress = "tcp://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:1883";
-    //private final String sAddress = "tcp://192.172.3.78:1883";
-    private final String sAddress = "tcp://192.172.3.23:2883";
-//    private static final String mTopic = "localapp";
-    private static final String mTopic = "vijay";
+    private static final String sAddress = "tcp://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:1883";
+//    private final String sAddress = "tcp://192.172.3.78:1883";
+//    private final String sAddress = "tcp://192.172.3.23:2883";
+    private static final String mTopic = "localapp";
+//    private static final String mTopic = "vijay";
 
     private MQTT mqtt = null;
     private ProgressDialog progressDialog = null;
@@ -81,9 +81,9 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     EmojiconEditText chatText;
     ImageView sendImageViewBtn, camShoutImgBtn,emoticImgBtn;
     public static int selectedMessageTypeInt = 0;
-    public static int selectedEmojiResourceID = R.mipmap.ic_launcher;
+    public static int selectedEmojiResourceID = R.drawable.emoji_staright;
     public final String[]  emoji_name = {"Straight","Shout","Whisper","Gossip","Murmur","Mumble","Emergency"};
-    public static int[] emojiResourceID = {R.mipmap.ic_launcher,R.mipmap.ic_launcher,R.mipmap.ic_launcher,R.mipmap.ic_launcher,R.mipmap.ic_launcher,R.mipmap.ic_launcher,R.mipmap.ic_launcher};
+    public static int[] emojiResourceID = {R.drawable.emoji_staright,R.drawable.emoji_shout,R.drawable.emoji_whisper,R.drawable.emoji_gossip,R.drawable.emoji_murmer,R.drawable.emoji_mumble,R.drawable.emoji_emergency};
 
 
     //ArrayList of messages to store the thread messages
@@ -158,11 +158,11 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
             }
         });
 
-        connectMqtt();
+//        connectMqtt();
 
         //calcultae distance
-        String dis = calcDistance(new LatLng(28.550123, 77.326640),new LatLng(28.550189, 77.353430),"m",true);
-        toast(dis);
+//        String dis = calcDistance(new LatLng(28.550123, 77.326640),new LatLng(28.550189, 77.353430),"m",true);
+//        toast(dis);
 
 //
 //
@@ -170,7 +170,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     }
 
 
-    // callback used for Future
+    // mqtt callback used for Future
     <T> Callback<T> onui(final Callback<T> original) {
         return new Callback<T>() {
             public void onSuccess(final T value) {
@@ -234,12 +234,22 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
 
     }
 
+
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
         connection.disconnect();
         toast("Disconnecting...");
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (connection==null ||!connection.isConnected()) {
+            connectMqtt();
+        }
+    }
+
 
     private void subscribe() {
         Topic[] topics = {new Topic(mTopic, QoS.AT_LEAST_ONCE)};
@@ -257,17 +267,18 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                         Message messageData = new Message();
                         try {
                             jsonObject = new JSONObject(messagePayLoad);
-                            messageData.setToken(jsonObject.getString("userId"));
+                            messageData.setmUserID(jsonObject.getString("userId"));
+                            messageData.setToken(jsonObject.getString("token"));
                             messageData.setmText(jsonObject.getString("msg"));
                             messageData.setTimeStamp(jsonObject.getString("timestamp"));
                             messageData.setMessageType(getMessageType(jsonObject.getInt("messageType")));
-                            JSONArray latlngJsonArray = jsonObject.getJSONArray("longlat");
+                            JSONArray latlngJsonArray = new JSONArray(jsonObject.getString("longlat"));
                             messageData.setmLatLng(new LatLng(Double.valueOf(latlngJsonArray.getString(0)),Double.valueOf(latlngJsonArray.getString(1))));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-                        if (!HomeActivity.mLoginToken.equals(messageData.getToken()) &&
+                        if (!HomeActivity.mUserId.equals(messageData.getmUserID()) &&
                                 isMessageForMe(messageData.getMessageType(),messageData.getmLatLng())) {
                             messages.add(messageData);
                             adapter.notifyDataSetChanged();
@@ -317,13 +328,14 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     View.OnClickListener sendTextClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            String text = chatText.getText().toString();
+            String text = chatText.getText().toString().trim();
             if (!text.matches("")) {
 
                 Message messageData = new Message();
-                messageData.setToken("58c902bbf81fde0d49d7ff5e");
-//                messageData.setToken(HomeActivity.mLoginToken);
-                messageData.setMessageType(MessageType.STRAIGHT);
+//                messageData.setToken("58c93b21f81fde4c11fe02e1");
+                messageData.setToken(HomeActivity.mLoginToken);
+                messageData.setmUserID(HomeActivity.mUserId);
+                messageData.setMessageType(getMessageType(selectedMessageTypeInt));
                 messageData.setTimeStamp(String.valueOf(System.currentTimeMillis()/1000));
                 messageData.setmText(text);
                 messageData.setmLatLng(HomeActivity.mLastKnownLocation);
@@ -343,19 +355,22 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                 byte[] bitmapdata = stream.toByteArray();*/
                 /******/
 
+
                 mParams =  new HashMap<>();
-                mParams.put("userId",messageData.getToken());
+                mParams.put("token",messageData.getToken());
+                mParams.put("userId",messageData.getmUserID());
                 mParams.put("msg",messageData.getmText());
                 mParams.put("timestamp",messageData.getTimeStamp());
 //                mParams.put("img",bitmap);
                 mParams.put("messageType",""+selectedMessageTypeInt);
                 String[] latlng = {""+messageData.getmLatLng().latitude,""+messageData.getmLatLng().longitude};
                 mParams.put("longlat",Arrays.toString(latlng));
+                JSONObject jsonObject = new JSONObject(mParams);
                 if (connection.isConnected()) {
-                    connection.publish(mTopic, mParams.toString().getBytes(), QoS.AT_LEAST_ONCE, false);
+                    connection.publish(mTopic, jsonObject.toString().getBytes(), QoS.AT_LEAST_ONCE, false);
                 }else {
                     connectMqtt();
-                    connection.publish(mTopic, mParams.toString().getBytes(), QoS.AT_LEAST_ONCE, false);
+                    connection.publish(mTopic, jsonObject.toString().getBytes(), QoS.AT_LEAST_ONCE, false);
                 }
 
             }
@@ -368,6 +383,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             selectedMessageTypeInt = position;
             selectedEmojiResourceID = emojiResourceID[position];
+            camShoutImgBtn.setImageResource(selectedEmojiResourceID);
             emojiGridView.setVisibility(View.GONE);
         }
     };
@@ -482,7 +498,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
             ImageView imageView = (ImageView)view.findViewById(R.id.emoji_icon);
             TextView textView = (TextView) view.findViewById(R.id.emoji_text);
             textView.setText(emojiName[position]);
-            imageView.setImageResource(R.drawable.ic_smily);
+            imageView.setImageResource(emojiResourceID[position]);
 
             return view;
         }
@@ -559,7 +575,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         double distance = Double.valueOf(calcDistance(HomeActivity.mLastKnownLocation,latLng,"km",false));
         switch (messageType) {
             case STRAIGHT:
-                if (distance <= 3)
+                if (distance <= 2)
                 return true;
                 break;
             case SHOUT:
@@ -567,23 +583,25 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                     return true;
                 break;
             case WHISPER:
+                //TODO: will remove in 1 min
                 if (distance <= 2)
                     return true;
                 break;
             case GOSSIP:
-                if (distance <= 1)
+                if (distance <= 4)
                     return true;
                 break;
             case MURMUR:
-                if (distance <= 0.5)
+                if (distance <= 1)
                     return true;
                 break;
             case MUMBLE:
+                //TODO: rearrange string
                 if (distance <= 0.3)
                     return true;
                 break;
             case EMERGENCY:
-                if (distance <= 5)
+                if (distance <= 10)
                     return true;
                 break;
         }

@@ -19,20 +19,34 @@ public class SignUpData {
     private Byte mType;
     private String mErrorMessage;
 
+    private String mPrivacy;
+
+
+
+    private String mUserId;
+
+    private String mToken;
+    private String profession;
+
     private String mDetails;
 
     private File picFile;
 
+
+
+    private String picUrl;
     private String mResponseMessage;
 
 
-    public SignUpData(String mName, String mEmail, String mPassword,
-                      String mMobile, String mSpeciality, String mDetails, LatLng mPlace,
+    public SignUpData(String mName, String mEmail, String profession, String mPassword,
+                      String mMobile,String privacy, String mSpeciality, String mDetails, LatLng mPlace,
                       LatLng mLocation, Byte mType,File picFile) {
         this.mName = mName;
         this.mEmail = mEmail;
+        this.profession = profession;
         this.mPassword = mPassword;
         this.mMobile = mMobile;
+        this.mPrivacy = privacy;
         this.mSpeciality = mSpeciality;
         this.mPlace = mPlace;
         this.mLocation = mLocation;
@@ -41,6 +55,41 @@ public class SignUpData {
         this.mDetails = mDetails;
     }
 
+    public String getmPrivacy() {
+        return mPrivacy;
+    }
+
+    public void setmPrivacy(String mPrivacy) {
+        this.mPrivacy = mPrivacy;
+    }
+    public String getmUserId() {
+        return mUserId;
+    }
+
+    public void setmUserId(String mUserId) {
+        this.mUserId = mUserId;
+    }
+    public String getPicUrl() {
+        return picUrl;
+    }
+
+    public void setPicUrl(String picUrl) {
+        this.picUrl = picUrl;
+    }
+    public String getmToken() {
+        return mToken;
+    }
+
+    public void setmToken(String mToken) {
+        this.mToken = mToken;
+    }
+    public String getProfession() {
+        return profession;
+    }
+
+    public void setProfession(String profession) {
+        this.profession = profession;
+    }
     public String getmDetails() {
         return mDetails;
     }

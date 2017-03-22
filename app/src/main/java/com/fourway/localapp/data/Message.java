@@ -21,6 +21,10 @@ public class Message {
     private String speciality;
     private LatLng mLatLng;
     private String emoji;
+
+
+
+    private String mUserID;
     private FeedFragment.MessageType messageType;
 
     private Bitmap imgBitmap;
@@ -33,6 +37,13 @@ public class Message {
         this.messageType = messageType;
     }
 
+    public String getmUserID() {
+        return mUserID;
+    }
+
+    public void setmUserID(String mUserID) {
+        this.mUserID = mUserID;
+    }
     public Bitmap getImgBitmap() {
         return imgBitmap;
     }

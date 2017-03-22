@@ -32,6 +32,7 @@ public class HomeActivity extends AppCompatActivity{
     SessionManager session;
     public static String mLoginToken = "";
     public static LatLng mLastKnownLocation = null;
+    public static String mUserId = "";
 
     TabLayout tabLayout;
 
@@ -242,6 +243,7 @@ public class HomeActivity extends AppCompatActivity{
 
         HashMap<String, String> user = session.getUserDetails();
         mLoginToken = user.get(SessionManager.KEY_LOGIN_TOKEN);
+        mUserId = user.get(SessionManager.KEY_LOGIN_USER_ID);
         try {
             Double lat = Double.valueOf(user.get(SessionManager.KEY_LAT));
             Double lng = Double.valueOf(user.get(SessionManager.KEY_LNG));

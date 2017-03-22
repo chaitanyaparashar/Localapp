@@ -42,10 +42,9 @@
 
                 <ImageView
                     android:layout_alignRight="@+id/msg_pic"
-                    android:src="@drawable/ic_smily"
                     android:id="@+id/msg_emoji"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_width="30dp"
+                    android:layout_height="30dp" />
 
 
         </RelativeLayout>

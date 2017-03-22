@@ -24,6 +24,7 @@ public class SessionManager {
 
     // User name (make variable public to access from outside)
     public static final String KEY_LOGIN_TOKEN = "LoginToken";
+    public static final String KEY_LOGIN_USER_ID = "userId";
     public static final String KEY_LAT = "lastKnownLat";
     public static final String KEY_LNG = "lastKnownLng";
 
@@ -37,11 +38,12 @@ public class SessionManager {
     /**
      * Create login session
      * */
-    public void createLoginSession(String token, LatLng latLng){
+    public void createLoginSession(String token,String userId, LatLng latLng){
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
         // Storing name in pref
         editor.putString(KEY_LOGIN_TOKEN, token);
+        editor.putString(KEY_LOGIN_USER_ID, userId);
         if (latLng != null) {
             editor.putString(KEY_LAT, String.valueOf(latLng.latitude));
             editor.putString(KEY_LNG, String.valueOf(latLng.longitude));
@@ -90,6 +92,7 @@ public class SessionManager {
         HashMap<String, String> user = new HashMap<String, String>();
         // user name
         user.put(KEY_LOGIN_TOKEN, pref.getString(KEY_LOGIN_TOKEN, null));
+        user.put(KEY_LOGIN_USER_ID, pref.getString(KEY_LOGIN_USER_ID, null));
         user.put(KEY_LAT, pref.getString(KEY_LAT, null));
         user.put(KEY_LNG, pref.getString(KEY_LNG, null));
 

@@ -10,6 +10,9 @@ public class LoginData {
     private String mEmail;
     private String mPassword;
     private String mAccessToken;
+
+
+    private String userId;
     private String mName;
     private String mMobile;
     private String mSpeciality;
@@ -22,6 +25,13 @@ public class LoginData {
     }
 
 
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
     public String getmMobile() {
         return mMobile;
     }

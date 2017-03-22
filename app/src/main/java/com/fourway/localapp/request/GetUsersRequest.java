@@ -78,6 +78,14 @@ public class GetUsersRequest extends CommonRequest {
                 String uMobile =  profile.getString("mobile");
                 String uSpeciality =  profile.getString("speciality");
                 String uNotes =  profile.getString("notes");
+                String uProfession = profile.getString("profession");
+                String mPrivacy = null;
+                try {
+                    mPrivacy = profile.getString("mobilePrivacy");
+                }catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
 
                 LatLng latLng = null;
                 try {
@@ -100,6 +108,8 @@ public class GetUsersRequest extends CommonRequest {
                 mProfile.setuSpeciality(uSpeciality);
                 mProfile.setuNotes(uNotes);
                 mProfile.setuLatLng(latLng);
+                mProfile.setProfession(uProfession);
+                mProfile.setuPrivacy(mPrivacy);
 
 
 //                if (mProfile.getuPictureURL() != "null") {

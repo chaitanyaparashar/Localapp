@@ -45,6 +45,7 @@ public class HomeActivity extends AppCompatActivity{
     private int[] tabIcons = {
             R.drawable.ic_map,
             R.drawable.ic_broadcast,
+            R.drawable.ic_notice_board,
             R.drawable.ic_setting
     };
 
@@ -69,7 +70,7 @@ public class HomeActivity extends AppCompatActivity{
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setOffscreenPageLimit(3);
+        mViewPager.setOffscreenPageLimit(4);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -113,6 +114,8 @@ public class HomeActivity extends AppCompatActivity{
         tabLayout.getTabAt(0).setIcon(tabIcons[0]);
         tabLayout.getTabAt(1).setIcon(tabIcons[1]);
         tabLayout.getTabAt(2).setIcon(tabIcons[2]);
+        tabLayout.getTabAt(3).setIcon(tabIcons[3]);
+
 
         tabLayout.getTabAt(0).getIcon().setColorFilter(Color.parseColor("#2196f3"), PorterDuff.Mode.SRC_IN);
     }
@@ -212,6 +215,8 @@ public class HomeActivity extends AppCompatActivity{
                 case 1:
                     return new FeedFragment();
                 case 2:
+                    return new NoticeBoardFragment();
+                case 3:
                     return new SignUpFragment();
 
             }
@@ -221,7 +226,7 @@ public class HomeActivity extends AppCompatActivity{
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return 4;
         }
 
        /* @Override

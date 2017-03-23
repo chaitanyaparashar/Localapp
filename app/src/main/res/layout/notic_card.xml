@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/card_view"
+        android:layout_gravity="center"
+        android:layout_margin="3dp"
+        android:elevation="3dp"
+        card_view:cardCornerRadius="5dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp">
+
+            <TextView
+                android:id="@+id/notice_name_TextView"
+                android:textColor="#2196f3"
+                android:textSize="15sp"
+                android:text="Wings &amp; Whells MKY Aero Club"
+                android:textStyle="bold"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_below="@+id/notice_name_TextView"
+                android:id="@+id/notice_lastMsg_TextView"
+                android:text="Whats's On (Board Name)"
+                android:textSize="13dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <ImageView
+                android:id="@+id/notice_menu"
+                android:layout_below="@+id/notice_lastMsg_TextView"
+                android:layout_alignParentRight="true"
+                android:layout_width="20dp"
+                android:layout_height="30dp"
+                android:src="@drawable/ic_dots"/>
+            <TextView
+                android:layout_below="@+id/notice_lastMsg_TextView"
+                android:layout_toLeftOf="@+id/notice_menu"
+                android:id="@+id/notice_lastMsg_time_TextView"
+                android:text="12th feb 2017 Sunday, 12:30 pm"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

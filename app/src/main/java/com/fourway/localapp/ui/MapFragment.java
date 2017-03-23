@@ -32,9 +32,9 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
+
 import com.fourway.localapp.R;
 import com.fourway.localapp.data.GetUsersRequestData;
 import com.fourway.localapp.data.Profile;
@@ -42,14 +42,12 @@ import com.fourway.localapp.login_session.SessionManager;
 import com.fourway.localapp.request.CommonRequest;
 import com.fourway.localapp.request.GetUsersRequest;
 import com.fourway.localapp.request.helper.VolleySingleton;
-import com.google.android.gms.common.api.GoogleApiClient;
-//import com.google.android.gms.location.LocationServices;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -69,26 +67,29 @@ import java.util.StringTokenizer;
 public class MapFragment extends Fragment implements OnMapReadyCallback, GetUsersRequest.GetUsersResponseCallback,
         ClusterManager.OnClusterClickListener<Profile>, ClusterManager.OnClusterInfoWindowClickListener<Profile>, ClusterManager.OnClusterItemClickListener<Profile>, ClusterManager.OnClusterItemInfoWindowClickListener<Profile> {
 
-    SessionManager session;
-    private ImageLoader mImageLoader;
+    public static String TAG = "MapFragment";
     private static final int REQUEST_LOCATION_CODE = 200;
-    final static String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.CALL_PHONE};
-    private GoogleMap mMap;
-    MapView mMapView;
-    Location mCurrentLocation, mLastLocation;
-    LocationManager mLocationManager;
-    ArrayList<Profile> profileList;
+    final static String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.CALL_PHONE};
 
-    ImageView professionalBtn, studentBtn,
+    SessionManager session;
+
+    private ImageLoader mImageLoader;
+    private GoogleMap mMap;
+    private MapView mMapView;
+    Location mCurrentLocation, mLastLocation;
+    private LocationManager mLocationManager;
+    public ArrayList<Profile> profileList;
+
+    private ImageView professionalBtn, studentBtn,
             repairBtn, emergencyBtn,
             notice_boardBtn;
-    ImageView searchBtn;
+    private ImageView searchBtn;
+    private RelativeLayout uDetailLayout;
+    private AutoCompleteTextView searchBoxView;
 
-    RelativeLayout uDetailLayout;
 
-    AutoCompleteTextView searchBoxView;
-
-    public static String TAG = "MapFragment";
 
     public MapFragment() {
         // Required empty public constructor
@@ -98,8 +99,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
     }
 
     @Override
@@ -110,42 +109,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
         session = new SessionManager(getActivity());
         profileList = new ArrayList<>();
-        studentBtn = (ImageView) view.findViewById(R.id.student_iv);
-        professionalBtn = (ImageView) view.findViewById(R.id.professionals_iv);
-        repairBtn = (ImageView) view.findViewById(R.id.repair_iv);
-        emergencyBtn = (ImageView) view.findViewById(R.id.emergency_iv);
-        notice_boardBtn = (ImageView) view.findViewById(R.id.notice_board_iv);
-        searchBtn = (ImageView) view.findViewById(R.id.search_btn);
-        searchBoxView = (AutoCompleteTextView) view.findViewById(R.id.autoCompleteTextView);
 
-        uDetailLayout = (RelativeLayout) view.findViewById(R.id.user_detail_rl);
-
-        searchBoxView.addTextChangedListener(textWatcherforSearchBox);
-
-        searchBtn.setOnClickListener(searchOnClickListener);
-        studentBtn.setOnClickListener(filterClickListener);
-        professionalBtn.setOnClickListener(filterClickListener);
-        repairBtn.setOnClickListener(filterClickListener);
-        emergencyBtn.setOnClickListener(filterClickListener);
-        notice_boardBtn.setOnClickListener(filterClickListener);
+        setupView(view);    //initialization view object
 
         mMapView = (MapView) view.findViewById(R.id.map_view);
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(this);
 
-        /*
-            for testing only
-         */
-
-
-        // Create an instance of GoogleAPIClient.
-//        ConnectToGooglePlayServices();
-
-
         mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !isPermissionGrated()) {
             requestPermissions(PERMISSIONS, REQUEST_LOCATION_CODE);
-        } else requestLocation();
+        } else {
+            requestLocation(); //requesting for location update
+        }
 
         if (!isLocationEnabled()) {
             showAlertForLocationSetting(1);
@@ -157,13 +133,36 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     }
 
     /**
+     * initialization view objects
+     * @param view
+     */
+    private void setupView(View view) {
+
+        studentBtn = (ImageView) view.findViewById(R.id.student_iv);
+        professionalBtn = (ImageView) view.findViewById(R.id.professionals_iv);
+        repairBtn = (ImageView) view.findViewById(R.id.repair_iv);
+        emergencyBtn = (ImageView) view.findViewById(R.id.emergency_iv);
+        notice_boardBtn = (ImageView) view.findViewById(R.id.notice_board_iv);
+        searchBtn = (ImageView) view.findViewById(R.id.search_btn);
+        searchBoxView = (AutoCompleteTextView) view.findViewById(R.id.autoCompleteTextView);
+        uDetailLayout = (RelativeLayout) view.findViewById(R.id.user_detail_rl);
+
+        searchBoxView.addTextChangedListener(textWatcherForSearchBox);
+        searchBtn.setOnClickListener(searchOnClickListener);
+        studentBtn.setOnClickListener(filterClickListener);
+        professionalBtn.setOnClickListener(filterClickListener);
+        repairBtn.setOnClickListener(filterClickListener);
+        emergencyBtn.setOnClickListener(filterClickListener);
+        notice_boardBtn.setOnClickListener(filterClickListener);
+    }
+
+    /**
      *
      * @param googleMap
      */
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         mMap = googleMap;
-//        mMap.setOnMarkerClickListener(this);
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             //User has previously accepted this permission
@@ -193,22 +192,29 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         mClusterManager.setOnClusterItemClickListener(this);
         mClusterManager.setOnClusterItemInfoWindowClickListener(this);
 
-        request(new LatLng(28.545623, 77.330507));
+
+
 //        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(28.545623, 77.330507), 9.5f));
         if (HomeActivity.mLastKnownLocation != null) {
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(HomeActivity.mLastKnownLocation, 14f));
+            request(HomeActivity.mLastKnownLocation);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(HomeActivity.mLastKnownLocation, 16.2f));
         }
 //        addItems();
 //        mClusterManager.cluster();
-
-        setMyLocationButton();
+        setMyLocationButton(); //adjust my location button
         Log.v(TAG, "Map Ready");
+    }
 
+    /**
+     *
+     * @return GoogleMap
+     */
+    protected GoogleMap getMap() {
+        return mMap;
     }
 
 
     private void addItems() {
-
         /*************** data for testing ***********/
         mClusterManager.addItem(new Profile(position(), "Walter"));
         mClusterManager.addItem(new Profile(position(), "Walter"));
@@ -298,13 +304,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     @Override
     public void onStart() {
         super.onStart();
-//        mGoogleApiClient.connect();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-//        mGoogleApiClient.disconnect();
     }
 
     @Override
@@ -369,7 +373,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             session.saveLastLocation(latLng);
             request(latLng);
 
-
         }
 
         @Override
@@ -388,6 +391,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         }
     };
 
+    /**
+     * request for update location based on distance and time
+     */
     private void requestLocation() {
         Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
@@ -406,11 +412,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         Log.v(TAG, "requestLocation");
     }
 
+    /**
+     * check location provider enabled or not
+     * @return
+     */
     private boolean isLocationEnabled() {
         return mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                 mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
 
+    /**
+     * check all required permission is granted or not
+     * @return
+     */
     private boolean isPermissionGrated() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if ((getActivity().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -427,6 +441,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         return false;
     }
 
+    /**
+     * Alert dialog for if your location setting is off
+     * @param status
+     */
     private void showAlertForLocationSetting(final int status) {
         String msg, title, btnText;
         if (status == 1) {
@@ -464,8 +482,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     }
 
 
-
-    //test
+    /**
+     * request for map data
+     * @param latLng
+     */
     void request(LatLng latLng) {
         GetUsersRequest usersRequest = new GetUsersRequest(getActivity(), latLng, HomeActivity.mLoginToken, MapFragment.this);
         usersRequest.executeRequest();
@@ -522,7 +542,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     }
 
     /**
-     *
+     * filter index by search string
      * @param profileList
      * @param searchString
      * @return
@@ -578,7 +598,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     }
 
     /**
-     * filter index by by profession
+     * filter index by profession
      * @param profileList
      * @param profession
      * @return
@@ -601,7 +621,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         return profileIndex;
     }
 
-    TextWatcher textWatcherforSearchBox = new TextWatcher() {
+    /**
+     * text watcher for search box
+     */
+    TextWatcher textWatcherForSearchBox = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -621,6 +644,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         }
     };
 
+    /**
+     * search listener
+     */
     View.OnClickListener searchOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -663,11 +689,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         return getActivity().getApplicationContext();
     }
 
-
-    protected GoogleMap getMap() {
-        return mMap;
-    }
-
+    /**
+     * show user profile when click on map profile
+     * user can call and email from this window
+     * @param profile
+     */
     private void markerClickWindow(final Profile profile) {
 
         if (uDetailLayout.getVisibility() != View.VISIBLE) {
@@ -725,14 +751,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
      * Demonstrates heavy customisation of the look of rendered clusters.
      */
 
-
     /**
      * Draws profile photos inside markers (using IconGenerator).
      * When there are multiple people in the cluster, draw multiple photos (using MultiDrawable).
      */
 
     private ClusterManager<Profile> mClusterManager;
-
 
     private class ProfileRenderer extends DefaultClusterRenderer<Profile> {
 
@@ -803,7 +827,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 profilePhotos.add(drawable);
             }
 
-//            Bitmap bmp = mVolleySingleton.
 
             MultiDrawable multiDrawable = new MultiDrawable(profilePhotos);
             multiDrawable.setBounds(0, 0, width, height);
@@ -847,6 +870,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         return true;
     }
 
+    /**
+     *
+     * @param profession
+     * @return
+     */
     public int getClusterDrawable(String profession) {
         switch (profession){
             case "Student":return R.drawable.ic_student;
@@ -874,12 +902,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
     }
 
-
-
     /**
-     * For testing
+     * for testing only
+     * generate random location
      */
-
     private Random mRandom = new Random(1984);
     private LatLng position() {
         return new LatLng(random(28.545623, 28.28494009999999), random(77.330507, 76.3514683));

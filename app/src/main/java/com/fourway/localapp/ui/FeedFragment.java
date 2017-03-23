@@ -68,7 +68,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
 
     private MQTT mqtt = null;
     private ProgressDialog progressDialog = null;
-    FutureConnection connection = null;
+    private FutureConnection connection = null;
     private Map<String, String> mParams;
 
     //Recyclerview objects

@@ -53,7 +53,9 @@ public class GetUsersRequest extends CommonRequest {
         super.setParams(mParams);
 
         mHeaders = new HashMap<>();
-        mHeaders.put("token", mToken);
+        if (mToken != null &&!mToken.equals("")) {
+            mHeaders.put("token", mToken);
+        }
         super.setPostHeader(mHeaders);
 
         mGetUsersResponseCallback = cb;

@@ -1,8 +1,11 @@
 package com.fourway.localapp.ui;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -18,17 +21,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fourway.localapp.R;
+import com.fourway.localapp.camera.Camera2Activity;
+import com.fourway.localapp.camera.CameraActivity;
 import com.fourway.localapp.data.GetFeedRequestData;
 import com.fourway.localapp.data.Message;
 import com.fourway.localapp.request.BroadcastRequest;
 import com.fourway.localapp.request.CommonRequest;
+import com.fourway.localapp.request.EmergencyMsgAcceptRequest;
 import com.fourway.localapp.request.GetFeedRequest;
+import com.fourway.localapp.request.PicUrlRequest;
+import com.fourway.localapp.request.helper.VolleySingleton;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.SphericalUtil;
 
@@ -41,14 +52,24 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.math.BigInteger;
 import java.net.URISyntaxException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
+import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
+
+import static com.fourway.localapp.request.CommonRequest.ResponseCode.COMMON_RES_SUCCESS;
+import static com.fourway.localapp.ui.ThreadAdapter.getEmojiResourceIdByMsgType;
 
 
 /**
@@ -57,13 +78,14 @@ import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
  * to handle interaction events.
  * create an instance of this fragment.
  */
-public class FeedFragment extends Fragment implements BroadcastRequest.BroadcastResponseCallback, GetFeedRequest.GetFeedRequestCallback {
+public class FeedFragment extends Fragment implements BroadcastRequest.BroadcastResponseCallback, GetFeedRequest.GetFeedRequestCallback,PicUrlRequest.PicUrlResponseCallback,EmergencyMsgAcceptRequest.EmergencyMsgAcceptResponseCallback {
 
     private final String TAG = "FeedFragment";
-//    private static final String sAddress = "tcp://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:1883";
+    private static final String sAddress = "tcp://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:1883";
 //    private final String sAddress = "tcp://192.172.3.78:1883";
-    private final String sAddress = "tcp://192.172.3.23:2883";
+//    private final String sAddress = "tcp://192.172.3.23:2883";
     private static final String mTopic = "localapp";
+    private static final String mTopicAcceptMsg = "accept";
 //    private static final String mTopic = "vijay";
 
     private MQTT mqtt = null;
@@ -78,6 +100,10 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     private RecyclerView.Adapter adapter;
     private GridView emojiGridView;
 
+    private ListView emergencyMessageListView;
+    private EmergencyListAdapter emergencyListAdapter;
+    private List<Message> emergencyMessageList;
+
     EmojiconEditText chatText;
     ImageView sendImageViewBtn, camShoutImgBtn,emoticImgBtn;
     public static int selectedMessageTypeInt = 0;
@@ -85,6 +111,32 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     public final String[]  emoji_name = {"Straight","Shout","Whisper","Gossip","Murmur","Mumble","Emergency"};
     public static int[] emojiResourceID = {R.drawable.emoji_staright,R.drawable.emoji_shout,R.drawable.emoji_whisper,R.drawable.emoji_gossip,R.drawable.emoji_murmer,R.drawable.emoji_mumble,R.drawable.emoji_emergency};
 
+    @Override
+    public void EmergencyMsgAcceptResponse(CommonRequest.ResponseCode responseCode) {
+        if (responseCode == COMMON_RES_SUCCESS) {
+            toast("accepted em");
+        }
+    }
+
+    public enum MediaType {
+        MEDIA_TEXT(0),
+        MEDIA_IMAGE(1),
+        MEDIA_VIDEO(3);
+
+        private final int number;
+
+        MediaType(int number) {
+            this.number = number;
+        }
+
+         MediaType() {
+            this.number = ordinal();
+        }
+
+        public int getNumber() {
+            return number;
+        }
+    }
 
     //ArrayList of messages to store the thread messages
     private ArrayList<Message> messages;
@@ -115,10 +167,40 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         emojiGridView = (GridView) view.findViewById(R.id.shout_emiji);
         chatText = (EmojiconEditText) view.findViewById(R.id.chat_text);
         camShoutImgBtn = (ImageView) view.findViewById(R.id.btn_cam_shout);
+        camShoutImgBtn.setOnClickListener(cameraClickListener);
         sendImageViewBtn = (ImageView) view.findViewById(R.id.btn_send_speak);
         emoticImgBtn = (ImageView) view.findViewById(R.id.btn_emoticon);
         recyclerView.setHasFixedSize(true);
+        recyclerView.setDrawingCacheEnabled(true);
+        recyclerView.setItemViewCacheSize(50);
         layoutManager = new LinearLayoutManager(getContext());
+
+        emergencyMessageListView = (ListView) view.findViewById(R.id.emergency_ListView);
+        emergencyMessageList = new ArrayList<>();
+        emergencyListAdapter = new EmergencyListAdapter(getActivity(),emergencyMessageList);
+        emergencyMessageListView.setAdapter(emergencyListAdapter);
+        emergencyMessageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if (view.getId() == R.id.accept_btn) {
+                    Message message = emergencyMessageList.get(position);
+                    emergencyMessageList.remove(position);
+                    EmergencyMsgAcceptRequest msgAcceptRequest = new EmergencyMsgAcceptRequest(getContext(),message.getMsgIdOnlyForFrontEnd(), "1",FeedFragment.this);
+                    if (connection.isConnected()) {
+                        connection.publish(mTopicAcceptMsg, message.getMsgIdOnlyForFrontEnd().getBytes(), QoS.AT_LEAST_ONCE, false);
+                        msgAcceptRequest.executeRequest();
+                    }else {
+                        connectMqtt();
+                        connection.publish(mTopicAcceptMsg, message.getMsgIdOnlyForFrontEnd().getBytes(), QoS.AT_LEAST_ONCE, false);
+                        msgAcceptRequest.executeRequest();
+                    }
+                    if (emergencyMessageList.size() == 0) {
+                        emergencyMessageListView.setVisibility(View.GONE);
+                    }
+                    emergencyListAdapter.notifyDataSetChanged();
+                }
+            }
+        });
 
         emoticImgBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,7 +216,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
 
         //Initializing message arraylist
                 messages = new ArrayList<>();
-        adapter = new ThreadAdapter(getContext(),messages,"bieGrastGiOdkeoqusherCacmaw");//hardcoded token
+        adapter = new ThreadAdapter(getContext(),messages,HomeActivity.mUserId);//hardcoded token
         recyclerView.setAdapter(adapter);
 
 
@@ -210,6 +292,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         connection = mqtt.futureConnection();
         progressDialog = ProgressDialog.show(getContext(), "",
                 "Connecting...", true);
+        progressDialog.setCancelable(true);
         connection.connect().then(onui(new Callback<Void>() {
             @Override
             public void onSuccess(Void value) {
@@ -252,7 +335,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
 
 
     private void subscribe() {
-        Topic[] topics = {new Topic(mTopic, QoS.AT_LEAST_ONCE)};
+        Topic[] topics = {new Topic(mTopic, QoS.AT_LEAST_ONCE),new Topic(mTopicAcceptMsg,QoS.AT_LEAST_ONCE)};
         connection.subscribe(topics).then(onui(new Callback<byte[]>() {
             @Override
             public void onSuccess(byte[] value) {
@@ -268,6 +351,10 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                         try {
                             jsonObject = new JSONObject(messagePayLoad);
                             messageData.setmUserID(jsonObject.getString("userId"));
+                            messageData.setMsgIdOnlyForFrontEnd(jsonObject.getString("emergencyId"));
+                            messageData.setPicUrl(jsonObject.getString("picUrl"));
+                            messageData.setMediaURL(jsonObject.getString("mediaUrl"));
+                            messageData.setMediaType(MediaType.values()[Integer.parseInt(jsonObject.getString("mediaType"))]);
                             messageData.setToken(jsonObject.getString("token"));
                             messageData.setmText(jsonObject.getString("msg"));
                             messageData.setTimeStamp(jsonObject.getString("timestamp"));
@@ -278,13 +365,33 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                             e.printStackTrace();
                         }
 
-                        if (!HomeActivity.mUserId.equals(messageData.getmUserID()) &&
-                                isMessageForMe(messageData.getMessageType(),messageData.getmLatLng())) {
-                            messages.add(messageData);
-                            adapter.notifyDataSetChanged();
-                            scrollToBottom();
+                        if (receivedMesageTopic.equals(mTopic)) {
+                            if (HomeActivity.mUserId == null || !HomeActivity.mUserId.equals(messageData.getmUserID()) &&
+                                    isMessageForMe(messageData.getMessageType(), messageData.getmLatLng())) {
+                                messages.add(messageData);
+                                adapter.notifyDataSetChanged();
+                                scrollToBottom();
+                                if (messageData.getMessageType() == MessageType.EMERGENCY) {
+                                    emergencyMessageListView.setVisibility(View.VISIBLE);
+                                    emergencyMessageList.add(messageData);
+                                    emergencyListAdapter.notifyDataSetChanged();
+                                }
+                            }
+                        }else {
+                            for (Message message1:emergencyMessageList){
+                                if (message1.getMsgIdOnlyForFrontEnd().equals(messagePayLoad)){
+                                    int index = emergencyMessageList.indexOf(message1);
+                                    emergencyMessageList.remove(index);
+                                    emergencyListAdapter.notifyDataSetChanged();
+                                    if (emergencyMessageList.size() == 0) {
+                                        emergencyMessageListView.setVisibility(View.GONE);
+                                    }
+                                    break;
+                                }
+                            }
+                            toast("accept");
                         }
-                        subscribe();
+                        subscribe();//must subscribe on received every msg
                     }
 
                     @Override
@@ -334,10 +441,30 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                 Message messageData = new Message();
 //                messageData.setToken("58c93b21f81fde4c11fe02e1");
                 messageData.setToken(HomeActivity.mLoginToken);
-                messageData.setmUserID(HomeActivity.mUserId);
+                if (HomeActivity.mUserId != null) {
+                    messageData.setmUserID(HomeActivity.mUserId);
+                } else {
+                    messageData.setmUserID("");
+                }
+
+                if (HomeActivity.mPicUrl !=null) {
+                    messageData.setPicUrl(HomeActivity.mPicUrl);
+                }
                 messageData.setMessageType(getMessageType(selectedMessageTypeInt));
+
+                if (messageData.getMessageType() == MessageType.MUMBLE) {
+                    text = mumbleMessage(text);
+                }
+
+                if (messageData.getMessageType() == MessageType.EMERGENCY) {
+                    messageData.setMsgIdOnlyForFrontEnd(nextSessionId());
+                } else {
+                    messageData.setMsgIdOnlyForFrontEnd("");
+                }
+
                 messageData.setTimeStamp(String.valueOf(System.currentTimeMillis()/1000));
                 messageData.setmText(text);
+                messageData.setMediaType(MediaType.MEDIA_TEXT);
                 messageData.setmLatLng(HomeActivity.mLastKnownLocation);
 
                 messages.add(messageData);
@@ -359,6 +486,10 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                 mParams =  new HashMap<>();
                 mParams.put("token",messageData.getToken());
                 mParams.put("userId",messageData.getmUserID());
+                mParams.put("picUrl",messageData.getPicUrl());
+                mParams.put("mediaUrl","");
+                mParams.put("mediaType",""+messageData.getMediaType().getNumber());
+                mParams.put("emergencyId",messageData.getMsgIdOnlyForFrontEnd());
                 mParams.put("msg",messageData.getmText());
                 mParams.put("timestamp",messageData.getTimeStamp());
 //                mParams.put("img",bitmap);
@@ -377,6 +508,67 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
 
         }
     };
+
+
+    private void sendMedia(MediaType mediaType,String mediaUrl, int to ) {
+        Message messageData = new Message();
+//                messageData.setToken("58c93b21f81fde4c11fe02e1");
+        messageData.setToken(HomeActivity.mLoginToken);
+        if (HomeActivity.mUserId != null) {
+            messageData.setmUserID(HomeActivity.mUserId);
+        } else {
+            messageData.setmUserID("");
+        }
+
+        if (HomeActivity.mPicUrl !=null) {
+            messageData.setPicUrl(HomeActivity.mPicUrl);
+        }
+
+        messageData.setMediaURL(mediaUrl);
+
+        messageData.setMessageType(getMessageType(selectedMessageTypeInt));
+
+
+        if (messageData.getMessageType() == MessageType.EMERGENCY) {
+            messageData.setMsgIdOnlyForFrontEnd(nextSessionId());
+        } else {
+            messageData.setMsgIdOnlyForFrontEnd("");
+        }
+
+        messageData.setTimeStamp(String.valueOf(System.currentTimeMillis()/1000));
+        messageData.setMediaType(mediaType);
+        messageData.setmLatLng(HomeActivity.mLastKnownLocation);
+
+
+
+        if (to == 1) {
+            mParams =  new HashMap<>();
+            mParams.put("token",messageData.getToken());
+            mParams.put("userId",messageData.getmUserID());
+            mParams.put("picUrl",messageData.getPicUrl());
+            mParams.put("emergencyId","");
+            mParams.put("mediaUrl",messageData.getMsgIdOnlyForFrontEnd());
+            mParams.put("msg","");
+            mParams.put("mediaUrl",messageData.getMediaURL());
+            mParams.put("mediaType",""+messageData.getMediaType().getNumber());
+            mParams.put("timestamp",messageData.getTimeStamp());
+//                mParams.put("img",bitmap);
+            mParams.put("messageType",""+selectedMessageTypeInt);
+            String[] latlng = {""+messageData.getmLatLng().latitude,""+messageData.getmLatLng().longitude};
+            mParams.put("longlat",Arrays.toString(latlng));
+            JSONObject jsonObject = new JSONObject(mParams);
+            if (connection.isConnected()) {
+                connection.publish(mTopic, jsonObject.toString().getBytes(), QoS.AT_LEAST_ONCE, false);
+            }else {
+                connectMqtt();
+                connection.publish(mTopic, jsonObject.toString().getBytes(), QoS.AT_LEAST_ONCE, false);
+            }
+        }else {
+            messages.add(messageData);
+            adapter.notifyDataSetChanged();
+            scrollToBottom();
+        }
+    }
 
     AdapterView.OnItemClickListener selectMsgTypeEmojiListener = new AdapterView.OnItemClickListener() {
         @Override
@@ -409,7 +601,8 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     View.OnClickListener cameraClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
+//            startActivity(new Intent(getContext(), Camera2Activity.class));
+            startActivityForResult(new Intent(getContext(),Camera2Activity.class),CAMERA_REQUEST);
         }
     };
 
@@ -455,14 +648,24 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     }
 
     @Override
-    public void GetFeedResponse(CommonRequest.ResponseCode responseCode, GetFeedRequestData data) {
+    public void GetFeedResponse(CommonRequest.ResponseCode responseCode, GetFeedRequestData data, GetFeedRequestData emergencyData) {
         switch (responseCode) {
             case COMMON_RES_SUCCESS:
                 if (messages.size()>0) {
                     messages.clear();
                 }
+
+                if (emergencyMessageList.size() > 0){
+                    emergencyMessageList.clear();
+                }
+
                 messages.addAll(data.getMessageList());
+                emergencyMessageList.addAll(emergencyData.getMessageList());
                 adapter.notifyDataSetChanged();
+                emergencyListAdapter.notifyDataSetChanged();
+                if (emergencyMessageList.size() > 0) {
+                    emergencyMessageListView.setVisibility(View.VISIBLE);
+                }
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:
                 break;
@@ -558,7 +761,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         MUMBLE,
         EMERGENCY
     }
-    public MessageType getMessageType(int type) {
+    public static MessageType getMessageType(int type) {
         switch (type) {
             case 0: return MessageType.STRAIGHT;
             case 1: return MessageType.SHOUT;
@@ -597,7 +800,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                 break;
             case MUMBLE:
                 //TODO: rearrange string
-                if (distance <= 0.3)
+                if (distance <= 2)
                     return true;
                 break;
             case EMERGENCY:
@@ -606,6 +809,46 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                 break;
         }
         return false;
+    }
+
+    /**
+     *
+     * @param msgText
+     * @return
+     */
+    public String mumbleMessage(String msgText) {
+
+        String mumbledStr = "";
+        StringTokenizer st = new StringTokenizer(msgText," ");
+        List<String> stringList = new ArrayList<>();
+        while (st.hasMoreTokens()) {
+            stringList.add(st.nextToken());
+        }
+        Collections.shuffle(stringList);
+
+
+        for (int i=0;i<stringList.size();i++) {
+            mumbledStr += stringList.get(i)+ " ";
+        }
+
+        if (stringList.size()>1 && mumbledStr.trim().equals(msgText)) {
+            Collections.shuffle(stringList);
+            mumbledStr = "";
+            for (int i=0;i<stringList.size();i++) {
+                mumbledStr += stringList.get(i)+ " ";
+            }
+        }
+
+        return mumbledStr.trim();
+    }
+
+    /**
+     * Random generate string for emergency msg id only for front end
+     * @return
+     */
+    public String nextSessionId() {
+       SecureRandom random = new SecureRandom();
+        return new BigInteger(130, random).toString(32);
     }
 
 
@@ -645,5 +888,81 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     }*/
 
 
+    class EmergencyListAdapter extends BaseAdapter{
+        private Activity context;
+        private List<Message> emergencyMessageList;
+        private LayoutInflater inflater = null;
 
+        public EmergencyListAdapter(Activity context, List<Message> emergencyMessageList) {
+            this.context = context;
+            this.emergencyMessageList = emergencyMessageList;
+            inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        }
+
+        @Override
+        public int getCount() {
+            return emergencyMessageList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return null;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return 0;
+        }
+
+        @Override
+        public View getView(final int position, View convertView, final ViewGroup parent) {
+            View vi=convertView;
+            if(convertView==null)
+                vi = inflater.inflate(R.layout.emergency_message_list, null);
+            CircularNetworkImageView proPicImageView = (CircularNetworkImageView)vi.findViewById(R.id.msg_pic);
+            EmojiconTextView msgTextView = (EmojiconTextView)vi.findViewById(R.id.textViewMsg);
+            Button acceptButton = (Button) vi.findViewById(R.id.accept_btn);
+            ImageView messageTypeImageView = (ImageView) vi.findViewById(R.id.msg_emoji) ;
+
+            Message message = emergencyMessageList.get(position);
+
+            proPicImageView.setImageUrl(message.getMediaURL(), VolleySingleton.getInstance(context).getImageLoader());
+            msgTextView.setText(message.getmText());
+            if (message.getMessageType() != null) {
+                messageTypeImageView.setImageResource(getEmojiResourceIdByMsgType(message.getMessageType()));
+            }
+
+            acceptButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    ((ListView) parent).performItemClick(v, position, 0);
+                }
+            });
+
+
+            return vi;
+        }
+    }
+
+    public static final int CAMERA_REQUEST = 55;
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == CAMERA_REQUEST) {
+            Uri resultData = Uri.parse(data.getStringExtra("result"));
+            sendMedia(MediaType.MEDIA_IMAGE,resultData.toString(),0);
+            toast(resultData.toString());
+
+            PicUrlRequest picUrlRequest = new PicUrlRequest(getContext(),new File(resultData.getPath()),this);
+            picUrlRequest.executeRequest();
+        }
+    }
+
+    @Override
+    public void PicUrlResponse(CommonRequest.ResponseCode responseCode, String picUrl) {
+
+        if (responseCode == COMMON_RES_SUCCESS) {
+            sendMedia(MediaType.MEDIA_IMAGE,picUrl,1);
+        }
+
+    }
 }

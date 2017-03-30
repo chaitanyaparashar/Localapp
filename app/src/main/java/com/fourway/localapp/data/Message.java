@@ -18,17 +18,41 @@ public class Message {
     private String name;
     private String timeStamp;
     private String mediaURL;
+    private String picUrl;
     private String speciality;
     private LatLng mLatLng;
     private String emoji;
-
-
-
+    private String msgIdOnlyForFrontEnd;
+    private FeedFragment.MediaType mediaType;
     private String mUserID;
     private FeedFragment.MessageType messageType;
-
     private Bitmap imgBitmap;
 
+    public String getAccepted() {
+        return accepted;
+    }
+
+    public void setAccepted(String accepted) {
+        this.accepted = accepted;
+    }
+
+    private String accepted;
+
+
+
+    public Message() {
+
+    }
+
+
+
+    public FeedFragment.MediaType getMediaType() {
+        return mediaType;
+    }
+
+    public void setMediaType(FeedFragment.MediaType mediaType) {
+        this.mediaType = mediaType;
+    }
     public FeedFragment.MessageType getMessageType() {
         return messageType;
     }
@@ -52,10 +76,19 @@ public class Message {
         this.imgBitmap = imgBitmap;
     }
 
+    public String getPicUrl() {
+        return picUrl;
+    }
 
+    public void setPicUrl(String picUrl) {
+        this.picUrl = picUrl;
+    }
+    public String getMsgIdOnlyForFrontEnd() {
+        return msgIdOnlyForFrontEnd;
+    }
 
-    public Message() {
-
+    public void setMsgIdOnlyForFrontEnd(String msgIdOnlyForFrontEnd) {
+        this.msgIdOnlyForFrontEnd = msgIdOnlyForFrontEnd;
     }
 
     public void setmText(String mText) {

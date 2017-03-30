@@ -569,7 +569,8 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         //TODO: Implement signup success logic here
         HomeActivity.mLoginToken = data.getmToken();
         HomeActivity.mUserId = data.getmUserId();
-        session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mLastKnownLocation);
+        HomeActivity.mPicUrl = data.getPicUrl();
+        session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mPicUrl, HomeActivity.mLastKnownLocation);
 
         mNameView.setEnabled(false);
         mNumberView.setEnabled(false);
@@ -651,7 +652,8 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         //TODO: -----
         HomeActivity.mLoginToken = data.getAccessToken();
         HomeActivity.mUserId = data.getUserId();
-        session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mLastKnownLocation);
+        HomeActivity.mPicUrl = data.getPicUrl();
+        session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mPicUrl, HomeActivity.mLastKnownLocation);
 
         mNameView.setText(data.getmName());
         mNumberView.setText(data.getmMobile());

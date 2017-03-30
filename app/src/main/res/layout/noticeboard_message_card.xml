@@ -20,31 +20,16 @@
             android:layout_margin="5dp">
 
             <TextView
-                android:id="@+id/notice_name_TextView"
-                android:textColor="#2196f3"
-                android:textSize="15sp"
-                android:text="Wings &amp; Whells MKY Aero Club"
-                android:textStyle="bold"
+                android:layout_margin="5dp"
+                android:id="@+id/notice_Msg_TextView"
+                android:text="Whats's On (Bfgoard Name)"
+                android:textSize="18sp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
 
             <TextView
-                android:layout_below="@+id/notice_name_TextView"
-                android:id="@+id/notice_lastMsg_TextView"
-                android:text="Whats's On (Board Name)"
-                android:textSize="13dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-            <ImageView
-                android:id="@+id/notice_menu"
-                android:layout_below="@+id/notice_lastMsg_TextView"
                 android:layout_alignParentRight="true"
-                android:layout_width="20dp"
-                android:layout_height="30dp"
-                android:src="@drawable/ic_dots"/>
-            <TextView
-                android:layout_below="@+id/notice_lastMsg_TextView"
-                android:layout_toLeftOf="@+id/notice_menu"
+                android:layout_below="@+id/notice_Msg_TextView"
                 android:id="@+id/notice_Msg_time_TextView"
                 android:text="12th feb 2017 Sunday, 12:30 pm"
                 android:layout_width="150dp"

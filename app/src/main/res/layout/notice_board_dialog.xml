@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:elevation="5dp"
+            android:background="#FFFFFF"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/notice_board_name_textView"
+                android:layout_margin="10dp"
+                android:textColor="#2196f3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Notice Board Name"
+                android:gravity="center"
+                android:textSize="22sp"/>
+        </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerViewDialog"
+            android:layout_width="match_parent"
+            android:layout_height="300dp">
+
+        </android.support.v7.widget.RecyclerView>
+
+        <Button
+            android:elevation="5dp"
+            android:text="Subscribe"
+            android:textColor="#FFFFFF"
+            android:background="#2196f3"
+            android:layout_width="match_parent"
+            android:layout_height="50dp" />
+    </LinearLayout>
+
+
+</FrameLayout>

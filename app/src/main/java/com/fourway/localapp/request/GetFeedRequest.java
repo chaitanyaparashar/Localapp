@@ -7,6 +7,7 @@ import com.android.volley.VolleyError;
 import com.fourway.localapp.data.GetFeedRequestData;
 import com.fourway.localapp.data.Message;
 import com.fourway.localapp.request.helper.VolleyErrorHelper;
+import com.fourway.localapp.ui.FeedFragment;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -27,21 +28,24 @@ import static com.fourway.localapp.request.CommonRequest.ResponseCode.COMMON_RES
 public class GetFeedRequest extends CommonRequest {
 
     public interface GetFeedRequestCallback {
-        void GetFeedResponse(CommonRequest.ResponseCode responseCode, GetFeedRequestData data);
+        void GetFeedResponse(CommonRequest.ResponseCode responseCode, GetFeedRequestData data,GetFeedRequestData emergencyData);
     }
 
     private GetFeedRequestCallback mGetFeedRequestCallback;
     private GetFeedRequestData mRequestData;
+    private GetFeedRequestData mRequestDataEmergency;
     private Context mContext;
 
     public GetFeedRequest(Context context, LatLng latLng, GetFeedRequestCallback cb) {
         super(context, RequestType.COMMON_REQUEST_FEED, CommonRequestMethod.COMMON_REQUEST_METHOD_GET, null);
         this.mContext = context;
         mRequestData = new GetFeedRequestData();
+        mRequestDataEmergency = new GetFeedRequestData();
 
         String url = getRequestTypeURL(RequestType.COMMON_REQUEST_FEED);
         url += "latitude=" + String.valueOf(latLng.latitude);
         url += "&longitude=" + String.valueOf(latLng.longitude);
+        url += "&radius=10";
         super.setURL(url);
 
         mGetFeedRequestCallback = cb;
@@ -51,40 +55,93 @@ public class GetFeedRequest extends CommonRequest {
     public void onResponseHandler(JSONObject response) {
         JSONArray msgJsonArray = null;
         try {
-            msgJsonArray = response.getJSONArray("obj");
+            msgJsonArray = response.getJSONArray("data");
             int size = msgJsonArray.length();
-            for (int i = 0; i < size; i++) {
+            int index = 0;
+            if (size > 50) {
+                index = size - 50;//get only last 50 message
+            }
+
+            for (int i = index; i < size; i++) {
                 JSONObject msgJsonObject = msgJsonArray.getJSONObject(i);
 
-                String mMobile ;
-                String mEmail;
-                String mText = null;
-                String token = null;
+                String mUserID = "";
+                String emergencyId = "";
+                String picUrl = "";
+
+                String mediaURL = "";
+
+                FeedFragment.MediaType mediaType = null;
+                String mMobile = "";
+                String mEmail = "";
+                String mText = "";
+                String token = "";
+                String timeStamp = "";
+                FeedFragment.MessageType messageType = null;
                 String sentAt;
-                String name;
-                String timeStamp;
-                String mediaURL;
-                String speciality;
-                LatLng mLatLng;
+                String name = "";
+                String speciality = "";
+                String accepted = "";
+
                 int emoji;
 
-                try {
-                    token = msgJsonObject.getString("token");
-                    mText = msgJsonObject.getString("text");
-                }catch (JSONException e) {
+                JSONArray latlngJsonArray = new JSONArray(msgJsonObject.getString("longLat"));
+                LatLng mLatLng = null;
 
+
+                try {
+                    mUserID = msgJsonObject.getString("userId");
+                    emergencyId = msgJsonObject.getString("emergencyId");
+                    picUrl = msgJsonObject.getString("picUrl");
+                    mediaURL = msgJsonObject.getString("mediaUrl");
+                    try {
+                        mediaType = FeedFragment.MediaType.values()[Integer.parseInt(msgJsonObject.getString("mediaType"))];
+                    }catch (NumberFormatException e){
+                        e.printStackTrace();
+                    }
+                    mMobile = msgJsonObject.getString("mobile");
+                    mEmail = msgJsonObject.getString("email");
+                    mText = msgJsonObject.getString("text");
+                    token = msgJsonObject.getString("token");
+                    timeStamp = msgJsonObject.getString("timestamp");
+                    messageType = FeedFragment.getMessageType(msgJsonObject.getInt("messageType"));
+                    name = msgJsonObject.getString("name");
+                    speciality = msgJsonObject.getString("speciality");
+                    accepted = msgJsonObject.getString("accept");
+                    mLatLng = new LatLng(Double.valueOf(latlngJsonArray.getString(0)),Double.valueOf(latlngJsonArray.getString(1)));
+
+                    }catch (JSONException e) {
+                    e.printStackTrace();
                 }
 
 
                 Message message = new Message();
-                message.setToken(token);
+                message.setmUserID(mUserID);
+                message.setMsgIdOnlyForFrontEnd(emergencyId);
+                message.setPicUrl(picUrl);
+                message.setMediaURL(mediaURL);
+                message.setMediaType(mediaType);
+                message.setmMobile(mMobile);
+                message.setmEmail(mEmail);
                 message.setmText(mText);
+                message.setToken(token);
+                message.setTimeStamp(timeStamp);
+                message.setMessageType(messageType);
+                message.setName(name);
+                message.setSpeciality(speciality);
+                message.setAccepted(accepted);
+                message.setmLatLng(mLatLng);
 
                 mRequestData.addMessage(message);
 
+                if (message.getMessageType() == FeedFragment.MessageType.EMERGENCY && !message.getAccepted().equals("1")) {
+
+                    mRequestDataEmergency.addMessage(message);
+                }
+
             }
 
-            mGetFeedRequestCallback.GetFeedResponse(ResponseCode.COMMON_RES_SUCCESS, mRequestData);
+            mGetFeedRequestCallback.GetFeedResponse(ResponseCode.COMMON_RES_SUCCESS, mRequestData,mRequestDataEmergency);
 
 
         }catch (JSONException e) {
@@ -102,7 +159,7 @@ public class GetFeedRequest extends CommonRequest {
 
         if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
             resCode = COMMON_RES_CONNECTION_TIMEOUT;
-            mGetFeedRequestCallback.GetFeedResponse (resCode, mRequestData);
+            mGetFeedRequestCallback.GetFeedResponse (resCode, mRequestData, mRequestDataEmergency);
         }
         if (errorMsg == VolleyErrorHelper.COMMON_NETWORK_ERROR_TIMEOUT)
         {
@@ -119,6 +176,6 @@ public class GetFeedRequest extends CommonRequest {
             mRequestData.setmErrorMessage(errorMsg);
         }
 
-        mGetFeedRequestCallback.GetFeedResponse (resCode, mRequestData);
+        mGetFeedRequestCallback.GetFeedResponse (resCode, mRequestData, mRequestDataEmergency);
     }
 }

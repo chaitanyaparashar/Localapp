@@ -1,8 +1,13 @@
 package com.fourway.localapp.ui;
 
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,10 +18,12 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fourway.localapp.R;
 import com.fourway.localapp.data.NoticeBoardData;
 import com.fourway.localapp.data.NoticeBoardMessage;
+import com.fourway.localapp.util.RecyclerTouchListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +37,7 @@ public class NoticeBoardFragment extends Fragment {
     private List<NoticeBoardData> noticeBoardList;
     private NoticeAdapter noticeAdapter;
     private NoticeAdapterNearYou noticeAdapterNearYou;
+    private FloatingActionButton noticeCreateFab;
 
     public NoticeBoardFragment() {
         // Required empty public constructor
@@ -46,9 +54,15 @@ public class NoticeBoardFragment extends Fragment {
         return fView;
     }
 
+    /**
+     * initialization of view objects
+     * @param fView
+     */
     private void setupView(View fView) {
         recyclerView = (RecyclerView) fView.findViewById(R.id.notice_board_recyclerView);
         recyclerViewNearYou = (RecyclerView) fView.findViewById(R.id.notice_board_near_you_recyclerView);
+        recyclerView.setHasFixedSize(true);
+        recyclerViewNearYou.setHasFixedSize(true);
 
         noticeBoardList = new ArrayList<>();
 
@@ -56,19 +70,71 @@ public class NoticeBoardFragment extends Fragment {
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        recyclerViewNearYou.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.HORIZONTAL,true));
+        recyclerViewNearYou.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true));
         recyclerViewNearYou.setItemAnimator(new DefaultItemAnimator());
 
         dummyData();
-        noticeAdapter = new NoticeAdapter(getContext(),noticeBoardList);
-        noticeAdapterNearYou = new NoticeAdapterNearYou(getContext(),noticeBoardList);
+        noticeAdapter = new NoticeAdapter(getContext(), noticeBoardList);
+        noticeAdapterNearYou = new NoticeAdapterNearYou(getContext(), noticeBoardList);
 
         recyclerView.setAdapter(noticeAdapter);
         recyclerViewNearYou.setAdapter(noticeAdapterNearYou);
 
 
+        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getContext(), recyclerView, recyclerItemClickListener));
+        recyclerViewNearYou.addOnItemTouchListener(new RecyclerTouchListener(getContext(),recyclerViewNearYou,recyclerItemClickListener));
 
-        noticeAdapter = new NoticeAdapter(getContext(),noticeBoardList);
+        noticeCreateFab = (FloatingActionButton) fView.findViewById(R.id.fab);
+        noticeCreateFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(),CreateNoticeActivity.class));
+            }
+        });
+
+    }
+
+    /**
+     * RecyclerView click Listener
+     */
+    public RecyclerTouchListener.ClickListener recyclerItemClickListener = new RecyclerTouchListener.ClickListener() {
+        @Override
+        public void onClick(View view, int position) {
+            NoticeBoardData noticeBoard = noticeBoardList.get(position);
+            showNoticeBoardDialog(noticeBoard);
+        }
+
+        @Override
+        public void onLongClick(View view, int position) {
+
+        }
+    };
+
+    public void showNoticeBoardDialog(NoticeBoardData noticeBoard) {
+
+        String msg, title, btnText;
+        DialogNoticeBoardMessageAdapter messageAdapter;
+
+            msg = "Your location Settings is set to 'OFF'. \nPlease Enable Location to " +
+                    "use this app";
+            title = noticeBoard.getName();
+            btnText = "Location Settings";
+
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.notice_board_dialog,null);
+        TextView noticeName = (TextView)view.findViewById(R.id.notice_board_name_textView);
+        RecyclerView messageRecyclerView = (RecyclerView)view.findViewById(R.id.recyclerViewDialog);
+
+        messageAdapter = new DialogNoticeBoardMessageAdapter(getContext(),noticeBoard);
+
+        messageRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        messageRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        messageRecyclerView.setAdapter(messageAdapter);
+
+        final AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+//        dialog.setCancelable(false);
+        dialog.setView(view);
+
+        dialog.show();
     }
 
     //for testing
@@ -85,10 +151,16 @@ public class NoticeBoardFragment extends Fragment {
         for (int i=0;i<20;i++) {
 
             noticeBoardList.add(noticeBoardData);
+            message.setMsg("this is a dummy message "+(i));
+            list.add(message);
+            noticeBoardData.setMessagesList(list);
         }
     }
 
 
+    /**
+     * Adapters
+     */
     class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.ViewHolder> {
         private Context mContext;
         private List<NoticeBoardData> noticeBoardList;
@@ -129,7 +201,7 @@ public class NoticeBoardFragment extends Fragment {
                 super(itemView);
                 noticeName = (TextView) itemView.findViewById(R.id.notice_name_TextView);
                 noticeLastMsg = (TextView) itemView.findViewById(R.id.notice_lastMsg_TextView);
-                noticeTime = (TextView) itemView.findViewById(R.id.notice_lastMsg_time_TextView);
+                noticeTime = (TextView) itemView.findViewById(R.id.notice_Msg_time_TextView);
                 dotsButton = (ImageView) itemView.findViewById(R.id.notice_menu);
             }
         }
@@ -169,6 +241,45 @@ public class NoticeBoardFragment extends Fragment {
             public ViewHolder(View itemView) {
                 super(itemView);
                 noticeName = (TextView) itemView.findViewById(R.id.notice_name_nearyou_TextView);
+            }
+        }
+    }
+
+    class DialogNoticeBoardMessageAdapter extends RecyclerView.Adapter<DialogNoticeBoardMessageAdapter.ViewHolder>{
+        private Context mContext;
+        private NoticeBoardData mNoticeBoardData;
+
+        public DialogNoticeBoardMessageAdapter(Context mContext, NoticeBoardData mNoticeBoardData) {
+            this.mContext = mContext;
+            this.mNoticeBoardData = mNoticeBoardData;
+        }
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View itemView = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.noticeboard_message_card, parent, false);
+            return new DialogNoticeBoardMessageAdapter.ViewHolder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {
+            NoticeBoardMessage noticeBoardMessage = mNoticeBoardData.getMessagesList().get(position);
+            holder.noticeMessage.setText(noticeBoardMessage.getMsg());
+            holder.timestamp.setText(noticeBoardMessage.getTimestamp());
+        }
+
+        @Override
+        public int getItemCount() {
+            return mNoticeBoardData.getMessagesList().size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            public TextView noticeMessage;
+            public TextView timestamp;
+            public ViewHolder(View itemView) {
+                super(itemView);
+                noticeMessage = (TextView) itemView.findViewById(R.id.notice_Msg_TextView);
+                timestamp = (TextView) itemView.findViewById(R.id.notice_Msg_time_TextView);
             }
         }
     }

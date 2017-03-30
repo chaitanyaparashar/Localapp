@@ -27,7 +27,7 @@
                     android:textAllCaps="true"
                     android:textColor="#2196f3"
                     android:textStyle="bold"
-                    android:text="My Notice Board"
+                    android:text="My Board"
                     android:textSize="22sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -91,11 +91,12 @@
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         app:elevation="15dp"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:src="@android:drawable/ic_input_add"
+        android:tint="#FFFFFF"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@android:drawable/ic_input_add"
         app:layout_anchor="@id/layout_notice_near_you"
-        android:layout_marginEnd="10dp"
+        android:layout_margin="16dp"
         app:layout_anchorGravity="right|end"/>
 
 

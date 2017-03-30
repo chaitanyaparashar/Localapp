@@ -1,9 +1,12 @@
 package com.fourway.localapp.ui;
 
+import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Bundle;
 
+import android.provider.MediaStore;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,8 +22,14 @@ import com.fourway.localapp.login_session.SessionManager;
 import com.google.android.gms.maps.model.LatLng;
 
 
-
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 public class HomeActivity extends AppCompatActivity{
 
@@ -33,6 +42,8 @@ public class HomeActivity extends AppCompatActivity{
     public static String mLoginToken = "";
     public static LatLng mLastKnownLocation = null;
     public static String mUserId = "";
+    public static String mPicUrl = null;
+    public static List<Uri> imageList;
 
     TabLayout tabLayout;
 
@@ -63,14 +74,14 @@ public class HomeActivity extends AppCompatActivity{
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
         session = new SessionManager(this);
 
-        if (session.isLoggedIn()) {
+//        if (session.isLoggedIn()) {
             getLastLoginDetails();
-        }
+//        }
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setOffscreenPageLimit(4);
+//        mViewPager.setOffscreenPageLimit(4);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -108,6 +119,11 @@ public class HomeActivity extends AppCompatActivity{
 //                        .setAction("Action", null).show();
 //            }
 //        });
+        imageList = new ArrayList<>();
+        ArrayList<File> files = getFilePaths();
+        for (File file:files) {
+            imageList.add(Uri.fromFile(file));
+        }
     }
 
     private void setupTabIcons() {
@@ -118,6 +134,94 @@ public class HomeActivity extends AppCompatActivity{
 
 
         tabLayout.getTabAt(0).getIcon().setColorFilter(Color.parseColor("#2196f3"), PorterDuff.Mode.SRC_IN);
+    }
+
+    public ArrayList<File> getFilePaths()
+    {
+
+        Uri u = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = {MediaStore.Images.ImageColumns.DATA};
+        Cursor c = null;
+        SortedSet<String> dirList = new TreeSet<String>();
+        ArrayList<File> resultIAV = new ArrayList<File>();
+
+        String[] directories = null;
+        if (u != null)
+        {
+            c = managedQuery(u, projection, null, null, null);
+        }
+
+        if ((c != null) && (c.moveToFirst()))
+        {
+            do
+            {
+                String tempDir = c.getString(0);
+                tempDir = tempDir.substring(0, tempDir.lastIndexOf("/"));
+                try{
+                    dirList.add(tempDir);
+                }
+                catch(Exception e)
+                {
+
+                }
+            }
+            while (c.moveToNext());
+            directories = new String[dirList.size()];
+            dirList.toArray(directories);
+
+        }
+
+        for(int i=0;i<dirList.size();i++)
+        {
+            File imageDir = new File(directories[i]);
+            File[] imageList = imageDir.listFiles();
+            if(imageList == null)
+                continue;
+            for (File imagePath : imageList) {
+                try {
+
+                    if(imagePath.isDirectory())
+                    {
+                        imageList = imagePath.listFiles();
+
+                    }
+                    if ( imagePath.getName().contains(".jpg")|| imagePath.getName().contains(".JPG")
+                            || imagePath.getName().contains(".jpeg")|| imagePath.getName().contains(".JPEG")
+                            || imagePath.getName().contains(".png") || imagePath.getName().contains(".PNG")
+//                            || imagePath.getName().contains(".gif") || imagePath.getName().contains(".GIF")
+//                            || imagePath.getName().contains(".bmp") || imagePath.getName().contains(".BMP")
+                            )
+                    {
+
+
+
+                        String path= imagePath.getAbsolutePath();
+//                        resultIAV.add(Uri.parse(path));
+                        resultIAV.add(imagePath);
+
+
+                    }
+                }
+                //  }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        Collections.sort(resultIAV, new Comparator<File>() {
+            @Override
+            public int compare(File o1, File o2) {
+                Long obj1 = o1.lastModified();
+                Long obj2 = o2.lastModified();
+                return obj1.compareTo(obj2);
+            }
+        });
+
+        Collections.reverse(resultIAV);
+
+        return resultIAV;
+
+
     }
 
 
@@ -249,6 +353,8 @@ public class HomeActivity extends AppCompatActivity{
         HashMap<String, String> user = session.getUserDetails();
         mLoginToken = user.get(SessionManager.KEY_LOGIN_TOKEN);
         mUserId = user.get(SessionManager.KEY_LOGIN_USER_ID);
+//        mUserId = "58b909b1f81fde3f9ce5ea31";//hardcoded
+        mPicUrl = user.get(SessionManager.KEY_LOGIN_USER_PIC_URL);
         try {
             Double lat = Double.valueOf(user.get(SessionManager.KEY_LAT));
             Double lng = Double.valueOf(user.get(SessionManager.KEY_LNG));

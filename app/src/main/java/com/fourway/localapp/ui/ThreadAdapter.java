@@ -1,18 +1,19 @@
 package com.fourway.localapp.ui;
 
 import android.content.Context;
-import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
 import com.fourway.localapp.R;
 import com.fourway.localapp.data.Message;
 import com.fourway.localapp.request.helper.VolleySingleton;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -29,7 +30,10 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
     private Context context;
 
     //Tag for tracking self message
-    private int SELF = 555;
+    private static final int  SELF_TEXT = 555;
+    private static final int OTHER_TEXT = 556;
+    private static final int SELF_IMAGE = 557;
+    private static final int OTHER_IMAGE = 558;
 
     //ArrayList of messages object containing all the messages in the thread
     private ArrayList<Message> messages;
@@ -46,33 +50,79 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
     public int getItemViewType(int position) {
         //getting message object of current position
         Message message = messages.get(position);
-        String msgToken = message.getToken();
+        String msgToken = message.getmUserID();
         if (msgToken == null) {
             msgToken = "";
         }
         //If its owner  id is  equals to the logged in user id
         if (msgToken.equals(token)) {
             //Returning self
-            String s= message.getToken();
-            s=s+"k";
-            return SELF;
+            try {
+                if (message.getMediaType().equals(FeedFragment.MediaType.MEDIA_TEXT))
+                {
+                    return SELF_TEXT;
+                }else {
+                    return SELF_IMAGE;
+                }
+
+            }catch (NullPointerException e){
+                return SELF_TEXT;
+            }
+
+
+        }else {
+            try {
+                if (message.getMediaType().equals(FeedFragment.MediaType.MEDIA_TEXT))
+                {
+                    return OTHER_TEXT;
+                }else {
+                    return OTHER_IMAGE;
+                }
+            }catch (NullPointerException e) {
+                return position;
+            }
+
         }
         //else returning position
-        return position;
+//        return position;
     }
+
+
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         //Creating view
-        View itemView;
+        View itemView = null;
         //if view type is self
-        if (viewType == SELF) {
+       /* if (viewType == SELF_TEXT) {
             //Inflating the layout self
             itemView = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.chat_thread, parent, false);
         } else {
             //else inflating the layout others
             itemView = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.chat_thread_others, parent, false);
+        }*/
+        switch (viewType) {
+            case SELF_TEXT:
+                itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.chat_thread, parent, false);
+                break;
+            case SELF_IMAGE:
+                itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.chat_thread_image, parent, false);
+                itemView.setTag("img");
+                break;
+            case OTHER_TEXT:
+                itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.chat_thread_others, parent, false);
+                break;
+            case OTHER_IMAGE:
+                itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.chat_thread_image_others, parent, false);
+                itemView.setTag("img");
+                break;
+            default: itemView = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.chat_thread_others, parent, false);
         }
         //returing the view
@@ -85,14 +135,21 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         Message message = messages.get(position);
         String text = message.getmText();
         String mURL = message.getMediaURL();
-        String userPicUrl = "https://s3-us-west-1.amazonaws.com/com.fourway.localapp.profileimage/vijay@gmail.com";
-        holder.textViewMessage.setText(text);
+        String userPicUrl = message.getPicUrl();//"https://s3-us-west-1.amazonaws.com/com.fourway.localapp.profileimage/vijay@gmail.com";
+        if (holder.textViewMessage != null) {
+            holder.textViewMessage.setText(text);
+        }
         if (message.getMessageType() != null) {
             holder.messageTypeImageView.setImageResource(getEmojiResourceIdByMsgType(message.getMessageType()));
         }
         if (userPicUrl!=null) {
             holder.proPic.setImageUrl(userPicUrl, VolleySingleton.getInstance(context).getImageLoader());
 //            holder.proPic.setImageBitmap(message.getImgBitmap());
+        }
+
+        if (message.getMediaType()!= null && message.getMediaType() == FeedFragment.MediaType.MEDIA_IMAGE) {
+//            holder.imageMedia.setImageDrawable(new BitmapDrawable(context.getResources(),BitmapFactory.decodeFile(message.getMediaURL())));
+            Picasso.with(context).load(message.getMediaURL()).into(holder.imageMedia);
         }
     }
 
@@ -107,6 +164,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         public EmojiconTextView textViewMessage;
         public CircularNetworkImageView proPic;
         public ImageView messageTypeImageView;
+        public ImageView imageMedia;
 //        public TextView textViewTimeime;
 
         public ViewHolder(View itemView) {
@@ -115,10 +173,13 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
             proPic = (CircularNetworkImageView) itemView.findViewById(R.id.msg_pic);
             messageTypeImageView = (ImageView) itemView.findViewById(R.id.msg_emoji);
 //            textViewTime = (TextView) itemView.findViewById(R.id.textViewTime);
+            if (itemView.getTag()!= null && itemView.getTag().equals("img")) {
+                imageMedia = (ImageView) itemView.findViewById(R.id.msg_img);
+            }
         }
     }
 
-    public int getEmojiResourceIdByMsgType(FeedFragment.MessageType messageType){
+    public static int getEmojiResourceIdByMsgType(FeedFragment.MessageType messageType){
         switch (messageType) {
             case STRAIGHT:
                     return FeedFragment.emojiResourceID[0];

@@ -71,7 +71,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     private static final int REQUEST_LOCATION_CODE = 200;
     final static String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.CALL_PHONE};
+            Manifest.permission.CALL_PHONE,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO,Manifest.permission.CAMERA};
 
     SessionManager session;
 
@@ -398,7 +398,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
         String provider = mLocationManager.getBestProvider(criteria, true);
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
             // here to request the missing permissions, and then overriding
@@ -429,8 +430,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if ((getActivity().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED || getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) && getActivity().checkSelfPermission(Manifest.permission.CALL_PHONE)
-                    == PackageManager.PERMISSION_GRANTED) {
+                    == PackageManager.PERMISSION_GRANTED) && getActivity().checkSelfPermission(Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED
+                    && getActivity().checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)  {
                 Log.v("", "Permission is grated");
                 return true;
             } else {
@@ -560,6 +561,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             String pName = profile.getuName();
             String pNotes = profile.getuNotes();
             String pSpeciality = profile.getuSpeciality();
+            String pProfession = profile.getProfession();
 
             if (pName.equals("null")) {
                 pName = "";
@@ -572,9 +574,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             if (pSpeciality == "null") {
                 pSpeciality = "";
             }
+            if (pProfession == "null") {
+                pProfession = "";
+            }
 
 
-            dataString = pName + " " + pNotes + " " + pSpeciality;
+            dataString = pName + " " + pNotes + " " + pSpeciality+ " " + pProfession;
             dataString = dataString.toLowerCase();
 
             StringTokenizer st = new StringTokenizer(dataString);

@@ -10,6 +10,7 @@ import android.os.Bundle;
 
 import com.fourway.localapp.R;
 import com.fourway.localapp.ui.HomeActivity;
+import com.fourway.localapp.ui.SignUpFragment;
 
 import android.Manifest;
 import android.content.Context;
@@ -39,6 +40,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
@@ -59,6 +61,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import static com.fourway.localapp.ui.FeedFragment.CAMERA_REQUEST;
+import static com.fourway.localapp.ui.FeedFragment.VIDEO_REQUEST;
 
 public class Camera2Activity extends AppCompatActivity implements View.OnClickListener , GalleryRecyclerViewAdapter.OnItemClickListener{
     private static final String TAG = "Camera2Activity";
@@ -102,6 +105,13 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
     private GalleryRecyclerViewAdapter galleryRecyclerViewAdapter;
     private LinearLayoutManager linearLayoutManager;
 
+    private static final String[] PERMISSIONS = {
+            Manifest.permission.CAMERA,
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,6 +140,9 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
             }
         });
 
+        takePictureButton.setOnLongClickListener(videoHoldListener);
+//        takePictureButton.setOnTouchListener(videoTouchListener);
+
         myRecyclerView = (RecyclerView)findViewById(R.id.gallery_RecyclerView);
         linearLayoutManager =
                 new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
@@ -143,6 +156,77 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
 
         prepareGallery();
     }
+
+    boolean isVideoButtonLongPressed = false;
+    View.OnLongClickListener videoHoldListener = new View.OnLongClickListener() {
+        @Override
+        public boolean onLongClick(View v) {
+            // Do something when your hold starts here.
+            Log.v(TAG,"on Long Click");
+
+            if (!isVideoButtonLongPressed) {
+//                startRecordingVideo();
+
+                isVideoButtonLongPressed = true;
+                Intent takeVideoIntent = new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
+                if (takeVideoIntent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(takeVideoIntent, REQUEST_VIDEO_CAPTURE);
+                }
+                isVideoButtonLongPressed = false;
+
+                return true;
+            }
+            return false;
+        }
+    };
+
+    final int REQUEST_VIDEO_CAPTURE = 1;
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK) {
+            Uri videoUri = intent.getData();
+            String path = getRealPathFromUriForImagesAndVideo(videoUri);
+            Intent returnIntent = new Intent();
+            returnIntent.putExtra("result",Uri.fromFile(new File(path)).toString());
+            setResult(VIDEO_REQUEST,returnIntent);
+            finish();
+
+        }
+    }
+
+    private String getRealPathFromUriForImagesAndVideo(Uri contentUri) {
+        Cursor cursor = null;
+        try {
+            String[] proj = {MediaStore.Images.Media.DATA};
+            cursor = getContentResolver().query(contentUri, proj, null, null, null);
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA);
+            cursor.moveToFirst();
+            return cursor.getString(column_index);
+        } catch (Exception e) {
+            return contentUri.getPath();
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+    }
+
+   /* View.OnTouchListener videoTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            v.onTouchEvent(event);
+            // We're only interested in when the button is released.
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                // We're only interested in anything if our speak button is currently pressed.
+                if (isVideoButtonLongPressed) {
+                    // Do something when the button is released.
+//                    stopRecordingVideo();
+                    isVideoButtonLongPressed = false;
+                }
+            }
+            return false;
+        }
+    };*/
 
     @Override
     public void onItemClick(GalleryRecyclerViewAdapter.ItemHolder item, int position) {
@@ -418,8 +502,11 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
             assert map != null;
             imageDimension = map.getOutputSizes(SurfaceTexture.class)[0];
             // Add permission for camera and let user grant the permission
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(Camera2Activity.this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CAMERA_PERMISSION);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED){
+
+                ActivityCompat.requestPermissions(Camera2Activity.this, PERMISSIONS, REQUEST_CAMERA_PERMISSION);
                 return;
             }
 
@@ -440,7 +527,7 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
         }
         captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
 
-        setFlash(captureRequestBuilder);
+//        setFlash(captureRequestBuilder);
         try {
             cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), null, mBackgroundHandler);
         } catch (CameraAccessException e) {

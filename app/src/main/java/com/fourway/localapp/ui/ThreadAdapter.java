@@ -3,6 +3,9 @@ package com.fourway.localapp.ui;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.media.ThumbnailUtils;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -150,6 +153,11 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         if (message.getMediaType()!= null && message.getMediaType() == FeedFragment.MediaType.MEDIA_IMAGE) {
 //            holder.imageMedia.setImageDrawable(new BitmapDrawable(context.getResources(),BitmapFactory.decodeFile(message.getMediaURL())));
             Picasso.with(context).load(message.getMediaURL()).into(holder.imageMedia);
+
+
+        } else if (message.getMediaType()!= null && message.getMediaType() == FeedFragment.MediaType.MEDIA_VIDEO) {
+            holder.imageMedia.setImageBitmap(ThumbnailUtils.createVideoThumbnail(Uri.parse(message.getMediaURL()).getPath(), MediaStore.Video.Thumbnails.FULL_SCREEN_KIND));
+
         }
     }
 

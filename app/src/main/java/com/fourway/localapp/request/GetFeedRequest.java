@@ -8,6 +8,7 @@ import com.fourway.localapp.data.GetFeedRequestData;
 import com.fourway.localapp.data.Message;
 import com.fourway.localapp.request.helper.VolleyErrorHelper;
 import com.fourway.localapp.ui.FeedFragment;
+import com.fourway.localapp.ui.HomeActivity;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -134,7 +135,8 @@ public class GetFeedRequest extends CommonRequest {
 
                 mRequestData.addMessage(message);
 
-                if (message.getMessageType() == FeedFragment.MessageType.EMERGENCY && !message.getAccepted().equals("1")) {
+                if (message.getMessageType() == FeedFragment.MessageType.EMERGENCY && !message.getAccepted().equals("1") &&
+                        !message.getMsgIdOnlyForFrontEnd().equals("null") && !HomeActivity.mUserId.equals(message.getmUserID())) {
 
                     mRequestDataEmergency.addMessage(message);
                 }

@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -69,6 +71,8 @@ import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
 
 import static com.fourway.localapp.request.CommonRequest.ResponseCode.COMMON_RES_SUCCESS;
+import static com.fourway.localapp.ui.FeedFragment.MediaType.MEDIA_IMAGE;
+import static com.fourway.localapp.ui.FeedFragment.MediaType.MEDIA_VIDEO;
 import static com.fourway.localapp.ui.ThreadAdapter.getEmojiResourceIdByMsgType;
 
 
@@ -121,7 +125,8 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     public enum MediaType {
         MEDIA_TEXT(0),
         MEDIA_IMAGE(1),
-        MEDIA_VIDEO(3);
+        MEDIA_VIDEO(2),
+        MEDIA_END(3);
 
         private final int number;
 
@@ -370,11 +375,13 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                                     isMessageForMe(messageData.getMessageType(), messageData.getmLatLng())) {
                                 messages.add(messageData);
                                 adapter.notifyDataSetChanged();
-                                scrollToBottom();
+                                recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+//                                scrollToBottom();
                                 if (messageData.getMessageType() == MessageType.EMERGENCY) {
                                     emergencyMessageListView.setVisibility(View.VISIBLE);
                                     emergencyMessageList.add(messageData);
                                     emergencyListAdapter.notifyDataSetChanged();
+                                    emergencyMessageListView.scrollTo(emergencyListAdapter.getCount()-2,emergencyListAdapter.getCount() -1);
                                 }
                             }
                         }else {
@@ -945,23 +952,37 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     }
 
     public static final int CAMERA_REQUEST = 55;
+    public static final int VIDEO_REQUEST = 56;
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == CAMERA_REQUEST) {
             Uri resultData = Uri.parse(data.getStringExtra("result"));
-            sendMedia(MediaType.MEDIA_IMAGE,resultData.toString(),0);
+            sendMedia(MEDIA_IMAGE,resultData.toString(),0);
             toast(resultData.toString());
 
-            PicUrlRequest picUrlRequest = new PicUrlRequest(getContext(),new File(resultData.getPath()),this);
+            PicUrlRequest picUrlRequest = new PicUrlRequest(getContext(),new File(resultData.getPath()),MEDIA_IMAGE,this);
+            picUrlRequest.executeRequest();
+        }else if (resultCode == VIDEO_REQUEST) {
+            Uri resultData = Uri.parse(data.getStringExtra("result"));
+            sendMedia(MEDIA_VIDEO,resultData.toString(),0);
+            toast(resultData.toString());
+
+            PicUrlRequest picUrlRequest = new PicUrlRequest(getContext(),new File(resultData.getPath()),MEDIA_VIDEO,this);
             picUrlRequest.executeRequest();
         }
     }
 
+
     @Override
-    public void PicUrlResponse(CommonRequest.ResponseCode responseCode, String picUrl) {
+    public void PicUrlResponse(CommonRequest.ResponseCode responseCode, String picUrl,MediaType mediaType) {
 
         if (responseCode == COMMON_RES_SUCCESS) {
-            sendMedia(MediaType.MEDIA_IMAGE,picUrl,1);
+            switch (mediaType) {
+                case MEDIA_IMAGE:sendMedia(MEDIA_IMAGE,picUrl,1);return;
+                case MEDIA_VIDEO:sendMedia(MediaType.MEDIA_VIDEO,picUrl,1);return;
+            }
+
         }
 
     }

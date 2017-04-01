@@ -28,6 +28,7 @@ public abstract class CommonRequest {
     private static final String BROADCAST_REQUEST_URL = "http://52.172.157.120:8080/broadcast";
     private static final String PASSWORD_REQUEST_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/forgot/password?";
     private static final String MSG_ACCEPT_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/message/update";
+    private static final String CREATE_NOTICE_BOARD_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/createNoticeBoard";
 
     public enum RequestType {
         COMMON_REQUEST_LOGIN,
@@ -36,7 +37,8 @@ public abstract class CommonRequest {
         COMMON_REQUEST_BROADCAST,
         COMMON_REQUEST_FEED,
         COMMON_REQUEST_PASSWORD,
-        COMMON_REQUEST_MSG_ACCEPT
+        COMMON_REQUEST_MSG_ACCEPT,
+        COMMON_REQUEST_CREATE_NOTICE_BOARD
     }
 
     public enum ResponseCode  {
@@ -137,6 +139,9 @@ public abstract class CommonRequest {
                 break;
             case COMMON_REQUEST_MSG_ACCEPT:
                 url = MSG_ACCEPT_URL;
+                break;
+            case COMMON_REQUEST_CREATE_NOTICE_BOARD:
+                url = CREATE_NOTICE_BOARD_URL;
                 break;
 
         }

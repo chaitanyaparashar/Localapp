@@ -1,5 +1,7 @@
 package com.fourway.localapp.data;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,16 +9,18 @@ import java.util.List;
  * Created by 4 way on 23-03-2017.
  */
 
-public class NoticeBoardData {
+public class NoticeBoard {
     private String id;
     private String adminId;
     private String name;
     private List<NoticeBoardMessage> messagesList;
+    private String errorMessage;
+    private LatLng location;
 
-    public NoticeBoardData() {
+    public NoticeBoard() {
     }
 
-    public NoticeBoardData(String adminId, String name) {
+    public NoticeBoard(String adminId, String name) {
         this.adminId = adminId;
         this.name = name;
     }
@@ -54,4 +58,11 @@ public class NoticeBoardData {
     }
 
 
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
+
+    public void setLocation(LatLng location) {
+        this.location = location;
+    }
 }

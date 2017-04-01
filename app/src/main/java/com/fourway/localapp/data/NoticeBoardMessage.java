@@ -14,10 +14,15 @@ public class NoticeBoardMessage {
     public NoticeBoardMessage() {
     }
 
-    public NoticeBoardMessage(String adminId, String msg) {
-        this.adminId = adminId;
+    public NoticeBoardMessage(String msg) {
         this.msg = msg;
     }
+
+    public NoticeBoardMessage(String id, String msg) {
+        this.id = id;
+        this.msg = msg;
+    }
+
 
     public String getTimestamp() {
         return timestamp;

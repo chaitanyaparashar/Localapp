@@ -20,7 +20,7 @@
 
 
     <Button
-        android:elevation="3dp"
+        android:elevation="4dp"
         android:id="@+id/btn_takepicture"
         android:layout_width="90dp"
         android:layout_height="90dp"

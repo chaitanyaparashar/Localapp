@@ -8,6 +8,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.fourway.localapp.request.helper.CommonFileUpload;
 import com.fourway.localapp.request.helper.VolleyErrorHelper;
+import com.fourway.localapp.ui.FeedFragment;
 import com.fourway.localapp.ui.HomeActivity;
 
 import org.json.JSONException;
@@ -26,19 +27,21 @@ import static com.fourway.localapp.request.CommonRequest.ResponseCode.COMMON_RES
 
 public class PicUrlRequest {
     public interface PicUrlResponseCallback {
-        void PicUrlResponse(CommonRequest.ResponseCode responseCode, String picUrl);
+        void PicUrlResponse(CommonRequest.ResponseCode responseCode, String picUrl, FeedFragment.MediaType mediaType);
     }
 
     Context mContext;
     private File imageFile;
     private CommonFileUpload mFileUpload;
+    private FeedFragment.MediaType mMediaType;
 
     private PicUrlResponseCallback mPicUrlResponseCallback;
 
-    public PicUrlRequest(Context mContext, File imageFile, PicUrlResponseCallback mPicUrlResponseCallback) {
+    public PicUrlRequest(Context mContext, File imageFile, FeedFragment.MediaType mMediaType,PicUrlResponseCallback mPicUrlResponseCallback) {
         this.mContext = mContext;
         this.imageFile = imageFile;
         this.mPicUrlResponseCallback = mPicUrlResponseCallback;
+        this.mMediaType = mMediaType;
     }
 
     public void executeRequest() {
@@ -56,7 +59,7 @@ public class PicUrlRequest {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                mPicUrlResponseCallback.PicUrlResponse(CommonRequest.ResponseCode.COMMON_RES_SUCCESS, picUrl);
+                mPicUrlResponseCallback.PicUrlResponse(CommonRequest.ResponseCode.COMMON_RES_SUCCESS, picUrl,mMediaType);
             }
         };
 
@@ -68,7 +71,7 @@ public class PicUrlRequest {
                 CommonRequest.ResponseCode resCode = COMMON_RES_INTERNAL_ERROR;
                 if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
                     resCode = COMMON_RES_CONNECTION_TIMEOUT;
-                    mPicUrlResponseCallback.PicUrlResponse(resCode,null);
+                    mPicUrlResponseCallback.PicUrlResponse(resCode,null,mMediaType);
                     return;
                 }
                 if (errorMsg == VolleyErrorHelper.COMMON_NETWORK_ERROR_TIMEOUT)
@@ -86,12 +89,17 @@ public class PicUrlRequest {
 //                    mSignUpData.setmErrorMessage(errorMsg);
                 }
 
-                mPicUrlResponseCallback.PicUrlResponse (resCode, null);
+                mPicUrlResponseCallback.PicUrlResponse (resCode, null ,mMediaType);
             }
         };
 
-        mFileUpload = new CommonFileUpload(mContext, imageFile, CommonFileUpload.FileType.COMMON_UPLOAD_FILE_TYPE_IMAGE,
-                String.valueOf(System.currentTimeMillis()/1000)+ HomeActivity.mUserId ,url,null,listener,errorListener);
+        if (mMediaType == FeedFragment.MediaType.MEDIA_IMAGE) {
+            mFileUpload = new CommonFileUpload(mContext, imageFile, CommonFileUpload.FileType.COMMON_UPLOAD_FILE_TYPE_IMAGE,
+                    String.valueOf(System.currentTimeMillis() / 1000) + HomeActivity.mUserId, url, null, listener, errorListener);
+        }else {
+            mFileUpload = new CommonFileUpload(mContext, imageFile, CommonFileUpload.FileType.COMMON_UPLOAD_FILE_TYPE_VIDEO,
+                    String.valueOf(System.currentTimeMillis() / 1000) + HomeActivity.mUserId, url, null, listener, errorListener);
+        }
 
         mFileUpload.uploadFile();
     }

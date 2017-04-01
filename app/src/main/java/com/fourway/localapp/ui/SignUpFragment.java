@@ -320,7 +320,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
 
 
 
-    public String getRealPathFromURI_API19(Context context, Uri uri){
+    public static String getRealPathFromURI_API19(Context context, Uri uri){
 
 
         String filePath = "";

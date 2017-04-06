@@ -16,16 +16,18 @@
         android:layout_height="wrap_content"
         app:cardCornerRadius="8dp">
 
+
         <ImageView
-            android:id="@+id/msg_img"
+            android:id="@+id/thumbli"
             android:layout_width="210dp"
             android:layout_height="210dp"
+            android:src="@drawable/ic_video_player"
             android:scaleType="centerCrop"/>
-        <VideoView
-            android:visibility="gone"
-            android:id="@+id/msg_vdo"
+        <ImageView
             android:layout_width="210dp"
-            android:layout_height="210dp" />
+            android:layout_height="210dp"
+            android:padding="50dp"
+            android:src="@android:drawable/ic_media_play"/>
 
     </android.support.v7.widget.CardView>
 

@@ -4,11 +4,14 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Color;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
+import android.os.Environment;
+import android.os.SystemClock;
+import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -19,21 +22,25 @@ import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fourway.localapp.R;
+import com.fourway.localapp.VideoPlay;
+import com.fourway.localapp.audio.ViewProxy;
 import com.fourway.localapp.camera.Camera2Activity;
-import com.fourway.localapp.camera.CameraActivity;
 import com.fourway.localapp.data.GetFeedRequestData;
 import com.fourway.localapp.data.Message;
 import com.fourway.localapp.request.BroadcastRequest;
@@ -42,6 +49,7 @@ import com.fourway.localapp.request.EmergencyMsgAcceptRequest;
 import com.fourway.localapp.request.GetFeedRequest;
 import com.fourway.localapp.request.PicUrlRequest;
 import com.fourway.localapp.request.helper.VolleySingleton;
+import com.fourway.localapp.util.RecyclerTouchListener;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.SphericalUtil;
 
@@ -55,6 +63,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.IOException;
 import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.security.SecureRandom;
@@ -65,12 +74,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.TimeUnit;
 
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
 
 import static com.fourway.localapp.request.CommonRequest.ResponseCode.COMMON_RES_SUCCESS;
+import static com.fourway.localapp.ui.FeedFragment.MediaType.MEDIA_AUDIO;
 import static com.fourway.localapp.ui.FeedFragment.MediaType.MEDIA_IMAGE;
 import static com.fourway.localapp.ui.FeedFragment.MediaType.MEDIA_VIDEO;
 import static com.fourway.localapp.ui.ThreadAdapter.getEmojiResourceIdByMsgType;
@@ -126,7 +139,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         MEDIA_TEXT(0),
         MEDIA_IMAGE(1),
         MEDIA_VIDEO(2),
-        MEDIA_END(3);
+        MEDIA_AUDIO(3);
 
         private final int number;
 
@@ -147,6 +160,21 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     private ArrayList<Message> messages;
 
 
+    LinearLayout linearLayoutMsgArea;
+
+    /************** Valuables for Audio ****************/
+    private TextView recordTimeText;
+    private View recordPanel;
+    private View slideText;
+    private float startedDraggingX = -1;
+    private float distCanMove = dp(80);
+    private long startTime = 0L;
+    long timeInMilliseconds = 0L;
+    long timeSwapBuff = 0L;
+    long updatedTime = 0L;
+    private Timer timer;
+
+
     public FeedFragment() {
         // Required empty public constructor
     }
@@ -163,7 +191,8 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
 
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
 
-
+        linearLayoutMsgArea = (LinearLayout) view.findViewById(R.id.linear_layout_msg_area);
+        initializationOfAudioObjects(view);
         //Initializing recyclerView
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(onRefreshListener);
@@ -175,6 +204,8 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         camShoutImgBtn.setOnClickListener(cameraClickListener);
         sendImageViewBtn = (ImageView) view.findViewById(R.id.btn_send_speak);
         emoticImgBtn = (ImageView) view.findViewById(R.id.btn_emoticon);
+
+        recyclerView.addOnItemTouchListener(recyclerTouchListener);
         recyclerView.setHasFixedSize(true);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setItemViewCacheSize(50);
@@ -215,7 +246,8 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         });
 
         recyclerView.setLayoutManager(layoutManager);
-        sendImageViewBtn.setOnClickListener(sendVoiceClickListener);
+//        sendImageViewBtn.setOnClickListener(sendVoiceClickListener);
+        sendImageViewBtn.setOnTouchListener(audioSendOnTouchListener);
         chatText.addTextChangedListener(textWatcher);
         // Inflate the layout for this fragment
 
@@ -594,6 +626,8 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         }
     };
 
+
+
     View.OnClickListener dropDownClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -622,13 +656,15 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             if (TextUtils.isEmpty(chatText.getText())) {
-                sendImageViewBtn.setOnClickListener(sendVoiceClickListener);
+//                sendImageViewBtn.setOnClickListener(sendVoiceClickListener);
+                sendImageViewBtn.setOnTouchListener(audioSendOnTouchListener);
                 sendImageViewBtn.setImageResource(R.drawable.ic_speak);
                 camShoutImgBtn.setImageResource(R.drawable.ic_camera);
                 camShoutImgBtn.setOnClickListener(cameraClickListener);
                 emojiGridView.setVisibility(View.GONE);
             }else {
                 sendImageViewBtn.setOnClickListener(sendTextClickListener);
+                sendImageViewBtn.setOnTouchListener(null);
                 sendImageViewBtn.setImageResource(R.drawable.ic_send);
                 camShoutImgBtn.setImageResource(selectedEmojiResourceID);
                 camShoutImgBtn.setOnClickListener(dropDownClickListener);
@@ -956,6 +992,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == CAMERA_REQUEST) {
             Uri resultData = Uri.parse(data.getStringExtra("result"));
             sendMedia(MEDIA_IMAGE,resultData.toString(),0);
@@ -981,9 +1018,292 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
             switch (mediaType) {
                 case MEDIA_IMAGE:sendMedia(MEDIA_IMAGE,picUrl,1);return;
                 case MEDIA_VIDEO:sendMedia(MediaType.MEDIA_VIDEO,picUrl,1);return;
+                case MEDIA_AUDIO:sendMedia(MediaType.MEDIA_AUDIO,picUrl,1);return;
             }
 
         }
 
+    }
+
+
+    RecyclerTouchListener recyclerTouchListener = new RecyclerTouchListener(getContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
+        @Override
+        public void onClick(View view, int position) {
+            if (view.getTag() != null && view.getTag().equals("vdo")){
+                Message message = messages.get(position);
+
+                Intent intent=new Intent(getActivity(), VideoPlay.class);
+                intent.putExtra("url",message.getMediaURL());
+                startActivity(intent);
+
+                /*mProgressBar.setVisibility(View.VISIBLE);
+
+//                if (videoView.uri
+                videoView.setVideoURI(Uri.parse(message.getMediaURL()));
+//                holder.videoView.setMediaController(new MediaController(context));
+               videoView.requestFocus();
+                videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        mProgressBar.setVisibility(View.GONE);
+                        videoView.start();
+                    }
+                });*/
+
+            }
+        }
+
+        @Override
+        public void onLongClick(View view, int position) {
+
+        }
+    });
+
+
+
+    /*****************============= FOR Audio =======================***************/
+
+    private static final int REQUEST_RECORD_AUDIO_PERMISSION = 200;
+    private static String mAudioFileName = null;
+    private static String mAudioPath = null;
+    private MediaRecorder mRecorder = null;
+    private MediaPlayer   mPlayer = null;
+    private boolean isCanceled = false;
+    ImageView recImage;
+
+
+    boolean isStartRecording = false;
+    public void initializationOfAudioObjects(View view) {
+
+        // Record to the external cache directory for visibility
+        mAudioPath = getActivity().getExternalCacheDir().getAbsolutePath();
+        mAudioPath = Environment
+                .getExternalStorageDirectory() + "/Localapp";
+
+
+        recordPanel = view.findViewById(R.id.record_panel);
+        recordTimeText = (TextView) view.findViewById(R.id.recording_time_text);
+        recImage = (ImageView) view.findViewById(R.id.rec_img);
+        slideText = view.findViewById(R.id.slideText);
+        TextView textView = (TextView) view.findViewById(R.id.slideToCancelTextView);
+        textView.setText("Slide to cancel");
+    }
+
+    View.OnTouchListener audioSendOnTouchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent motionEvent) {
+
+            if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
+
+                recImage.setVisibility(View.VISIBLE);
+                recordPanel.setVisibility(View.VISIBLE);
+                linearLayoutMsgArea.setVisibility(View.INVISIBLE);
+
+                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) slideText
+                        .getLayoutParams();
+                params.leftMargin = dp(30);
+                slideText.setLayoutParams(params);
+                ViewProxy.setAlpha(slideText, 1);
+                startedDraggingX = -1;
+
+                 startRecording();
+                isStartRecording = true;
+                isCanceled = false;
+
+                sendImageViewBtn.getParent()
+                        .requestDisallowInterceptTouchEvent(true);
+
+
+            }else if (motionEvent.getAction() == MotionEvent.ACTION_UP
+                    || motionEvent.getAction() == MotionEvent.ACTION_CANCEL) {
+
+                startedDraggingX = -1;
+
+                if (isStartRecording) {
+                     stopRecording();
+
+                    isStartRecording = false;
+
+                }
+
+                recordPanel.setVisibility(View.INVISIBLE);
+                linearLayoutMsgArea.setVisibility(View.VISIBLE);
+
+            }else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+                float x = motionEvent.getX();
+                if (x < -distCanMove-180) {
+                    if (isStartRecording) {
+                        isCanceled = true;
+                         stopRecording();
+                        isStartRecording = false;
+                    }
+                    recordPanel.setVisibility(View.INVISIBLE);
+                    linearLayoutMsgArea.setVisibility(View.VISIBLE);
+                }
+                x = x + ViewProxy.getX(sendImageViewBtn);
+                FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) slideText
+                        .getLayoutParams();
+
+                if (startedDraggingX != -1) {
+                    float dist = (x - startedDraggingX);
+                    params.leftMargin = dp(30) + (int) dist;
+                    slideText.setLayoutParams(params);
+                    float alpha = 1.3f + dist / distCanMove;
+                    if (alpha > 1) {
+                        alpha = 1;
+                    } else if (alpha < 0) {
+                        alpha = 0;
+                    }
+                    ViewProxy.setAlpha(slideText, alpha);
+                }
+
+                if (x <= ViewProxy.getX(slideText) + slideText.getWidth()
+                        + dp(30)) {
+                    if (startedDraggingX == -1) {
+                        startedDraggingX = x;
+                        distCanMove = (recordPanel.getMeasuredWidth()
+                                - slideText.getMeasuredWidth() - dp(20)) / 2.0f;
+                        if (distCanMove <= 0) {
+                            distCanMove = dp(200);
+                        } else if (distCanMove > dp(200)) {
+                            distCanMove = dp(80);
+                        }
+                    }
+                }
+
+                if (params.leftMargin > dp(30)) {
+                    params.leftMargin = dp(30);
+                    slideText.setLayoutParams(params);
+                    ViewProxy.setAlpha(slideText, 1);
+                    startedDraggingX = -1;
+                }
+
+                v.onTouchEvent(motionEvent);
+
+            }
+            return true;
+        }
+    };
+
+
+    private void startRecording() {
+        mRecorder = new MediaRecorder();
+        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mAudioFileName = mAudioPath + "/audio"+System.currentTimeMillis()+".3gp";
+        mRecorder.setOutputFile(mAudioFileName);
+        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+
+        try {
+            mRecorder.prepare();
+        } catch (IOException e) {
+            Log.e(TAG, "prepare() failed");
+        }
+
+        mRecorder.start();
+        startRecord();
+    }
+
+    private void stopRecording() {
+        try {
+            mRecorder.stop();
+            mRecorder.release();
+            mRecorder = null;
+            if (!isCanceled && !recordTimeText.getText().toString().equals("00:00")) {
+                Uri resultData = Uri.parse(mAudioFileName);
+                sendMedia(MEDIA_AUDIO, mAudioFileName, 0);
+                toast(resultData.toString());
+
+                PicUrlRequest picUrlRequest = new PicUrlRequest(getContext(), new File(resultData.getPath()), MEDIA_AUDIO, this);
+                picUrlRequest.executeRequest();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            mRecorder.release();
+            mRecorder = null;
+        }
+        stopRecord();
+
+
+    }
+
+
+
+    private void startRecord() {
+        // TODO Auto-generated method stub
+        startTime = SystemClock.uptimeMillis();
+        timer = new Timer();
+        MyTimerTask myTimerTask = new MyTimerTask();
+        timer.schedule(myTimerTask, 1000, 1000);
+        vibrate();
+    }
+
+    private void stopRecord() {
+        // TODO Auto-generated method stub
+        if (timer != null) {
+            timer.cancel();
+        }
+        if (recordTimeText.getText().toString().equals("00:00")) {
+            vibrate();
+            return;
+        }
+        recordTimeText.setText("00:00");
+        vibrate();
+    }
+
+    public static int dp(float value) {
+        return (int) Math.ceil(1 * value);
+    }
+
+    private void vibrate() {
+        // TODO Auto-generated method stub
+        try {
+            Vibrator v = (Vibrator) getActivity().getSystemService(Context.VIBRATOR_SERVICE);
+            v.vibrate(100);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    class MyTimerTask extends TimerTask {
+
+        @Override
+        public void run() {
+            timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
+            updatedTime = timeSwapBuff + timeInMilliseconds;
+            final String hms = String.format(
+                    "%02d:%02d",
+                    TimeUnit.MILLISECONDS.toMinutes(updatedTime)
+                            - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS
+                            .toHours(updatedTime)),
+                    TimeUnit.MILLISECONDS.toSeconds(updatedTime)
+                            - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
+                            .toMinutes(updatedTime)));
+            final long lastsec = TimeUnit.MILLISECONDS.toSeconds(updatedTime)
+                    - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
+                    .toMinutes(updatedTime));
+            System.out.println(lastsec + " hms " + hms);
+            getActivity().runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    try {
+                        if (recordTimeText != null) {
+                            recordTimeText.setText(hms);
+
+                            if (lastsec !=0 && lastsec%2==0) {
+                                recImage.setVisibility(View.VISIBLE);
+                            }else {
+                                recImage.setVisibility(View.INVISIBLE);
+                            }
+
+                        }
+                    } catch (Exception e) {
+                        // TODO: handle exception
+                    }
+
+                }
+            });
+        }
     }
 }

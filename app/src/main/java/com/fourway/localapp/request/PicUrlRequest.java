@@ -96,9 +96,12 @@ public class PicUrlRequest {
         if (mMediaType == FeedFragment.MediaType.MEDIA_IMAGE) {
             mFileUpload = new CommonFileUpload(mContext, imageFile, CommonFileUpload.FileType.COMMON_UPLOAD_FILE_TYPE_IMAGE,
                     String.valueOf(System.currentTimeMillis() / 1000) + HomeActivity.mUserId, url, null, listener, errorListener);
-        }else {
+        }else if (mMediaType == FeedFragment.MediaType.MEDIA_VIDEO) {
             mFileUpload = new CommonFileUpload(mContext, imageFile, CommonFileUpload.FileType.COMMON_UPLOAD_FILE_TYPE_VIDEO,
                     String.valueOf(System.currentTimeMillis() / 1000) + HomeActivity.mUserId, url, null, listener, errorListener);
+        }else {
+            mFileUpload = new CommonFileUpload(mContext, imageFile, CommonFileUpload.FileType.COMMON_UPLOAD_FILE_TYPE_AUDIO,
+                    HomeActivity.mUserId + String.valueOf(System.currentTimeMillis() / 1000), url, null, listener, errorListener);
         }
 
         mFileUpload.uploadFile();

@@ -4,20 +4,22 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.VIBRATE"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.CAMERA" />
-
     <uses-feature android:name="android.hardware.camera2.full" />
 
     <uses-permission
-        android:name="android.permission.FLASHLIGHT"
-        android:permissionGroup="android.permission-group.HARDWARE_CONTROLS"
-        android:protectionLevel="normal" />
+        android:name="android.permission.FLASHLIGHT" />
     <!-- Accessing camera hardware -->
 
+    <!-- Needed only if your app targets Android 5.0 (API level 21) or higher. -->
+    <uses-feature android:name="android.hardware.location.gps" />
     <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-feature android:name="android.hardware.camera2.flash" />
 
     <!--
          The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
@@ -62,7 +64,8 @@
 
         <activity android:name=".ui.CreateNoticeActivity" />
         <activity android:name=".camera.CameraActivity" />
-        <activity android:name=".camera.Camera2Activity"></activity>
+        <activity android:name=".camera.Camera2Activity" />
+        <activity android:name=".VideoPlay"></activity>
     </application>
 
 </manifest>

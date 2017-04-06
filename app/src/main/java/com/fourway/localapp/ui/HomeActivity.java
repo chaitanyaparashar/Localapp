@@ -1,5 +1,6 @@
 package com.fourway.localapp.ui;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -15,9 +16,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 
 import com.fourway.localapp.R;
+import com.fourway.localapp.camera.Camera2Activity;
 import com.fourway.localapp.login_session.SessionManager;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -54,6 +55,7 @@ public class HomeActivity extends AppCompatActivity{
     private ViewPager mViewPager;
 
     private int[] tabIcons = {
+            R.drawable.ic_camera,
             R.drawable.ic_map,
             R.drawable.ic_broadcast,
             R.drawable.ic_notice_board,
@@ -81,6 +83,7 @@ public class HomeActivity extends AppCompatActivity{
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+        mViewPager.setCurrentItem(1);
 //        mViewPager.setOffscreenPageLimit(4);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -92,6 +95,11 @@ public class HomeActivity extends AppCompatActivity{
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 tab.getIcon().setColorFilter(Color.parseColor("#2196f3"), PorterDuff.Mode.SRC_IN);
+
+                if (tab.getPosition() == 0) {
+                    Intent i = new Intent(HomeActivity.this, Camera2Activity.class);
+                    startActivityForResult(i, 20);
+                }
             }
 
             @Override
@@ -131,98 +139,13 @@ public class HomeActivity extends AppCompatActivity{
         tabLayout.getTabAt(1).setIcon(tabIcons[1]);
         tabLayout.getTabAt(2).setIcon(tabIcons[2]);
         tabLayout.getTabAt(3).setIcon(tabIcons[3]);
+        tabLayout.getTabAt(4).setIcon(tabIcons[4]);
 
 
         tabLayout.getTabAt(0).getIcon().setColorFilter(Color.parseColor("#2196f3"), PorterDuff.Mode.SRC_IN);
     }
 
-    public ArrayList<File> getFilePaths()
-    {
 
-        Uri u = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
-        String[] projection = {MediaStore.Images.ImageColumns.DATA};
-        Cursor c = null;
-        SortedSet<String> dirList = new TreeSet<String>();
-        ArrayList<File> resultIAV = new ArrayList<File>();
-
-        String[] directories = null;
-        if (u != null)
-        {
-            c = managedQuery(u, projection, null, null, null);
-        }
-
-        if ((c != null) && (c.moveToFirst()))
-        {
-            do
-            {
-                String tempDir = c.getString(0);
-                tempDir = tempDir.substring(0, tempDir.lastIndexOf("/"));
-                try{
-                    dirList.add(tempDir);
-                }
-                catch(Exception e)
-                {
-
-                }
-            }
-            while (c.moveToNext());
-            directories = new String[dirList.size()];
-            dirList.toArray(directories);
-
-        }
-
-        for(int i=0;i<dirList.size();i++)
-        {
-            File imageDir = new File(directories[i]);
-            File[] imageList = imageDir.listFiles();
-            if(imageList == null)
-                continue;
-            for (File imagePath : imageList) {
-                try {
-
-                    if(imagePath.isDirectory())
-                    {
-                        imageList = imagePath.listFiles();
-
-                    }
-                    if ( imagePath.getName().contains(".jpg")|| imagePath.getName().contains(".JPG")
-                            || imagePath.getName().contains(".jpeg")|| imagePath.getName().contains(".JPEG")
-                            || imagePath.getName().contains(".png") || imagePath.getName().contains(".PNG")
-//                            || imagePath.getName().contains(".gif") || imagePath.getName().contains(".GIF")
-//                            || imagePath.getName().contains(".bmp") || imagePath.getName().contains(".BMP")
-                            )
-                    {
-
-
-
-                        String path= imagePath.getAbsolutePath();
-//                        resultIAV.add(Uri.parse(path));
-                        resultIAV.add(imagePath);
-
-
-                    }
-                }
-                //  }
-                catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-        Collections.sort(resultIAV, new Comparator<File>() {
-            @Override
-            public int compare(File o1, File o2) {
-                Long obj1 = o1.lastModified();
-                Long obj2 = o2.lastModified();
-                return obj1.compareTo(obj2);
-            }
-        });
-
-        Collections.reverse(resultIAV);
-
-        return resultIAV;
-
-
-    }
 
 
 
@@ -315,12 +238,14 @@ public class HomeActivity extends AppCompatActivity{
             // getItem is called to instantiate the fragment for the given page.
             switch (position) {
                 case 0:
-                    return new MapFragment();
+                    return new CameraFragment();
                 case 1:
-                    return new FeedFragment();
+                    return new MapFragment();
                 case 2:
-                    return new NoticeBoardFragment();
+                    return new FeedFragment();
                 case 3:
+                    return new NoticeBoardFragment();
+                case 4:
                     return new SignUpFragment();
 
             }
@@ -330,7 +255,7 @@ public class HomeActivity extends AppCompatActivity{
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 4;
+            return 5;
         }
 
        /* @Override
@@ -346,6 +271,11 @@ public class HomeActivity extends AppCompatActivity{
             return null;
         }*/
 
+    }
+
+    public static class CameraFragment extends Fragment {
+        public CameraFragment() {
+        }
     }
 
     void getLastLoginDetails() {
@@ -366,5 +296,104 @@ public class HomeActivity extends AppCompatActivity{
 
 
 
+    }
+
+
+    public ArrayList<File> getFilePaths()
+    {
+
+        Uri u = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        String[] projection = {MediaStore.Images.ImageColumns.DATA};
+        Cursor c = null;
+        SortedSet<String> dirList = new TreeSet<String>();
+        ArrayList<File> resultIAV = new ArrayList<File>();
+
+        String[] directories = null;
+        if (u != null)
+        {
+            c = managedQuery(u, projection, null, null, null);
+        }
+
+        if ((c != null) && (c.moveToFirst()))
+        {
+            do
+            {
+                String tempDir = c.getString(0);
+                tempDir = tempDir.substring(0, tempDir.lastIndexOf("/"));
+                try{
+                    dirList.add(tempDir);
+                }
+                catch(Exception e)
+                {
+
+                }
+            }
+            while (c.moveToNext());
+            directories = new String[dirList.size()];
+            dirList.toArray(directories);
+
+        }
+
+        for(int i=0;i<dirList.size();i++)
+        {
+            File imageDir = new File(directories[i]);
+            File[] imageList = imageDir.listFiles();
+            if(imageList == null)
+                continue;
+            for (File imagePath : imageList) {
+                try {
+
+                    if(imagePath.isDirectory())
+                    {
+                        imageList = imagePath.listFiles();
+
+                    }
+                    if ( imagePath.getName().contains(".jpg")|| imagePath.getName().contains(".JPG")
+                            || imagePath.getName().contains(".jpeg")|| imagePath.getName().contains(".JPEG")
+                            || imagePath.getName().contains(".png") || imagePath.getName().contains(".PNG")
+//                            || imagePath.getName().contains(".gif") || imagePath.getName().contains(".GIF")
+//                            || imagePath.getName().contains(".bmp") || imagePath.getName().contains(".BMP")
+                            )
+                    {
+
+
+
+                        String path= imagePath.getAbsolutePath();
+//                        resultIAV.add(Uri.parse(path));
+                        resultIAV.add(imagePath);
+
+
+                    }
+                }
+                //  }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        Collections.sort(resultIAV, new Comparator<File>() {
+            @Override
+            public int compare(File o1, File o2) {
+                Long obj1 = o1.lastModified();
+                Long obj2 = o2.lastModified();
+                return obj1.compareTo(obj2);
+            }
+        });
+
+        Collections.reverse(resultIAV);
+
+        return resultIAV;
+
+
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == 20) {
+            mViewPager.setCurrentItem(1);
+        }
     }
 }

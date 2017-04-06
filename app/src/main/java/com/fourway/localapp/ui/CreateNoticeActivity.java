@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.fourway.localapp.R;
 import com.fourway.localapp.data.NoticeBoard;
@@ -89,7 +90,8 @@ public class CreateNoticeActivity extends AppCompatActivity implements CreateNot
 
         mProgressDialog.dismiss();
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
-
+            Toast.makeText(this, "Notice Board Created Successfully", Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 }

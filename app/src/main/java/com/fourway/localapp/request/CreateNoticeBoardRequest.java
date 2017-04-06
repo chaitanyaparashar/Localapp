@@ -63,8 +63,16 @@ public class CreateNoticeBoardRequest extends CommonRequest {
             String noticeBoardId = noticeBoardObject.getString("id");
             String noticeBoardName = noticeBoardObject.getString("name");
             String noticeBoardAdminId = noticeBoardObject.getString("adminId");
-            JSONArray latlngJsonArray = new JSONArray(noticeBoardObject.getString("longLat"));
-            LatLng latLng = new LatLng(Double.valueOf(latlngJsonArray.getString(0)),Double.valueOf(latlngJsonArray.getString(1)));
+            JSONArray latlngJsonArray = null;
+            LatLng latLng = null;
+            try {
+                latlngJsonArray = new JSONArray(noticeBoardObject.getString("longLat"));
+                latLng = new LatLng(Double.valueOf(latlngJsonArray.getString(0)),Double.valueOf(latlngJsonArray.getString(1)));
+            }catch (JSONException e){
+                e.printStackTrace();
+            }
+
+
 
             String msgID = messageObject.getString("id");
             String msgText = messageObject.getString("text");
@@ -77,6 +85,8 @@ public class CreateNoticeBoardRequest extends CommonRequest {
             List<NoticeBoardMessage> message = new ArrayList<>();
             message.add(new NoticeBoardMessage(msgID,msgText));
             mNoticeBoard.setMessagesList(message);
+
+            mCreateNoticeBoardResponseCallback.createNoticeBoardResponse(ResponseCode.COMMON_RES_SUCCESS,mNoticeBoard);
 
 
 

@@ -10,7 +10,20 @@
     android:elevation="10dp"
     android:weightSum="10">
 
+    <ImageView
+        android:layout_gravity="center"
+        android:id="@+id/btn_send_speak"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_margin="5dp"
+        android:src="@drawable/ic_speak"/>
+
     <LinearLayout
+        android:visibility="visible"
+        android:id="@+id/linear_layout_msg_area"
+        android:layout_toLeftOf="@id/btn_send_speak"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="1dip"
@@ -59,17 +72,78 @@
                 android:layout_width="0dp"
                 android:layout_height="32dp" />
 
-
-
         </LinearLayout>
 
 
-        <ImageView
-            android:layout_gravity="center"
-            android:id="@+id/btn_send_speak"
-            android:layout_width="35dp"
-            android:layout_weight=".5"
-            android:layout_height="35dp"
-            android:src="@drawable/ic_speak"/>
+
     </LinearLayout>
+
+
+
+    <com.fourway.localapp.audio.FrameLayoutFixed
+        android:visibility="invisible"
+        android:id="@+id/record_panel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="1dip"
+        android:layout_centerVertical="true"
+        android:orientation="horizontal">
+
+
+        <LinearLayout
+            android:id="@+id/slideText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="100dp"
+                android:layout_marginTop="1dp"
+                android:src="@drawable/slidearrow" />
+
+            <TextView
+                android:id="@+id/slideToCancelTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="6dp"
+                android:textColor="#707970"
+                android:textSize="14dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:background="#f5f5f5"
+            android:layout_gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_marginLeft="30dp"
+            android:paddingLeft="2dp" >
+
+            <ImageView
+                android:id="@+id/rec_img"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="1dp"
+                android:src="@drawable/rec" />
+
+            <TextView
+                android:id="@+id/recording_time_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="6dp"
+                android:text="00:00"
+                android:textColor="#4d4c4b"
+                android:textSize="16dp" />
+        </LinearLayout>
+
+    </com.fourway.localapp.audio.FrameLayoutFixed>
 </RelativeLayout>

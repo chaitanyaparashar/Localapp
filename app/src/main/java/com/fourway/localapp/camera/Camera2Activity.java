@@ -1,5 +1,6 @@
 package com.fourway.localapp.camera;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
@@ -79,11 +80,18 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
     private Button takePictureButton;
     private TextureView textureView;
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+    private static final SparseIntArray INVERSE_ORIENTATIONS = new SparseIntArray();
     static {
         ORIENTATIONS.append(Surface.ROTATION_0, 90);
         ORIENTATIONS.append(Surface.ROTATION_90, 0);
         ORIENTATIONS.append(Surface.ROTATION_180, 270);
         ORIENTATIONS.append(Surface.ROTATION_270, 180);
+    }
+    static {
+        INVERSE_ORIENTATIONS.append(Surface.ROTATION_0, 270);
+        INVERSE_ORIENTATIONS.append(Surface.ROTATION_90, 180);
+        INVERSE_ORIENTATIONS.append(Surface.ROTATION_180, 90);
+        INVERSE_ORIENTATIONS.append(Surface.ROTATION_270, 0);
     }
     private String cameraId;
     protected CameraDevice cameraDevice;
@@ -187,6 +195,7 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
             Uri videoUri = intent.getData();
             String path = getRealPathFromUriForImagesAndVideo(videoUri);
             Intent returnIntent = new Intent();
+//            returnIntent.putExtra("result",Uri.fromFile(new File(path)).toString());
             returnIntent.putExtra("result",Uri.fromFile(new File(path)).toString());
             setResult(VIDEO_REQUEST,returnIntent);
             finish();
@@ -347,7 +356,11 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
 
             // Orientation
             int rotation = getWindowManager().getDefaultDisplay().getRotation();
-            captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
+            if (cameraId == CAMERA_BACK) {
+                captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, ORIENTATIONS.get(rotation));
+            }else {
+                captureBuilder.set(CaptureRequest.JPEG_ORIENTATION, INVERSE_ORIENTATIONS.get(rotation));
+            }
 
 //            final File imageFile = new File(Environment.getExternalStorageDirectory()+"/pic.jpg");
 
@@ -455,6 +468,8 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
             e.printStackTrace();
         }
     }
+
+
 
 
     protected void createCameraPreview() {

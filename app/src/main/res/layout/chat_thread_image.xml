@@ -21,6 +21,11 @@
             android:layout_width="210dp"
             android:layout_height="210dp"
             android:scaleType="centerCrop"/>
+        <VideoView
+            android:visibility="gone"
+            android:id="@+id/msg_vdo"
+            android:layout_width="210dp"
+            android:layout_height="210dp" />
 
     </android.support.v7.widget.CardView>
 

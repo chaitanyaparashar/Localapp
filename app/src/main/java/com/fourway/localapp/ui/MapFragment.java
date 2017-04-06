@@ -691,7 +691,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     }
 
     protected Context getApplicationContext() {
-        return getActivity().getApplicationContext();
+        return getContext();
     }
 
     /**
@@ -816,7 +816,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             for (Profile p : cluster.getItems()) {
                 // Draw 4 at most.
                 if (profilePhotos.size() == 4) break;
-                mImageViewC = (NetworkImageView)getView().findViewWithTag(p.getuEmail());
+//                mImageViewC = (NetworkImageView)getView().findViewWithTag(p.getuEmail());
                 Drawable drawable = getResources().getDrawable(R.mipmap.ic_launcher);
                 /*try {
                     drawable = mImageViewC.getDrawable();

@@ -64,8 +64,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import static android.app.Activity.RESULT_OK;
-import org.java_websocket.client.WebSocketClient;
-
 
 
 /**
@@ -588,7 +586,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
 
         final EditText _email, _password;
 
-        View mDialogView = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_sign_in,null);
+        View mDialogView = LayoutInflater.from(getActivity()).inflate(R.layout.signin_dialog,null);
         _email = (EditText) mDialogView.findViewById(R.id.input_email);
         _password = (EditText) mDialogView.findViewById(R.id.input_password);
         builder.setView(mDialogView);

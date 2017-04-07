@@ -7,7 +7,9 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -15,6 +17,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -52,10 +55,15 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -132,6 +140,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         fbPermissions.add("public_profile");
         fbPermissions.add("email");
         fbPermissions.add("user_about_me");
+        fbPermissions.add("user_mobile_phone");
         fbPermissions.add("user_birthday");
         fbPermissions.add("user_location");
         fbPermissions.add("user_relationships");
@@ -691,10 +700,10 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
                     try {
                         String fbName = object.getString("name");
                         String fbEmail = object.getString("email");
-                        String fbGender = object.getString("gender");
-                        String fbAbout = object.getString("about");
-                        String fbRelationship_status = object.getString("relationship_status");
-                        String fbBirthaday = object.getString("birthday");
+//                        String fbGender = object.getString("gender");
+//                        String fbAbout = object.getString("about");
+//                        String fbRelationship_status = object.getString("relationship_status");
+//                        String fbBirthaday = object.getString("birthday");
 
 
                         com.facebook.Profile fbProfile = Profile.getCurrentProfile();
@@ -721,8 +730,11 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
 
                         mNameView.setText(fbName);
                         mEmailView.setText(fbEmail);
-                        mDetailView.setText(fbAbout);
+//                        mDetailView.setText(fbAbout);
                         profilePic.setImageUrl(picUrl.toString(), VolleySingleton.getInstance(getActivity()).getImageLoader());
+
+                        new DownloadFileFromURL().execute(picUrl.toString());
+
 //                        profilePic.setImageBitmap(profilePicBitmap);
 
 
@@ -752,7 +764,11 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
 
         @Override
         public void onError(FacebookException error) {
-            Toast.makeText(getActivity(), ""+error.getMessage(), Toast.LENGTH_SHORT).show();
+
+
+                Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
+
+
         }
     };
 
@@ -771,4 +787,100 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
 
         }
     }
+
+
+
+    /**
+     * Background Async Task to download file
+     * */
+    class DownloadFileFromURL extends AsyncTask<String, String, String> {
+
+        /**
+         * Before starting background thread
+         * Show Progress Bar Dialog
+         * */
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mProgressDialog = new ProgressDialog(getActivity());
+            mProgressDialog.setMessage("Getting data...");
+            mProgressDialog.show();
+        }
+
+        /**
+         * Downloading file in background thread
+         * */
+        @Override
+        protected String doInBackground(String... f_url) {
+            int count;
+            try {
+                URL url = new URL(f_url[0]);
+                URLConnection conection = url.openConnection();
+                conection.connect();
+                // getting file length
+                int lenghtOfFile = conection.getContentLength();
+
+                // input stream to read file - with 8k buffer
+                InputStream input = new BufferedInputStream(url.openStream(), 8192);
+
+                // Output stream to write file
+                OutputStream output = new FileOutputStream("/sdcard/downloadedfile.jpg");
+
+                byte data[] = new byte[1024];
+
+                long total = 0;
+
+                while ((count = input.read(data)) != -1) {
+                    total += count;
+                    // publishing the progress....
+                    // After this onProgressUpdate will be called
+                    publishProgress(""+(int)((total*100)/lenghtOfFile));
+
+                    // writing data to file
+                    output.write(data, 0, count);
+                }
+
+                // flushing output
+                output.flush();
+
+                // closing streams
+                output.close();
+                input.close();
+
+            } catch (Exception e) {
+                Log.e("Error: ", e.getMessage());
+            }
+
+            return null;
+        }
+
+        /**
+         * Updating progress bar
+         * */
+        protected void onProgressUpdate(String... progress) {
+            // setting progress percentage
+            mProgressDialog.dismiss();
+        }
+
+        /**
+         * After completing background task
+         * Dismiss the progress dialog
+         * **/
+        @Override
+        protected void onPostExecute(String file_url) {
+            // dismiss the dialog after the file was downloaded
+           mProgressDialog.dismiss();
+
+            // Displaying downloaded image into image view
+            // Reading image path from sdcard
+            String imagePath = Environment.getExternalStorageDirectory().toString() + "/downloadedfile.jpg";
+            imgFile = new File(imagePath);
+            Toast.makeText(getContext(), ""+imagePath, Toast.LENGTH_SHORT).show();
+            // setting downloaded into image view
+//            my_image.setImageDrawable(Drawable.createFromPath(imagePath));
+        }
+
+    }
+
+
 }

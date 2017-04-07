@@ -41,6 +41,7 @@
                 android:layout_marginBottom="5dp">
 
                 <android.support.v7.widget.RecyclerView
+                    android:padding="5dp"
                     android:id="@+id/notice_board_recyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">

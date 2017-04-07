@@ -15,10 +15,13 @@
         android:id="@+id/btn_send_speak"
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
+        android:clickable="true"
+        android:layout_width="wrap_content"
+        android:minHeight="35dp"
+        android:minWidth="35dp"
+        android:layout_height="wrap_content"
         android:layout_margin="5dp"
-        android:src="@drawable/ic_speak"/>
+        android:src="@drawable/mic_button_state"/>
 
     <LinearLayout
         android:visibility="visible"

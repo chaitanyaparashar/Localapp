@@ -4,22 +4,29 @@ package com.fourway.localapp.ui;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.fourway.localapp.R;
 import com.fourway.localapp.data.NoticeBoard;
 import com.fourway.localapp.data.NoticeBoardMessage;
-import com.fourway.localapp.util.RecyclerTouchListener;
+import com.fourway.localapp.request.CommonRequest;
+import com.fourway.localapp.request.MyNoticeBoardRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +34,15 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class NoticeBoardFragment extends Fragment {
+public class NoticeBoardFragment extends Fragment implements MyNoticeBoardRequest.MyNoticeBoardRequestCallback{
 
     private RecyclerView recyclerView, recyclerViewNearYou;
     private List<NoticeBoard> noticeBoardList;
     private NoticeAdapter noticeAdapter;
     private NoticeAdapterNearYou noticeAdapterNearYou;
     private FloatingActionButton noticeCreateFab;
+
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     public NoticeBoardFragment() {
         // Required empty public constructor
@@ -69,7 +78,7 @@ public class NoticeBoardFragment extends Fragment {
         recyclerViewNearYou.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true));
         recyclerViewNearYou.setItemAnimator(new DefaultItemAnimator());
 
-        dummyData();
+//        dummyData();
         noticeAdapter = new NoticeAdapter(getContext(), noticeBoardList);
         noticeAdapterNearYou = new NoticeAdapterNearYou(getContext(), noticeBoardList);
 
@@ -77,34 +86,44 @@ public class NoticeBoardFragment extends Fragment {
         recyclerViewNearYou.setAdapter(noticeAdapterNearYou);
 
 
-        recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getContext(), recyclerView, recyclerItemClickListener));
-        recyclerViewNearYou.addOnItemTouchListener(new RecyclerTouchListener(getContext(),recyclerViewNearYou,recyclerItemClickListener));
+        /*recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getContext(), recyclerView, recyclerItemClickListener));
+        recyclerViewNearYou.addOnItemTouchListener(new RecyclerTouchListener(getContext(),recyclerViewNearYou,recyclerItemClickListener));*/
 
         noticeCreateFab = (FloatingActionButton) fView.findViewById(R.id.fab);
         noticeCreateFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getContext(),CreateNoticeActivity.class));
+
             }
         });
 
+
+        swipeRefreshLayout = (SwipeRefreshLayout) fView.findViewById(R.id.swipe_refresh_layout_notice_board);
+        swipeRefreshLayout.setOnRefreshListener(onRefreshListener);
+        swipeRefreshLayout.setColorSchemeColors(Color.parseColor("#2196f3"));
+
+        swipeRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeRefreshLayout.setRefreshing(true);
+                request();
+            }
+        });
+
+
+
     }
 
-    /**
-     * RecyclerView click Listener
-     */
-    public RecyclerTouchListener.ClickListener recyclerItemClickListener = new RecyclerTouchListener.ClickListener() {
-        @Override
-        public void onClick(View view, int position) {
-            NoticeBoard noticeBoard = noticeBoardList.get(position);
-            showNoticeBoardDialog(noticeBoard);
-        }
 
+    SwipeRefreshLayout.OnRefreshListener onRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
-        public void onLongClick(View view, int position) {
-
+        public void onRefresh() {
+            request();
         }
     };
+
+
 
     public void showNoticeBoardDialog(NoticeBoard noticeBoard) {
 
@@ -153,6 +172,35 @@ public class NoticeBoardFragment extends Fragment {
         }
     }
 
+    private void request() {
+        MyNoticeBoardRequest noticeBoardRequest = new MyNoticeBoardRequest(getContext(),HomeActivity.mUserId,this);
+        noticeBoardRequest.executeRequest();
+    }
+
+    @Override
+    public void MyNoticeBoardResponse(CommonRequest.ResponseCode responseCode, List<NoticeBoard> myNoticeBoards, List<NoticeBoard> subscribedNoticeBoardList) {
+        swipeRefreshLayout.setRefreshing(false);
+        if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
+            if (noticeBoardList.size()>0) {
+                noticeBoardList.clear();
+            }
+
+            if (myNoticeBoards.size() != 0){
+                noticeBoardList.addAll(myNoticeBoards);
+            }
+
+            if (subscribedNoticeBoardList.size() != 0) {
+                noticeBoardList.addAll(subscribedNoticeBoardList);
+            }
+
+            noticeAdapter.notifyDataSetChanged();
+        }
+    }
+
+
+
+
+
 
     /**
      * Adapters
@@ -177,11 +225,15 @@ public class NoticeBoardFragment extends Fragment {
         public void onBindViewHolder(ViewHolder holder, int position) {
             NoticeBoard noticeBoard = noticeBoardList.get(position);
             int size = noticeBoard.getMessagesList().size();
-            NoticeBoardMessage message = noticeBoard.getMessagesList().get(size-1);
+            if (size>0) {
+                NoticeBoardMessage message = noticeBoard.getMessagesList().get(size-1);
+                holder.noticeLastMsg.setText(message.getMsg());
+                holder.noticeTime.setText(message.getTimestamp());
+            }
+
 
             holder.noticeName.setText(noticeBoard.getName());
-            holder.noticeLastMsg.setText(message.getMsg());
-            holder.noticeTime.setText(message.getTimestamp());
+
         }
 
         @Override
@@ -189,7 +241,7 @@ public class NoticeBoardFragment extends Fragment {
             return noticeBoardList.size();
         }
 
-        public class ViewHolder extends RecyclerView.ViewHolder {
+        public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
             public TextView noticeName,noticeLastMsg,noticeTime;
             public ImageView dotsButton;
 
@@ -199,8 +251,68 @@ public class NoticeBoardFragment extends Fragment {
                 noticeLastMsg = (TextView) itemView.findViewById(R.id.notice_lastMsg_TextView);
                 noticeTime = (TextView) itemView.findViewById(R.id.notice_Msg_time_TextView);
                 dotsButton = (ImageView) itemView.findViewById(R.id.notice_menu);
+                dotsButton.setOnClickListener(this);
+                itemView.setOnClickListener(this);
+            }
+
+            @Override
+            public void onClick(View v) {
+                if (v.getId() == R.id.notice_menu) {
+                    if (getAdapterPosition() ==0){
+                        showPopupMenu(v,R.menu.menu_my_notice);
+                    }else {
+                        showPopupMenu(v,R.menu.menu_subscribe_notice);
+                    }
+
+                }else {
+                    NoticeBoard noticeBoard = noticeBoardList.get(getAdapterPosition());
+                    showNoticeBoardDialog(noticeBoard);
+                }
             }
         }
+
+
+
+        /**
+         * Showing popup menu when tapping on 3 dots
+         */
+        private void showPopupMenu(View view,int menuId) {
+            // inflate menu
+            PopupMenu popup = new PopupMenu(mContext, view);
+            MenuInflater inflater = popup.getMenuInflater();
+            inflater.inflate(menuId, popup.getMenu());
+            popup.setOnMenuItemClickListener(new MyMenuItemClickListener());
+            popup.show();
+        }
+
+        /**
+         * Click listener for popup menu items
+         */
+        class MyMenuItemClickListener implements PopupMenu.OnMenuItemClickListener {
+
+            public MyMenuItemClickListener() {
+            }
+
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.action_add_msg:
+                        Toast.makeText(mContext, "action_add_msg", Toast.LENGTH_SHORT).show();
+                        return true;
+                    case R.id.action_delete:
+                        Toast.makeText(mContext, "action_delete", Toast.LENGTH_SHORT).show();
+                        return true;
+                    case R.id.action_unsubscribe:
+                        Toast.makeText(mContext, "action_unsubscribe", Toast.LENGTH_SHORT).show();
+                        return true;
+                    default:
+                }
+                return false;
+            }
+        }
+
+
+
     }
 
     class NoticeAdapterNearYou extends RecyclerView.Adapter<NoticeAdapterNearYou.ViewHolder>{

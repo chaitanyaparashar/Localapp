@@ -643,7 +643,9 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         @Override
         public void onClick(View v) {
 //            startActivity(new Intent(getContext(), Camera2Activity.class));
-            startActivityForResult(new Intent(getContext(),Camera2Activity.class),CAMERA_REQUEST);
+            Intent intent = new Intent(getContext(),Camera2Activity.class);
+            intent.putExtra("requestCode", CAMERA_REQUEST);
+            startActivityForResult(intent, CAMERA_REQUEST);
         }
     };
 
@@ -993,6 +995,8 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        toast("on activity "+TAG);
         if (resultCode == CAMERA_REQUEST) {
             Uri resultData = Uri.parse(data.getStringExtra("result"));
             sendMedia(MEDIA_IMAGE,resultData.toString(),0);
@@ -1095,6 +1099,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
 
             if (motionEvent.getAction() == MotionEvent.ACTION_DOWN) {
 
+                sendImageViewBtn.setImageResource(R.drawable.ic_speak_pressed);
                 recImage.setVisibility(View.VISIBLE);
                 recordPanel.setVisibility(View.VISIBLE);
                 linearLayoutMsgArea.setVisibility(View.INVISIBLE);
@@ -1116,6 +1121,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
 
             }else if (motionEvent.getAction() == MotionEvent.ACTION_UP
                     || motionEvent.getAction() == MotionEvent.ACTION_CANCEL) {
+                sendImageViewBtn.setImageResource(R.drawable.ic_speak);
 
                 startedDraggingX = -1;
 
@@ -1130,9 +1136,11 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                 linearLayoutMsgArea.setVisibility(View.VISIBLE);
 
             }else if (motionEvent.getAction() == MotionEvent.ACTION_MOVE) {
+
                 float x = motionEvent.getX();
                 if (x < -distCanMove-180) {
                     if (isStartRecording) {
+                        sendImageViewBtn.setImageResource(R.drawable.ic_speak);
                         isCanceled = true;
                          stopRecording();
                         isStartRecording = false;

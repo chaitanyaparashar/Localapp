@@ -1,5 +1,6 @@
 package com.fourway.localapp.ui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -16,6 +17,8 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.fourway.localapp.R;
 import com.fourway.localapp.camera.Camera2Activity;
@@ -38,6 +41,7 @@ public class HomeActivity extends AppCompatActivity{
     FragmentTransaction transaction;
     Fragment fragmentToLaunch;
 
+    public static Context mapContext = null;
 
     SessionManager session;
     public static String mLoginToken = "";
@@ -55,7 +59,6 @@ public class HomeActivity extends AppCompatActivity{
     private ViewPager mViewPager;
 
     private int[] tabIcons = {
-            R.drawable.ic_camera,
             R.drawable.ic_map,
             R.drawable.ic_broadcast,
             R.drawable.ic_notice_board,
@@ -69,6 +72,7 @@ public class HomeActivity extends AppCompatActivity{
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(getResources().getColor(R.color.titleColor));
         setSupportActionBar(toolbar);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
 
         // Create the adapter that will return a fragment for each of the three
@@ -83,8 +87,7 @@ public class HomeActivity extends AppCompatActivity{
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setCurrentItem(1);
-//        mViewPager.setOffscreenPageLimit(4);
+        mViewPager.setOffscreenPageLimit(4);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -96,10 +99,12 @@ public class HomeActivity extends AppCompatActivity{
             public void onTabSelected(TabLayout.Tab tab) {
                 tab.getIcon().setColorFilter(Color.parseColor("#2196f3"), PorterDuff.Mode.SRC_IN);
 
-                if (tab.getPosition() == 0) {
-                    Intent i = new Intent(HomeActivity.this, Camera2Activity.class);
-                    startActivityForResult(i, 20);
-                }
+                /*if (tab.getPosition() == 0) {
+//                    ((MapFragment)mSectionsPagerAdapter.getItem(1)).gggg();
+                    *//*Intent i = new Intent(HomeActivity.this, Camera2Activity.class);
+                    i.putExtra("requestCode", 20);
+                    startActivityForResult(i, 20);*//*
+                }*/
             }
 
             @Override
@@ -135,14 +140,17 @@ public class HomeActivity extends AppCompatActivity{
     }
 
     private void setupTabIcons() {
-        tabLayout.getTabAt(0).setIcon(tabIcons[0]);
-        tabLayout.getTabAt(1).setIcon(tabIcons[1]);
-        tabLayout.getTabAt(2).setIcon(tabIcons[2]);
-        tabLayout.getTabAt(3).setIcon(tabIcons[3]);
-        tabLayout.getTabAt(4).setIcon(tabIcons[4]);
+        try {
+            tabLayout.getTabAt(0).setIcon(tabIcons[0]);
+            tabLayout.getTabAt(1).setIcon(tabIcons[1]);
+            tabLayout.getTabAt(2).setIcon(tabIcons[2]);
+            tabLayout.getTabAt(3).setIcon(tabIcons[3]);
 
 
-        tabLayout.getTabAt(0).getIcon().setColorFilter(Color.parseColor("#2196f3"), PorterDuff.Mode.SRC_IN);
+            tabLayout.getTabAt(0).getIcon().setColorFilter(Color.parseColor("#2196f3"), PorterDuff.Mode.SRC_IN);
+        }catch (NullPointerException e){
+            e.printStackTrace();
+        }
     }
 
 
@@ -227,7 +235,7 @@ public class HomeActivity extends AppCompatActivity{
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        int totalPage = 2;
+//        int totalPage = 2;
 
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
@@ -237,15 +245,15 @@ public class HomeActivity extends AppCompatActivity{
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             switch (position) {
+               /* case 0:
+                    return new CameraFragment();*/
                 case 0:
-                    return new CameraFragment();
-                case 1:
                     return new MapFragment();
-                case 2:
+                case 1:
                     return new FeedFragment();
-                case 3:
+                case 2:
                     return new NoticeBoardFragment();
-                case 4:
+                case 3:
                     return new SignUpFragment();
 
             }
@@ -255,7 +263,7 @@ public class HomeActivity extends AppCompatActivity{
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 5;
+            return 4;
         }
 
        /* @Override
@@ -291,7 +299,7 @@ public class HomeActivity extends AppCompatActivity{
 
             mLastKnownLocation = new LatLng(lat,lng);
         }catch (NullPointerException e){
-
+            e.printStackTrace();
         }
 
 
@@ -388,12 +396,4 @@ public class HomeActivity extends AppCompatActivity{
     }
 
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(requestCode == 20) {
-            mViewPager.setCurrentItem(1);
-        }
-    }
 }

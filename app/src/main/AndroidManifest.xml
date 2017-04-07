@@ -64,7 +64,9 @@
 
         <activity android:name=".ui.CreateNoticeActivity" />
         <activity android:name=".camera.CameraActivity" />
-        <activity android:name=".camera.Camera2Activity" />
+        <activity
+            android:name=".camera.Camera2Activity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".VideoPlay"></activity>
     </application>
 

@@ -1,7 +1,5 @@
 package com.fourway.localapp.camera;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -11,8 +9,6 @@ import android.os.Bundle;
 
 import com.fourway.localapp.R;
 import com.fourway.localapp.ui.HomeActivity;
-import com.fourway.localapp.ui.SignUpFragment;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -29,19 +25,16 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
 import android.media.ImageReader;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.Size;
 import android.util.SparseIntArray;
-import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
@@ -65,9 +58,12 @@ import static com.fourway.localapp.ui.FeedFragment.CAMERA_REQUEST;
 import static com.fourway.localapp.ui.FeedFragment.VIDEO_REQUEST;
 
 public class Camera2Activity extends AppCompatActivity implements View.OnClickListener , GalleryRecyclerViewAdapter.OnItemClickListener{
+
     private static final String TAG = "Camera2Activity";
     public static final String CAMERA_FRONT = "1";
     public static final String CAMERA_BACK = "0";
+
+    public static int WHICH_REQUEST = -1;
 
 
 
@@ -127,6 +123,8 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        WHICH_REQUEST = getIntent().getIntExtra("requestCode" ,-1);
 
         cameraId = CAMERA_BACK;
 
@@ -242,7 +240,7 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
 //        Toast.makeText(this, ""+item.getItemUri(), Toast.LENGTH_SHORT).show();
         Intent returnIntent = new Intent();
         returnIntent.putExtra("result",item.getItemUri().toString());
-        setResult(CAMERA_REQUEST,returnIntent);
+        setResult(WHICH_REQUEST,returnIntent);
         finish();
     }
 
@@ -444,7 +442,7 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
 
                     Intent returnIntent = new Intent();
                     returnIntent.putExtra("result",Uri.fromFile(imageFile).toString());
-                    setResult(CAMERA_REQUEST,returnIntent);
+                    setResult(WHICH_REQUEST,returnIntent);
                     finish();
                 }
             };

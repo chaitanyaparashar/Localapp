@@ -3,6 +3,7 @@ package com.fourway.localapp.ui;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,9 +25,11 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -36,11 +39,13 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 
 import com.fourway.localapp.R;
+import com.fourway.localapp.camera.Camera2Activity;
 import com.fourway.localapp.data.GetUsersRequestData;
 import com.fourway.localapp.data.Profile;
 import com.fourway.localapp.login_session.SessionManager;
 import com.fourway.localapp.request.CommonRequest;
 import com.fourway.localapp.request.GetUsersRequest;
+import com.fourway.localapp.request.ImageSearchRequest;
 import com.fourway.localapp.request.helper.VolleySingleton;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -58,6 +63,7 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -65,7 +71,8 @@ import java.util.StringTokenizer;
 
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GetUsersRequest.GetUsersResponseCallback,
-        ClusterManager.OnClusterClickListener<Profile>, ClusterManager.OnClusterInfoWindowClickListener<Profile>, ClusterManager.OnClusterItemClickListener<Profile>, ClusterManager.OnClusterItemInfoWindowClickListener<Profile> {
+        ClusterManager.OnClusterClickListener<Profile>, ClusterManager.OnClusterInfoWindowClickListener<Profile>, ClusterManager.OnClusterItemClickListener<Profile>, ClusterManager.OnClusterItemInfoWindowClickListener<Profile>,
+        ImageSearchRequest.ImageSearchResponseCallback {
 
     public static String TAG = "MapFragment";
     private static final int REQUEST_LOCATION_CODE = 200;
@@ -85,7 +92,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     private ImageView professionalBtn, studentBtn,
             repairBtn, emergencyBtn,
             notice_boardBtn;
-    private ImageView searchBtn;
+    private ImageView searchBtn,searchCameraBtn;
     private RelativeLayout uDetailLayout;
     private AutoCompleteTextView searchBoxView;
 
@@ -106,6 +113,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         MapsInitializer.initialize(this.getActivity());
+
+
 
         session = new SessionManager(getActivity());
         profileList = new ArrayList<>();
@@ -144,16 +153,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         emergencyBtn = (ImageView) view.findViewById(R.id.emergency_iv);
         notice_boardBtn = (ImageView) view.findViewById(R.id.notice_board_iv);
         searchBtn = (ImageView) view.findViewById(R.id.search_btn);
+        searchCameraBtn= (ImageView) view.findViewById(R.id.search_camera_btn);
         searchBoxView = (AutoCompleteTextView) view.findViewById(R.id.autoCompleteTextView);
         uDetailLayout = (RelativeLayout) view.findViewById(R.id.user_detail_rl);
 
         searchBoxView.addTextChangedListener(textWatcherForSearchBox);
         searchBtn.setOnClickListener(searchOnClickListener);
+        searchCameraBtn.setOnClickListener(searchOnClickListener);
         studentBtn.setOnClickListener(filterClickListener);
         professionalBtn.setOnClickListener(filterClickListener);
         repairBtn.setOnClickListener(filterClickListener);
         emergencyBtn.setOnClickListener(filterClickListener);
         notice_boardBtn.setOnClickListener(filterClickListener);
+
     }
 
     /**
@@ -294,6 +306,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     public void onResume() {
         super.onResume();
         mMapView.onResume();
+
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(onKeyListener);
     }
 
     @Override
@@ -369,7 +385,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 //            addMarkerAtLocation(latLng);
             HomeActivity.mLastKnownLocation = latLng;
-            Toast.makeText(getApplicationContext(), "" + latLng, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getApplicationContext(), "" + latLng, Toast.LENGTH_SHORT).show();
             session.saveLastLocation(latLng);
             request(latLng);
 
@@ -540,6 +556,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             }
         }
         mClusterManager.cluster();
+        if (filterIndexSize == 1) {
+            markerClickWindow(profileList.get(filterIndex.get(0)));
+        }
     }
 
     /**
@@ -637,11 +656,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
+            InputMethodManager imm = (InputMethodManager) getActivity()
+                    .getSystemService(Context.INPUT_METHOD_SERVICE);
+
             if (TextUtils.isEmpty(searchBoxView.getText()) && profileList != null) {
                 addMarkerByProfile(false, null);
+                searchCameraBtn.setVisibility(View.VISIBLE);
+
+            }else {
+                searchCameraBtn.setVisibility(View.GONE);
+            }
+
+            if (imm.isAcceptingText()) {
+                searchBoxView.setCursorVisible(true);
+            } else {
+                Log.d(TAG,"Software Keyboard was not shown");
+                searchBoxView.setCursorVisible(false);
             }
 
         }
+
 
         @Override
         public void afterTextChanged(Editable s) {
@@ -649,18 +683,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         }
     };
 
+
     /**
      * search listener
      */
     View.OnClickListener searchOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            String searchQuery = searchBoxView.getText().toString();
-            if (!TextUtils.isEmpty(searchQuery)) {
-                ArrayList<Integer> indexs = search(profileList, searchQuery);
-                if (indexs != null && indexs.size() > 0) {
-                    addMarkerByProfile(true, indexs);
+            if (v.getId() == R.id.search_btn) {
+                String searchQuery = searchBoxView.getText().toString();
+                if (!TextUtils.isEmpty(searchQuery)) {
+                    ArrayList<Integer> indexs = search(profileList, searchQuery);
+                    if (indexs != null && indexs.size() > 0) {
+                        addMarkerByProfile(true, indexs);
+                    }
                 }
+            }else {
+                Intent i = new Intent(getContext(), Camera2Activity.class);
+                i.putExtra("requestCode", 20);
+                startActivityForResult(i, 20);
             }
 
         }
@@ -701,7 +742,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
      */
     private void markerClickWindow(final Profile profile) {
 
-        if (uDetailLayout.getVisibility() != View.VISIBLE) {
             String pName = profile.getuName();
             String pTitle = profile.getProfession();
             String pPrivacy = profile.getuPrivacy();
@@ -746,10 +786,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             });
 
             uDetailLayout.setVisibility(View.VISIBLE);
-        }else {
-            uDetailLayout.setVisibility(View.GONE);
-        }
+
     }
+
+
 
 
     /**
@@ -839,6 +879,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             mClusterImageView.setImageDrawable(multiDrawable);
             Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
+
+            if (cluster.getSize() == 1) {
+                for (Profile p2 : cluster.getItems()) {
+                    markerClickWindow(p2);
+                }
+
+            }
         }
 
         @Override
@@ -846,7 +893,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             // Always render clusters.
             return cluster.getSize() > 1;
         }
+
+
     }
+
 
     @Override
     public boolean onClusterClick(Cluster<Profile> cluster) {
@@ -907,6 +957,56 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
     }
 
+
+    ProgressDialog mProgressDialog ;
+
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == 20){
+            Uri resultData = Uri.parse(data.getStringExtra("result"));
+            ImageSearchRequest searchRequest = new ImageSearchRequest(getContext(),new File(resultData.getPath()),this);
+            searchRequest.executeRequest();
+            mProgressDialog = new ProgressDialog(getContext());
+            mProgressDialog.setMessage("Please wait ...");
+            mProgressDialog.show();
+        }
+    }
+
+
+    @Override
+    public void ImageSearchResponse(CommonRequest.ResponseCode res, Profile uProfile, String errorMsg) {
+        mProgressDialog.dismiss();
+        switch (res) {
+            case COMMON_RES_SUCCESS:
+                ArrayList<Integer> indexs = new ArrayList<>();
+                for(Profile p : profileList){
+                    if(p.getuId() != null && p.getuId().contentEquals(uProfile.getuId())){
+                        indexs.add(profileList.indexOf(p));
+                        if (indexs.size() > 0) {
+                            addMarkerByProfile(true, indexs);
+                        }
+                        break;
+                    }
+                    //something here
+                }
+                break;
+            case COMMON_RES_CONNECTION_TIMEOUT:
+                break;
+            case COMMON_RES_FAILED_TO_CONNECT:
+                Toast.makeText(getContext(), "No internet connection", Toast.LENGTH_SHORT).show();
+                break;
+            case COMMON_RES_INTERNAL_ERROR:
+                break;
+            case COMMON_RES_SERVER_ERROR_WITH_MESSAGE:
+                Toast.makeText(getContext(), "No data found for this image :(", Toast.LENGTH_SHORT).show();
+                addMarkerByProfile(false, null);
+                break;
+        }
+    }
+
     /**
      * for testing only
      * generate random location
@@ -919,4 +1019,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     private double random(double min, double max) {
         return mRandom.nextDouble() * (max - min) + min;
     }
+
+
+    View.OnKeyListener onKeyListener = new View.OnKeyListener() {
+        @Override
+        public boolean onKey(View v, int keyCode, KeyEvent event) {
+            if( keyCode == KeyEvent.KEYCODE_BACK && uDetailLayout.getVisibility() == View.VISIBLE) {
+
+                uDetailLayout.setVisibility(View.GONE);
+                addMarkerByProfile(false, null);
+                return true;
+            }
+            return false;
+        }
+    };
+
+
 }

@@ -1,7 +1,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.fourway.localapp.ui.SignInFragment"
+    tools:context="com.localapp.ui.SignInFragment"
     android:layout_height="fill_parent"
     android:fitsSystemWindows="true">
 

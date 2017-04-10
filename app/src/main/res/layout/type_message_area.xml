@@ -85,7 +85,7 @@
 
 
 
-    <com.fourway.localapp.audio.FrameLayoutFixed
+    <com.localapp.audio.FrameLayoutFixed
         android:visibility="invisible"
         android:id="@+id/record_panel"
         android:layout_width="fill_parent"
@@ -150,5 +150,5 @@
                 android:textSize="16dp" />
         </LinearLayout>
 
-    </com.fourway.localapp.audio.FrameLayoutFixed>
+    </com.localapp.audio.FrameLayoutFixed>
 </RelativeLayout>

@@ -25,6 +25,7 @@
         </LinearLayout>
 
         <android.support.v7.widget.RecyclerView
+            android:layout_margin="5dp"
             android:id="@+id/recyclerViewDialog"
             android:layout_width="match_parent"
             android:layout_height="300dp">
@@ -32,12 +33,49 @@
         </android.support.v7.widget.RecyclerView>
 
         <Button
+            android:id="@+id/subscribe_btn"
             android:elevation="5dp"
             android:text="Subscribe"
             android:textColor="#FFFFFF"
             android:background="#2196f3"
             android:layout_width="match_parent"
             android:layout_height="50dp" />
+        <LinearLayout
+            android:background="#efefef"
+            android:elevation="10dp"
+            android:id="@+id/ll_notice_dialog"
+            android:weightSum="3.5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="50dp">
+
+            <EditText
+                android:id="@+id/_input_notice_message"
+                android:background="@drawable/chat_style_editext"
+                android:layout_margin="5dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="6dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:hint="Type a message"
+                android:textColorHint="#cdcdcd"
+                android:scrollbars="vertical"
+                android:fadeScrollbars="false"
+                android:maxLines="4"
+                android:layout_weight="3.5"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:minHeight="45dp"/>
+
+            <ImageButton
+                android:id="@+id/_notice_post_btn"
+                android:layout_margin="5dp"
+                android:layout_gravity="center"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:background="@drawable/ic_send"/>
+
+        </LinearLayout>
     </LinearLayout>
 
 

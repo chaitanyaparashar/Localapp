@@ -28,7 +28,6 @@
                     android:layout_marginRight="10dp"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:tint="#2196f3"
                     android:src="@drawable/ic_emergency"/>
 
                 <ImageView

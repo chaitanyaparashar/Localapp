@@ -14,18 +14,35 @@
         android:elevation="3dp"
         card_view:cardCornerRadius="5dp">
 
+
+
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="5dp">
 
+            <ImageButton
+                android:layout_alignParentRight="true"
+                android:elevation="5dp"
+                android:id="@+id/msg_delete"
+                android:backgroundTint="#0a0b48"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/ic_menu_delete"/>
+
+
             <TextView
+                android:layout_toLeftOf="@+id/msg_delete"
                 android:layout_margin="5dp"
                 android:id="@+id/notice_Msg_TextView"
                 android:text="Whats's On (Bfgoard Name)"
                 android:textSize="18sp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
+
+
+
+
 
             <TextView
                 android:layout_alignParentRight="true"

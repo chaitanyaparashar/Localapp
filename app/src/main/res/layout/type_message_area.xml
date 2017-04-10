@@ -29,7 +29,7 @@
         android:layout_toLeftOf="@id/btn_send_speak"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="1dip"
+        android:layout_marginTop="1dp"
         android:layout_centerVertical="true"
         android:orientation="horizontal" >
 
@@ -60,6 +60,8 @@
                 android:maxLines="4"
                 android:hint="Type a message"
                 android:textColorHint="#cdcdcd"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:minHeight="45dp"

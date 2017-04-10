@@ -122,8 +122,15 @@ public class MyNoticeBoardRequest extends CommonRequest{
                 int sNoticeSize = subcribedNoticeBoardArray.length();
                 for (int i =0; i<sNoticeSize; i++) {
 
-                    JSONObject noticeJsonObject = createdNoticeBoardArray.getJSONObject(i);
-                    JSONObject lastMsgObject = noticeJsonObject.getJSONObject("lastMessage");
+
+                    JSONObject noticeJsonObject = subcribedNoticeBoardArray.getJSONObject(i);
+                    JSONObject lastMsgObject = null;
+                    try {
+                        lastMsgObject = noticeJsonObject.getJSONObject("lastMessage");
+                    }catch (JSONException e){
+                        e.printStackTrace();
+                    }
+
 
                     String noticeBoardId = noticeJsonObject.getString("id");
                     String noticeBoardName = noticeJsonObject.getString("name");
@@ -160,11 +167,11 @@ public class MyNoticeBoardRequest extends CommonRequest{
 
             }
 
-            myNoticeBoardRequestCallback.MyNoticeBoardResponse(COMMON_RES_SUCCESS,myNoticeBoardList,subscribedNoticeBoardList);
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        myNoticeBoardRequestCallback.MyNoticeBoardResponse(COMMON_RES_SUCCESS,myNoticeBoardList,subscribedNoticeBoardList);
 
     }
 

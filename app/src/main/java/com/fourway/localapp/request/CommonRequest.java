@@ -30,6 +30,13 @@ public abstract class CommonRequest {
     private static final String MSG_ACCEPT_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/message/update";
     private static final String CREATE_NOTICE_BOARD_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/createNoticeBoard";
     private static final String GET_MY_NOTICE_BOARD_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/getAllCreatedNoticeBoard";
+    private static final String POST_NOTICE_BOARD_MSG_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/postMessageInNoticeBoard";
+    private static final String GET_NEAREST_NOTICE_BOARD_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/nearestNoticeBoard?";
+    private static final String GET_NOTICE_BOARD_MSG_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/getMessageFromNoticeBoard";
+    private static final String SUBSCRIBE_NOTICE_BOARD_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/suscribeNoticeBoard";
+    private static final String UNSUBSCRIBE_NOTICE_BOARD_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/unsuscribeNoticeBoard";
+    private static final String DELETE_NOTICE_BOARD_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/DeleteNoticeBoard";
+    private static final String DELETE_NOTICE_BOARD_MSG_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/deleteMessageFromNoticeBoard";
 
     public enum RequestType {
         COMMON_REQUEST_LOGIN,
@@ -40,7 +47,14 @@ public abstract class CommonRequest {
         COMMON_REQUEST_PASSWORD,
         COMMON_REQUEST_MSG_ACCEPT,
         COMMON_REQUEST_CREATE_NOTICE_BOARD,
-        COMMON_REQUEST_MY_NOTICE_BOARD
+        COMMON_REQUEST_MY_NOTICE_BOARD,
+        COMMON_REQUEST_POST_NOTICE_BOARD_MSG,
+        COMMON_REQUEST_NEAREST_NOTICE_BOARD,
+        COMMON_REQUEST_GET_NOTICE_BOARD_MSG,
+        COMMON_REQUEST_SUBSCRIBE_NOTICE_BOARD,
+        COMMON_REQUEST_UNSUBSCRIBE_NOTICE_BOARD,
+        COMMON_REQUEST_DELETE_NOTICE_BOARD,
+        COMMON_REQUEST_DELETE_NOTICE_BOARD_MSG
     }
 
     public enum ResponseCode  {
@@ -146,8 +160,39 @@ public abstract class CommonRequest {
                 url = CREATE_NOTICE_BOARD_URL;
                 break;
             case COMMON_REQUEST_MY_NOTICE_BOARD:
-                            url = GET_MY_NOTICE_BOARD_URL;
-                            break;
+                url = GET_MY_NOTICE_BOARD_URL;
+                break;
+
+            case COMMON_REQUEST_POST_NOTICE_BOARD_MSG:
+                url = POST_NOTICE_BOARD_MSG_URL;
+                break;
+
+            case COMMON_REQUEST_NEAREST_NOTICE_BOARD:
+                url = GET_NEAREST_NOTICE_BOARD_URL;
+                break;
+            case COMMON_REQUEST_GET_NOTICE_BOARD_MSG:
+                url = GET_NOTICE_BOARD_MSG_URL;
+                break;
+            case COMMON_REQUEST_SUBSCRIBE_NOTICE_BOARD:
+                url = SUBSCRIBE_NOTICE_BOARD_URL;
+                break;
+            case COMMON_REQUEST_UNSUBSCRIBE_NOTICE_BOARD:
+                url = UNSUBSCRIBE_NOTICE_BOARD_URL;
+                break;
+
+            case COMMON_REQUEST_DELETE_NOTICE_BOARD:
+                url = DELETE_NOTICE_BOARD_URL;
+                break;
+
+            case COMMON_REQUEST_DELETE_NOTICE_BOARD_MSG:
+                url = DELETE_NOTICE_BOARD_MSG_URL;
+                break;
+
+
+
+
+
+
 
         }
 
@@ -168,6 +213,7 @@ public abstract class CommonRequest {
                 onErrorHandler(error);
             }
         };
+
 
         RequestQueue requestQueue = Volley.newRequestQueue(mContext);
 

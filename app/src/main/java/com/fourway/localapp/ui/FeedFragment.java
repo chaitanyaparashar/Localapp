@@ -131,7 +131,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     @Override
     public void EmergencyMsgAcceptResponse(CommonRequest.ResponseCode responseCode) {
         if (responseCode == COMMON_RES_SUCCESS) {
-            toast("accepted em");
+//            toast("accepted em");
         }
     }
 
@@ -300,11 +300,18 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                 });
             }
             public void onFailure(final Throwable error) {
-                getActivity().runOnUiThread(new Runnable(){
-                    public void run() {
-                        original.onFailure(error);
-                    }
-                });
+
+                try {
+                    getActivity().runOnUiThread(new Runnable(){
+
+                        public void run() {
+                            original.onFailure(error);
+                        }
+                    });
+                }catch (NullPointerException e){
+                    e.printStackTrace();
+                }
+
             }
         };
     }
@@ -327,24 +334,25 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
 
 
         connection = mqtt.futureConnection();
-        progressDialog = ProgressDialog.show(getContext(), "",
+        /*progressDialog = ProgressDialog.show(getContext(), "",
                 "Connecting...", true);
-        progressDialog.setCancelable(true);
+        progressDialog.setCancelable(true);*/
         connection.connect().then(onui(new Callback<Void>() {
             @Override
             public void onSuccess(Void value) {
-                progressDialog.dismiss();
+//                progressDialog.dismiss();
 //                connectButton.setEnabled(false);
 //                sendButton.setEnabled(true);
-                toast("Connected");
+                Log.v(TAG,"Mqtt Connected");
+//                toast("Connected");
                 subscribe();//subscribed
             }
 
             @Override
             public void onFailure(Throwable value) {
-                toast("Problem connecting to host");
+//                toast("Problem connecting to host");
                 Log.e(TAG, "Exception connecting to " + sAddress + " - " + value);
-                progressDialog.dismiss();
+//                progressDialog.dismiss();
 //                connectButton.setEnabled(true);
 //                sendButton.setEnabled(false);
             }
@@ -359,7 +367,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     public void onDestroy() {
         super.onDestroy();
         connection.disconnect();
-        toast("Disconnecting...");
+//        toast("Disconnecting...");
     }
 
     @Override
@@ -428,7 +436,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                                     break;
                                 }
                             }
-                            toast("accept");
+//                            toast("accept");
                         }
                         subscribe();//must subscribe on received every msg
                     }
@@ -622,7 +630,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     View.OnClickListener sendVoiceClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            Toast.makeText(getContext(), "Voice", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getContext(), "Voice", Toast.LENGTH_SHORT).show();
         }
     };
 
@@ -996,18 +1004,17 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        toast("on activity "+TAG);
         if (resultCode == CAMERA_REQUEST) {
             Uri resultData = Uri.parse(data.getStringExtra("result"));
             sendMedia(MEDIA_IMAGE,resultData.toString(),0);
-            toast(resultData.toString());
+//            toast(resultData.toString());
 
             PicUrlRequest picUrlRequest = new PicUrlRequest(getContext(),new File(resultData.getPath()),MEDIA_IMAGE,this);
             picUrlRequest.executeRequest();
         }else if (resultCode == VIDEO_REQUEST) {
             Uri resultData = Uri.parse(data.getStringExtra("result"));
             sendMedia(MEDIA_VIDEO,resultData.toString(),0);
-            toast(resultData.toString());
+//            toast(resultData.toString());
 
             PicUrlRequest picUrlRequest = new PicUrlRequest(getContext(),new File(resultData.getPath()),MEDIA_VIDEO,this);
             picUrlRequest.executeRequest();
@@ -1220,7 +1227,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
             if (!isCanceled && !recordTimeText.getText().toString().equals("00:00")) {
                 Uri resultData = Uri.parse(mAudioFileName);
                 sendMedia(MEDIA_AUDIO, mAudioFileName, 0);
-                toast(resultData.toString());
+//                toast(resultData.toString());
 
                 PicUrlRequest picUrlRequest = new PicUrlRequest(getContext(), new File(resultData.getPath()), MEDIA_AUDIO, this);
                 picUrlRequest.executeRequest();

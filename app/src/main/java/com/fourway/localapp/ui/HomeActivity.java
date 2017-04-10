@@ -48,7 +48,7 @@ public class HomeActivity extends AppCompatActivity{
     public static LatLng mLastKnownLocation = null;
     public static String mUserId = "";
     public static String mPicUrl = null;
-    public static List<Uri> imageList;
+//    public static List<Uri> imageList;
 
     TabLayout tabLayout;
 
@@ -132,11 +132,11 @@ public class HomeActivity extends AppCompatActivity{
 //                        .setAction("Action", null).show();
 //            }
 //        });
-        imageList = new ArrayList<>();
+        /*imageList = new ArrayList<>();
         ArrayList<File> files = getFilePaths();
         for (File file:files) {
             imageList.add(Uri.fromFile(file));
-        }
+        }*/
     }
 
     private void setupTabIcons() {
@@ -307,8 +307,7 @@ public class HomeActivity extends AppCompatActivity{
     }
 
 
-    public ArrayList<File> getFilePaths()
-    {
+    /*public ArrayList<File> getFilePaths() {
 
         Uri u = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
         String[] projection = {MediaStore.Images.ImageColumns.DATA};
@@ -393,7 +392,7 @@ public class HomeActivity extends AppCompatActivity{
         return resultIAV;
 
 
-    }
+    }*/
 
 
 }

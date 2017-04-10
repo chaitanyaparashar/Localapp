@@ -62,6 +62,7 @@ import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -805,8 +806,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
         private IconGenerator mIconGenerator = new IconGenerator(getActivity().getApplication());
         private IconGenerator mClusterIconGenerator = new IconGenerator(getActivity().getApplication());
-        private NetworkImageView mImageView;
-        private NetworkImageView mImageViewC;
+        private ImageView mImageView;
+        private ImageView mImageViewC;
         private ImageView mClusterImageView;
         private int mDimension;
 
@@ -817,7 +818,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             mClusterIconGenerator.setContentView(multiProfile);
             mClusterImageView = (ImageView) multiProfile.findViewById(R.id.cluster_image);
 
-            mImageView = new NetworkImageView(getApplicationContext());
+            mImageView = new ImageView(getApplicationContext());
             mDimension = (int) getResources().getDimension(R.dimen.custom_profile_image);
             mImageView.setLayoutParams(new ViewGroup.LayoutParams(mDimension, mDimension));
             int padding = (int) getResources().getDimension(R.dimen.custom_profile_padding);
@@ -833,7 +834,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             mImageLoader = VolleySingleton.getInstance(getApplicationContext()).getImageLoader();
             mImageLoader.get(profile.getuPictureURL(),ImageLoader.getImageListener(mImageView,R.mipmap.ic_launcher,android.R.drawable.ic_dialog_alert));
 //            mImageView.setImageResource(R.mipmap.ic_launcher);
-            mImageView.setImageUrl(profile.getuPictureURL(), mImageLoader);
+//            mImageView.setImageUrl(profile.getuPictureURL(), mImageLoader);
+            Picasso.with(getContext()).load(profile.getuPictureURL());
             mImageView.setTag(profile.getuEmail());
 
             Bitmap icon = mIconGenerator.makeIcon();
@@ -854,16 +856,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             for (Profile p : cluster.getItems()) {
                 // Draw 4 at most.
                 if (profilePhotos.size() == 4) break;
-//                mImageViewC = (NetworkImageView)getView().findViewWithTag(p.getuEmail());
+                mImageViewC = (ImageView) getView().findViewWithTag(p.getuEmail());
                 Drawable drawable = getResources().getDrawable(R.mipmap.ic_launcher);
                 /*try {
                     drawable = mImageViewC.getDrawable();
                 }catch (NullPointerException e){
                     e.printStackTrace();
                 }*/
-                if (p.getProfession() != null){
+                /*if (p.getProfession() != null){
                     drawable = getResources().getDrawable(getClusterDrawable(p.getProfession()));
-                }
+                }*/
 
 //                Drawable drawable = getResources().getDrawable(p.profilePhoto);
                 drawable.setBounds(0, 0, width, height);

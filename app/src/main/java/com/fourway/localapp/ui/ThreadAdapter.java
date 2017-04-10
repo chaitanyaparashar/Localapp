@@ -20,6 +20,7 @@ import android.widget.SeekBar;
 import com.fourway.localapp.R;
 import com.fourway.localapp.data.Message;
 import com.fourway.localapp.request.helper.VolleySingleton;
+import com.github.siyamed.shapeimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
@@ -194,7 +195,8 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
             holder.messageTypeImageView.setImageResource(getEmojiResourceIdByMsgType(message.getMessageType()));
         }
         if (userPicUrl!=null) {
-            holder.proPic.setImageUrl(userPicUrl, VolleySingleton.getInstance(context).getImageLoader());
+            Picasso.with(context).load(userPicUrl).placeholder(R.drawable.ic_user).into(holder.proPic);
+//            holder.proPic.setImageUrl(userPicUrl, VolleySingleton.getInstance(context).getImageLoader());
 //            holder.proPic.setImageBitmap(message.getImgBitmap());
         }
 
@@ -259,7 +261,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
     //Initializing views
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public EmojiconTextView textViewMessage;
-        public CircularNetworkImageView proPic;
+        public CircularImageView proPic;
         public ImageView messageTypeImageView;
 
         public ImageView imageMedia;
@@ -279,7 +281,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         public ViewHolder(View itemView) {
             super(itemView);
             textViewMessage = (EmojiconTextView) itemView.findViewById(R.id.textViewMsg);
-            proPic = (CircularNetworkImageView) itemView.findViewById(R.id.msg_pic);
+            proPic = (CircularImageView) itemView.findViewById(R.id.msg_pic);
             messageTypeImageView = (ImageView) itemView.findViewById(R.id.msg_emoji);
 //            textViewTime = (TextView) itemView.findViewById(R.id.textViewTime);
             if (itemView.getTag()!= null && itemView.getTag().equals("img")) {

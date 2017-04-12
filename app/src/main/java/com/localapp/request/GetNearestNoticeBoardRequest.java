@@ -68,7 +68,7 @@ public class GetNearestNoticeBoardRequest extends CommonRequest {
                 NoticeBoard mNoticeBoard = new NoticeBoard(noticeBoardAdminId,noticeBoardName);
                 mNoticeBoard.setId(noticeBoardId);
 
-                if (!HomeActivity.mUserId.equals(mNoticeBoard.getAdminId()))
+                if (HomeActivity.mPicUrl == null || !HomeActivity.mUserId.equals(mNoticeBoard.getAdminId()))
                 mNoticeBoardList.add(mNoticeBoard);
             }
 

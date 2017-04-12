@@ -121,6 +121,9 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     private EmergencyListAdapter emergencyListAdapter;
     private List<Message> emergencyMessageList;
 
+    private View typeMessageAreaPreventClickView;
+
+
     EmojiconEditText chatText;
     ImageView sendImageViewBtn, camShoutImgBtn,emoticImgBtn;
     public static int selectedMessageTypeInt = 0;
@@ -191,7 +194,11 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
 
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
 
+
+
         linearLayoutMsgArea = (LinearLayout) view.findViewById(R.id.linear_layout_msg_area);
+        typeMessageAreaPreventClickView = (View) view.findViewById(R.id.type_message_area_prevent_click_View);
+        typeMessageAreaPreventClickView.setOnClickListener(typeMessageSurfaceClickListener);
         initializationOfAudioObjects(view);
         //Initializing recyclerView
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
@@ -272,7 +279,6 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         swipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
-                swipeRefreshLayout.setRefreshing(true);
                 request();
             }
         });
@@ -460,14 +466,38 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         Toast.makeText(getContext(), message, Toast.LENGTH_LONG).show();
     }
 
-    /**
-     * TODO: For Testing
-     */
+
     void request() {
-        LatLng latLng = new LatLng(28.545544, 77.331020);
-        GetFeedRequest feedRequest = new GetFeedRequest(getContext(), latLng, this);
-        feedRequest.executeRequest();
+        if (HomeActivity.mLastKnownLocation !=null ) {
+//            LatLng latLng = new LatLng(28.545544, 77.331020);
+            GetFeedRequest feedRequest = new GetFeedRequest(getContext(), HomeActivity.mLastKnownLocation, this);
+            feedRequest.executeRequest();
+            swipeRefreshLayout.setRefreshing(true);
+        }else {
+            toast("Please wait getting your location...");
+            swipeRefreshLayout.setRefreshing(false);
+        }
+
+        if (HomeActivity.mUserId != null && !HomeActivity.mUserId.equals("")){
+            typeMessageAreaPreventClickView.setVisibility(View.GONE);
+        }else {
+            typeMessageAreaPreventClickView.setVisibility(View.VISIBLE);
+        }
+
     }
+
+
+    View.OnClickListener typeMessageSurfaceClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (HomeActivity.mUserId == null || HomeActivity.mUserId.equals("")) {
+                Toast.makeText(getContext(), "Please login first...", Toast.LENGTH_SHORT).show();
+            }else {
+                typeMessageAreaPreventClickView.setVisibility(View.GONE);
+                Toast.makeText(getContext(), "Please click again...", Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
 
 
 

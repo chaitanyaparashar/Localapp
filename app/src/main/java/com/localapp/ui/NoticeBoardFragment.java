@@ -91,7 +91,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-        recyclerViewNearYou.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, true));
+        recyclerViewNearYou.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false));
         recyclerViewNearYou.setItemAnimator(new DefaultItemAnimator());
 
 //        dummyData();
@@ -109,7 +109,11 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
         noticeCreateFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getContext(),CreateNoticeActivity.class));
+                if (HomeActivity.mUserId !=null && !HomeActivity.mUserId.equals("")) {
+                    startActivity(new Intent(getContext(), CreateNoticeActivity.class));
+                }else {
+                    Toast.makeText(getContext(), "Please login first...", Toast.LENGTH_SHORT).show();
+                }
 
             }
         });
@@ -149,7 +153,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
         LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.ll_notice_dialog);
         Button subButton = (Button) view.findViewById(R.id.subscribe_btn);
 
-        if (HomeActivity.mUserId.equals(noticeBoard.getAdminId())) {
+        if (HomeActivity.mUserId != null && HomeActivity.mUserId.equals(noticeBoard.getAdminId())) {
             subButton.setVisibility(View.GONE);
         }else {
             linearLayout.setVisibility(View.GONE);
@@ -176,20 +180,25 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
         subButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                CommonRequest.RequestType type;
-                if (hasSubscribed) {
-                    type = CommonRequest.RequestType.COMMON_REQUEST_UNSUBSCRIBE_NOTICE_BOARD;
-                    noticeBoardList.remove(noticeBoardList.indexOf(noticeBoard));
-                    noticeAdapter.notifyDataSetChanged();
-                }else {
-                    type = CommonRequest.RequestType.COMMON_REQUEST_SUBSCRIBE_NOTICE_BOARD;
-                    if (!noticeBoardList.contains(noticeBoard)){
-                        noticeBoardList.add(noticeBoard);
+                if (HomeActivity.mUserId !=null && !HomeActivity.mUserId.equals("")) {
+                    CommonRequest.RequestType type;
+                    if (hasSubscribed) {
+                        type = CommonRequest.RequestType.COMMON_REQUEST_UNSUBSCRIBE_NOTICE_BOARD;
+                        noticeBoardList.remove(noticeBoardList.indexOf(noticeBoard));
                         noticeAdapter.notifyDataSetChanged();
+                    } else {
+                        type = CommonRequest.RequestType.COMMON_REQUEST_SUBSCRIBE_NOTICE_BOARD;
+                        if (!noticeBoardList.contains(noticeBoard)) {
+                            noticeBoardList.add(noticeBoard);
+                            noticeAdapter.notifyDataSetChanged();
+                        }
                     }
+
+                    requestSubscribeAndUnsub(noticeBoard, type);
+                }else {
+                    Toast.makeText(getContext(), "Please login first...", Toast.LENGTH_SHORT).show();
                 }
 
-                requestSubscribeAndUnsub(noticeBoard,type);
             }
         });
 
@@ -553,8 +562,8 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
             holder.noticeMessage.setText(noticeBoardMessage.getMsg());
             holder.timestamp.setText(noticeBoardMessage.getTimestamp());
 
-            if (HomeActivity.mUserId!=null && !HomeActivity.mUserId.equals(mNoticeBoard.getAdminId())) {
-                holder.deleteImageView.setVisibility(View.GONE);
+            if (HomeActivity.mUserId!=null && HomeActivity.mUserId.equals(mNoticeBoard.getAdminId())) {
+                holder.deleteImageView.setVisibility(View.VISIBLE);
             }
 
             holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
@@ -581,6 +590,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
                 noticeMessage = (TextView) itemView.findViewById(R.id.notice_Msg_TextView);
                 timestamp = (TextView) itemView.findViewById(R.id.notice_Msg_time_TextView);
                 deleteImageView = (ImageView) itemView.findViewById(R.id.msg_delete);
+                deleteImageView.setVisibility(View.GONE);
             }
         }
     }

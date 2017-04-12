@@ -75,6 +75,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         ClusterManager.OnClusterClickListener<Profile>, ClusterManager.OnClusterInfoWindowClickListener<Profile>, ClusterManager.OnClusterItemClickListener<Profile>, ClusterManager.OnClusterItemInfoWindowClickListener<Profile>,
         ImageSearchRequest.ImageSearchResponseCallback {
 
+
+    public static boolean frgmentVisibility = false;
+
     public static String TAG = "MapFragment";
     private static final int REQUEST_LOCATION_CODE = 200;
     final static String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION,
@@ -306,6 +309,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     @Override
     public void onResume() {
         super.onResume();
+        frgmentVisibility = true;
+
         mMapView.onResume();
 
         getView().setFocusableInTouchMode(true);
@@ -316,6 +321,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        frgmentVisibility = false;
     }
 
     @Override
@@ -326,6 +332,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     @Override
     public void onStop() {
         super.onStop();
+        frgmentVisibility = false;
     }
 
     @Override
@@ -387,8 +394,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 //            addMarkerAtLocation(latLng);
             HomeActivity.mLastKnownLocation = latLng;
 //            Toast.makeText(getApplicationContext(), "" + latLng, Toast.LENGTH_SHORT).show();
-            session.saveLastLocation(latLng);
-            request(latLng);
+            if (frgmentVisibility) {
+                session.saveLastLocation(latLng);
+                request(latLng);
+            }
 
         }
 
@@ -542,23 +551,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     void addMarkerByProfile(boolean isFilter, ArrayList<Integer> filterIndex) {
         int filterIndexSize = 0;
 
-        mClusterManager.clearItems();
+        if (mClusterManager != null) {
+            mClusterManager.clearItems();
 
-        if (filterIndex != null) {
-            filterIndexSize = filterIndex.size();
-        }
-
-        if (!isFilter) {
-            mClusterManager.addItems(profileList);
-        } else {
-            for (int i = 0; i < filterIndexSize; i++) {
-                int profileIndex = filterIndex.get(i);
-                mClusterManager.addItem(profileList.get(profileIndex));
+            if (filterIndex != null) {
+                filterIndexSize = filterIndex.size();
             }
-        }
-        mClusterManager.cluster();
-        if (filterIndexSize == 1) {
-            markerClickWindow(profileList.get(filterIndex.get(0)));
+
+            if (!isFilter) {
+                mClusterManager.addItems(profileList);
+            } else {
+                for (int i = 0; i < filterIndexSize; i++) {
+                    int profileIndex = filterIndex.get(i);
+                    mClusterManager.addItem(profileList.get(profileIndex));
+                }
+            }
+            mClusterManager.cluster();
+            if (filterIndexSize == 1) {
+                markerClickWindow(profileList.get(filterIndex.get(0)));
+            }
         }
     }
 
@@ -718,6 +729,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                     if (ActivityCompat.checkSelfPermission(getApplicationContext(),
                             Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                         mMap.setMyLocationEnabled(true);
+                        requestLocation();
                     }
                 } else {
                     // permission denied, boo! Disable the

@@ -10,6 +10,7 @@
     android:elevation="10dp"
     android:weightSum="10">
 
+
     <ImageView
         android:layout_gravity="center"
         android:id="@+id/btn_send_speak"
@@ -151,4 +152,13 @@
         </LinearLayout>
 
     </com.localapp.audio.FrameLayoutFixed>
+
+
+
+    <View
+        android:id="@+id/type_message_area_prevent_click_View"
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="true"
+        android:layout_width="match_parent"
+        android:layout_height="65dp"/>
 </RelativeLayout>

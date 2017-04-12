@@ -199,7 +199,7 @@ public class MyNoticeBoardRequest extends CommonRequest{
 //            mRequestData.setmErrorMessage(errorMsg);
         }
 
-//        mGetFeedRequestCallback.GetFeedResponse (resCode, mRequestData, mRequestDataEmergency);
+       myNoticeBoardRequestCallback.MyNoticeBoardResponse(COMMON_RES_SUCCESS,myNoticeBoardList,subscribedNoticeBoardList);
     }
 
     public interface MyNoticeBoardRequestCallback {

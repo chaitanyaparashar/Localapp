@@ -626,6 +626,9 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
                 LoginData loginData = new LoginData(mEmail, mPassword);
                 LoginRequest request = new LoginRequest(getActivity(),loginData,SignUpFragment.this);
                 request.executeRequest();
+                mProgressDialog = new ProgressDialog(getActivity());
+                mProgressDialog.setMessage("Please wait...");
+                mProgressDialog.show();
 //                forgetPassword("Vijayicfaics@gmail.com");
             }
         });
@@ -635,6 +638,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
 
     @Override
     public void onLoginResponse(CommonRequest.ResponseCode responseCode, LoginData data) {
+        mProgressDialog.dismiss();
         switch (responseCode) {
             case COMMON_RES_SUCCESS:
                 mSignInDialog.dismiss();

@@ -48,6 +48,9 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+
+
+
             <include
                 layout="@layout/type_message_area"
                 android:id="@+id/msg_area"
@@ -55,6 +58,7 @@
                 android:gravity="bottom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
+
 
 
             <GridView

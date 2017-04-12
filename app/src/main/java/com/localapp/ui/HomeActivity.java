@@ -35,6 +35,7 @@ public class HomeActivity extends AppCompatActivity{
     public static LatLng mLastKnownLocation = null;
     public static String mUserId = "";
     public static String mPicUrl = null;
+    public static boolean activityVisibility = false;
 //    public static List<Uri> imageList;
 
     TabLayout tabLayout;
@@ -380,6 +381,7 @@ public class HomeActivity extends AppCompatActivity{
 
 
     }*/
+
 
 
 }

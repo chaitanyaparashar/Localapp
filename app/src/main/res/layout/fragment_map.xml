@@ -6,6 +6,7 @@
     tools:context="com.localapp.ui.MapFragment">
 
 
+
     <RelativeLayout
             android:id="@+id/rl"
             android:background="#FFF"
@@ -13,6 +14,12 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
             android:elevation="10dp">
+
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/temp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
             <LinearLayout
                 android:layout_centerHorizontal="true"
@@ -23,55 +30,49 @@
 
                 <ImageView
                     android:id="@+id/emergency_iv"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:src="@drawable/ic_emergency"/>
+                    android:layout_margin="5dp"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:src="@drawable/ic_health"/>
 
                 <ImageView
                     android:id="@+id/student_iv"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_width="43dp"
-                    android:layout_height="50dp"
-                    android:tint="@android:color/darker_gray"
+                    android:layout_margin="5dp"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
                     android:src="@drawable/ic_student" />
 
                 <ImageView
                     android:id="@+id/professionals_iv"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_width="44dp"
-                    android:layout_height="50dp"
-                    android:tint="@android:color/darker_gray"
+                    android:layout_margin="5dp"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
                     android:src="@drawable/ic_professionals"/>
 
                 <ImageView
+                    android:id="@+id/hobbies_iv"
+                    android:layout_margin="5dp"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:src="@drawable/ic_hobby"/>
+
+                <ImageView
                     android:id="@+id/repair_iv"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="8dp"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:tint="@android:color/darker_gray"
-                    android:src="@drawable/ic_repair_and_maintainance" />
+                    android:layout_margin="5dp"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:src="@drawable/ic_repair" />
                 <ImageView
                     android:id="@+id/notice_board_iv"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:tint="@android:color/darker_gray"
-                    android:src="@drawable/ic_notice_board" />
-
+                    android:layout_margin="5dp"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:src="@drawable/ic_notice" />
 
 
             </LinearLayout>
+
+
 
             <RelativeLayout
                 android:clickable="false"
@@ -83,13 +84,13 @@
                 android:layout_gravity="bottom"
                 android:elevation="10dp">
 
-                <com.android.volley.toolbox.NetworkImageView
+                <com.github.siyamed.shapeimageview.CircularImageView
                     android:layout_centerVertical="true"
                     android:id="@+id/user_pic"
                     android:layout_margin="5dp"
                     android:layout_width="80dp"
                     android:layout_height="80dp"
-                    android:src="@mipmap/ic_launcher"/>
+                    android:src="@drawable/ic_user"/>
 
                 <TextView
                     android:id="@+id/user_name"
@@ -110,30 +111,45 @@
                     android:layout_height="wrap_content"
                     android:text="M.B.B.S"/>
                 <RatingBar
+                    android:visibility="gone"
                     android:layout_toRightOf="@+id/user_pic"
                     android:layout_below="@+id/user_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <ImageView
-                    android:id="@+id/action_call"
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:src="@drawable/ic_phone"
-                    android:layout_marginTop="5dp"
+                <LinearLayout
                     android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true" />
+                    android:layout_alignParentEnd="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
 
-                <ImageView
-                    android:layout_width="45dp"
-                    android:layout_height="45dp"
-                    android:src="@drawable/ic_email"
-                    android:id="@+id/action_email"
-                    android:layout_marginRight="5dp"
-                    android:layout_marginTop="5dp"
-                    android:layout_alignParentTop="true"
-                    android:layout_toStartOf="@+id/action_call" />
+                    <ImageView
+                        android:layout_toLeftOf="@+id/action_call"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:src="@drawable/ic_email"
+                        android:id="@+id/action_email"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginTop="5dp"
+                        android:layout_toStartOf="@+id/action_call" />
+
+                    <ImageView
+                        android:id="@+id/action_call"
+                        android:layout_width="45dp"
+                        android:layout_height="45dp"
+                        android:layout_marginRight="5dp"
+                        android:src="@drawable/ic_phone"
+                        android:layout_marginTop="5dp"
+                         />
+
+
+
+                </LinearLayout>
+
+
             </RelativeLayout>
+
+
 
 
 

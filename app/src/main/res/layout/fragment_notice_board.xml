@@ -68,7 +68,7 @@
                 android:layout_margin="8dp"
                 android:gravity="center_horizontal"
                 android:textColor="#2196f3"
-                android:text="NOTICE BOARD NEAR YOU"
+                android:text="NOTICE BOARDS NEAR YOU"
                 android:textStyle="bold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

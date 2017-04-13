@@ -87,7 +87,7 @@ public class SignUpRequest {
                     JSONObject dataObject = new JSONObject(jsonObject.getString("data"));
                     String token = dataObject.getString("token");
                     String picUrl = dataObject.getString("picUrl");
-                    String userID = dataObject.getString("userId");
+                    String userID = dataObject.getString("UserId");
                     mSignUpData.setPicUrl(picUrl);
                     mSignUpData.setmToken(token);
                     mSignUpData.setmUserId(userID);

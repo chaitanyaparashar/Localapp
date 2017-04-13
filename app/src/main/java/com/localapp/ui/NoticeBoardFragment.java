@@ -7,12 +7,14 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -58,6 +60,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
     private FloatingActionButton noticeCreateFab;
 
     private SwipeRefreshLayout swipeRefreshLayout;
+    private Snackbar closeAppSnackbar;
 
     public NoticeBoardFragment() {
         // Required empty public constructor
@@ -72,6 +75,15 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
 
         setupView(fView);
         return fView;
+    }
+
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(onKeyListener);
     }
 
     /**
@@ -140,6 +152,22 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
         @Override
         public void onRefresh() {
             requestForMyNoticeBoard();
+        }
+    };
+
+
+    int onlyOneTime = 0;
+    View.OnKeyListener onKeyListener = new View.OnKeyListener() {
+        @Override
+        public boolean onKey(View v, int keyCode, KeyEvent event) {
+            if( keyCode == KeyEvent.KEYCODE_BACK && event.getAction()!= KeyEvent.ACTION_DOWN && onlyOneTime == 0) {
+
+                closeAppSnackbar = Snackbar.make(getView(), "Press back again to exit Localapp", Snackbar.LENGTH_LONG);
+                closeAppSnackbar.show();
+                onlyOneTime++;
+                return true;
+            }
+            return false;
         }
     };
 
@@ -257,14 +285,20 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
     }
 
     private void requestForMyNoticeBoard() {
-        MyNoticeBoardRequest noticeBoardRequest = new MyNoticeBoardRequest(getContext(),HomeActivity.mUserId,this);
-        noticeBoardRequest.executeRequest();
+        if (HomeActivity.mUserId != null && !HomeActivity.mUserId.equals("")) {
+            MyNoticeBoardRequest noticeBoardRequest = new MyNoticeBoardRequest(getContext(), HomeActivity.mUserId, this);
+            noticeBoardRequest.executeRequest();
+        }else {
+            requestForNearbyNoticeBoard();
+        }
     }
 
     private void requestForNearbyNoticeBoard() {
         if (HomeActivity.mLastKnownLocation != null) {
             GetNearestNoticeBoardRequest nearestNoticeBoardRequest = new GetNearestNoticeBoardRequest(getContext(), this, HomeActivity.mLastKnownLocation);
             nearestNoticeBoardRequest.executeRequest();
+        }else {
+            swipeRefreshLayout.setRefreshing(false);
         }
     }
 
@@ -314,6 +348,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
 
     @Override
     public void GetNearestNoticeBoardResponse(CommonRequest.ResponseCode responseCode, List<NoticeBoard> mNoticeBoards) {
+        swipeRefreshLayout.setRefreshing(false);
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
             if (nearestNoticeBoardList.size()>0) {
                 nearestNoticeBoardList.clear();

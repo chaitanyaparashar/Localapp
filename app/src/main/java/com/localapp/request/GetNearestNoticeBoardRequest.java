@@ -64,9 +64,19 @@ public class GetNearestNoticeBoardRequest extends CommonRequest {
                 String noticeBoardId = jsonObject.getString("id");
                 String noticeBoardName = jsonObject.getString("name");
                 String noticeBoardAdminId = jsonObject.getString("adminId");
+                LatLng latLng = null;
+                try {
+                    JSONArray lngJsonArray = jsonObject.getJSONArray("longlat");
+                    if (lngJsonArray.length()>0) {
+                        latLng = new LatLng(Double.parseDouble(lngJsonArray.getString(0)), Double.parseDouble(lngJsonArray.getString(1)));
+                    }
+                }catch (JSONException e){
+                    Log.v("Request",e.getMessage());
+                }
 
                 NoticeBoard mNoticeBoard = new NoticeBoard(noticeBoardAdminId,noticeBoardName);
                 mNoticeBoard.setId(noticeBoardId);
+                mNoticeBoard.setLocation(latLng);
 
                 if (HomeActivity.mPicUrl == null || !HomeActivity.mUserId.equals(mNoticeBoard.getAdminId()))
                 mNoticeBoardList.add(mNoticeBoard);

@@ -43,6 +43,7 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.localapp.R;
+import com.localapp.appcontroller.AppController;
 import com.localapp.data.LoginData;
 import com.localapp.data.SignUpData;
 import com.localapp.login_session.SessionManager;
@@ -669,7 +670,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         mNumberView.setText(data.getmMobile());
         mEmailView.setText(data.getEmail());
         mInfoView.setText(data.getmSpeciality());
-        profilePic.setImageUrl(data.getPicUrl(), VolleySingleton.getInstance(getActivity()).getImageLoader());
+        profilePic.setImageUrl(data.getPicUrl(), VolleySingleton.getInstance(AppController.getAppContext()).getImageLoader());
 //        mDetailView.setText(data.getmName());
 
         mNameView.setEnabled(false);
@@ -734,7 +735,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
                         mNameView.setText(fbName);
                         mEmailView.setText(fbEmail);
 //                        mDetailView.setText(fbAbout);
-                        profilePic.setImageUrl(picUrl.toString(), VolleySingleton.getInstance(getActivity()).getImageLoader());
+                        profilePic.setImageUrl(picUrl.toString(), VolleySingleton.getInstance(AppController.getAppContext()).getImageLoader());
 
                         new DownloadFileFromURL().execute(picUrl.toString());
 
@@ -878,7 +879,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
             // Reading image path from sdcard
             String imagePath = Environment.getExternalStorageDirectory().toString() + "/downloadedfile.jpg";
             imgFile = new File(imagePath);
-            Toast.makeText(getContext(), ""+imagePath, Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getContext(), ""+imagePath, Toast.LENGTH_SHORT).show();
             // setting downloaded into image view
 //            my_image.setImageDrawable(Drawable.createFromPath(imagePath));
         }

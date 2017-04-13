@@ -20,6 +20,7 @@ public class MultiDrawable extends Drawable{
 
     @Override
     public void draw(Canvas canvas) {
+        if (mDrawables.size() == 0)return;
         if (mDrawables.size() == 1) {
             mDrawables.get(0).draw(canvas);
             return;

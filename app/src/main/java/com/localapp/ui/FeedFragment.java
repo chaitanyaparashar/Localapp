@@ -13,6 +13,7 @@ import android.os.Environment;
 import android.os.SystemClock;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,6 +22,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -37,6 +39,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.siyamed.shapeimageview.CircularImageView;
 import com.localapp.VideoPlay;
 import com.localapp.audio.ViewProxy;
 import com.localapp.camera.Camera2Activity;
@@ -48,6 +51,7 @@ import com.localapp.request.EmergencyMsgAcceptRequest;
 import com.localapp.request.GetFeedRequest;
 import com.localapp.request.PicUrlRequest;
 import com.localapp.request.helper.VolleySingleton;
+import com.squareup.picasso.Picasso;
 import com.util.RecyclerTouchListener;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.SphericalUtil;
@@ -122,6 +126,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     private List<Message> emergencyMessageList;
 
     private View typeMessageAreaPreventClickView;
+    private Snackbar closeAppSnackbar;
 
 
     EmojiconEditText chatText;
@@ -1002,14 +1007,15 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
             View vi=convertView;
             if(convertView==null)
                 vi = inflater.inflate(R.layout.emergency_message_list, null);
-            CircularNetworkImageView proPicImageView = (CircularNetworkImageView)vi.findViewById(R.id.msg_pic);
+            CircularImageView proPicImageView = (CircularImageView)vi.findViewById(R.id.msg_pic);
             EmojiconTextView msgTextView = (EmojiconTextView)vi.findViewById(R.id.textViewMsg);
             Button acceptButton = (Button) vi.findViewById(R.id.accept_btn);
             ImageView messageTypeImageView = (ImageView) vi.findViewById(R.id.msg_emoji) ;
 
             Message message = emergencyMessageList.get(position);
 
-            proPicImageView.setImageUrl(message.getMediaURL(), VolleySingleton.getInstance(context).getImageLoader());
+//            proPicImageView.setImageUrl(message.getMediaURL(), VolleySingleton.getInstance(context).getImageLoader());
+            Picasso.with(context).load(message.getMediaURL()).into(proPicImageView);
             msgTextView.setText(message.getmText());
             if (message.getMessageType() != null) {
                 messageTypeImageView.setImageResource(getEmojiResourceIdByMsgType(message.getMessageType()));
@@ -1351,4 +1357,27 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
             });
         }
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(onKeyListener);
+    }
+
+    int onlyOneTime = 0;
+    View.OnKeyListener onKeyListener = new View.OnKeyListener() {
+        @Override
+        public boolean onKey(View v, int keyCode, KeyEvent event) {
+            if( keyCode == KeyEvent.KEYCODE_BACK && event.getAction()!= KeyEvent.ACTION_DOWN && onlyOneTime == 0) {
+
+                closeAppSnackbar = Snackbar.make(getView(), "Press back again to exit Localapp", Snackbar.LENGTH_LONG);
+                closeAppSnackbar.show();
+                onlyOneTime++;
+                return true;
+            }
+            return false;
+        }
+    };
 }

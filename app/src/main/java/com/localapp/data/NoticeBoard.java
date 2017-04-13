@@ -14,6 +14,11 @@ public class NoticeBoard {
     private String name;
     private List<NoticeBoardMessage> messagesList;
     private String errorMessage;
+
+    public LatLng getLocation() {
+        return location;
+    }
+
     private LatLng location;
 
     public NoticeBoard() {

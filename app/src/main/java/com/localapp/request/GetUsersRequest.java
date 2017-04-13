@@ -8,6 +8,7 @@ import com.localapp.data.GetUsersRequestData;
 import com.localapp.data.Profile;
 import com.localapp.request.helper.VolleyErrorHelper;
 import com.google.android.gms.maps.model.LatLng;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,6 +17,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.localapp.appcontroller.AppController.getAppContext;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_CONNECTION_TIMEOUT;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_FAILED_TO_CONNECT;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_INTERNAL_ERROR;
@@ -72,6 +74,7 @@ public class GetUsersRequest extends CommonRequest {
             int size = profileList.length();
             for (int i = 0; i < size; i++) {
                 JSONObject profile = profileList.getJSONObject(i);
+                Picasso.with(getAppContext()).load(profile.getString("picUrl")).resize(100,100);
                 String uId = profile.getString("id");
                 String uName =  profile.getString("name");
                 String uEmail =  profile.getString("email");

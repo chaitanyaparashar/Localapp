@@ -8,6 +8,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.localapp.appcontroller.AppController;
 import com.localapp.request.helper.CustomRequest;
 
 import org.json.JSONObject;
@@ -215,7 +216,8 @@ public abstract class CommonRequest {
         };
 
 
-        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+//        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        RequestQueue requestQueue = Volley.newRequestQueue(AppController.getAppContext());
 
         CustomRequest jsonObjRequest;
 

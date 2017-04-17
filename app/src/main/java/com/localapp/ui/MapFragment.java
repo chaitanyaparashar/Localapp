@@ -23,6 +23,9 @@ import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -33,7 +36,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,12 +53,16 @@ import com.localapp.appcontroller.AppController;
 import com.localapp.camera.Camera2Activity;
 import com.localapp.data.GetUsersRequestData;
 import com.localapp.data.NoticeBoard;
+import com.localapp.data.NoticeBoardMessage;
 import com.localapp.data.Profile;
 import com.localapp.login_session.SessionManager;
 import com.localapp.request.CommonRequest;
 import com.localapp.request.GetNearestNoticeBoardRequest;
+import com.localapp.request.GetNoticeBoardMessageRequest;
 import com.localapp.request.GetUsersRequest;
 import com.localapp.request.ImageSearchRequest;
+import com.localapp.request.PostNoticeBoardMessageRequest;
+import com.localapp.request.SubscribeUnsubscribeNoticeBoardRequest;
 import com.localapp.request.helper.VolleySingleton;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -69,6 +80,7 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 import com.squareup.picasso.Picasso;
+import com.util.utility;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -82,7 +94,7 @@ import static com.localapp.appcontroller.AppController.isActivityVisible;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GetUsersRequest.GetUsersResponseCallback,
         ClusterManager.OnClusterClickListener<Profile>, ClusterManager.OnClusterInfoWindowClickListener<Profile>, ClusterManager.OnClusterItemClickListener<Profile>, ClusterManager.OnClusterItemInfoWindowClickListener<Profile>,
-        ImageSearchRequest.ImageSearchResponseCallback, GetNearestNoticeBoardRequest.GetNearestNoticeBoardRequestCallback {
+        ImageSearchRequest.ImageSearchResponseCallback, GetNearestNoticeBoardRequest.GetNearestNoticeBoardRequestCallback,GetNoticeBoardMessageRequest.GetNoticeBoardMessageRequestCallback,SubscribeUnsubscribeNoticeBoardRequest.SubscribeUnsubscribeNoticeBoardCallback {
 
 
 
@@ -109,6 +121,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     private RelativeLayout uDetailLayout;
     private AutoCompleteTextView searchBoxView;
     private Snackbar closeAppSnackbar;
+
+    DialogNoticeBoardMessageAdapter messageAdapter;
 
 
 
@@ -248,48 +262,35 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
     private void addItems() {
         /*************** data for testing ***********/
-        mClusterManager.addItem(new Profile(position(), "Walter"));
-        mClusterManager.addItem(new Profile(position(), "Walter"));
-        mClusterManager.addItem(new Profile(position(), "Walter"));
-        mClusterManager.addItem(new Profile(position(), "Walter"));
-        mClusterManager.addItem(new Profile(position(), "Walter"));
-        mClusterManager.addItem(new Profile(position(), "Walter"));
-        mClusterManager.addItem(new Profile(position(), "Gran"));
-        mClusterManager.addItem(new Profile(position(), "Ruth"));
-        mClusterManager.addItem(new Profile(position(), "Stefan"));
-        mClusterManager.addItem(new Profile(position(), "Stefan"));
-        mClusterManager.addItem(new Profile(position(), "Stefan"));
-        mClusterManager.addItem(new Profile(position(), "Stefan"));
-        mClusterManager.addItem(new Profile(position(), "Stefan"));
-        mClusterManager.addItem(new Profile(position(), "Stefan"));
-        mClusterManager.addItem(new Profile(position(), "Mechanic"));
-        mClusterManager.addItem(new Profile(position(), "Mechanic"));
-        mClusterManager.addItem(new Profile(position(), "Mechanic"));
-        mClusterManager.addItem(new Profile(position(), "Mechanic"));
-        mClusterManager.addItem(new Profile(position(), "Mechanic"));
-        mClusterManager.addItem(new Profile(position(), "Mechanic"));
-        mClusterManager.addItem(new Profile(position(), "Mechanic"));
-        mClusterManager.addItem(new Profile(position(), "Mechanic"));
-        mClusterManager.addItem(new Profile(position(), "Mechanic"));
-        mClusterManager.addItem(new Profile(position(), "Yeats"));
-        mClusterManager.addItem(new Profile(position(), "Yeats"));
-        mClusterManager.addItem(new Profile(position(), "Yeats"));
-        mClusterManager.addItem(new Profile(position(), "Yeats"));
-        mClusterManager.addItem(new Profile(position(), "Yeats"));
-        mClusterManager.addItem(new Profile(position(), "Yeats"));
-        mClusterManager.addItem(new Profile(position(), "Yeats"));
-        mClusterManager.addItem(new Profile(position(), "John"));
-        mClusterManager.addItem(new Profile(position(), "Trevor the Turtle"));
-        mClusterManager.addItem(new Profile(position(), "Teach"));
-        mClusterManager.addItem(new Profile(position(), "Teach"));
-        mClusterManager.addItem(new Profile(position(), "Teach"));
-        mClusterManager.addItem(new Profile(position(), "Teach"));
-        mClusterManager.addItem(new Profile(position(), "Teach"));
-        mClusterManager.addItem(new Profile(position(), "Teach"));
-        mClusterManager.addItem(new Profile(position(), "Teach"));
-        mClusterManager.addItem(new Profile(position(), "Teach"));
-        mClusterManager.addItem(new Profile(position(), "Teach"));
-        mClusterManager.addItem(new Profile(position(), "Teach"));
+        for (int i =0 ;i <10; i++) {
+            mClusterManager.addItem(new Profile(position(), "Walter"));
+        }
+        for (int i =0 ;i <10; i++) {
+            mClusterManager.addItem(new Profile(position(), "Gran"));
+        }
+        for (int i =0 ;i <10; i++) {
+            mClusterManager.addItem(new Profile(position(), "Ruth"));
+        }
+        for (int i =0 ;i <10; i++) {
+            mClusterManager.addItem(new Profile(position(), "Stefan"));
+        }
+        for (int i =0 ;i <10; i++) {
+            mClusterManager.addItem(new Profile(position(), "Yeats"));
+        }
+
+        for (int i =0 ;i <10; i++) {
+            mClusterManager.addItem(new Profile(position(), "Mechanic"));
+        }
+
+        for (int i =0 ;i <10; i++) {
+            mClusterManager.addItem(new Profile(position(), "John"));
+        }
+
+        for (int i =0 ;i <10; i++) {
+            mClusterManager.addItem(new Profile(position(), "Teach"));
+        }
+
+
 
     }
 
@@ -551,6 +552,100 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         dialog.show();
     }
 
+    AlertDialog dialog;
+    public void showNoticeBoardDialog(final NoticeBoard noticeBoard, final boolean hasSubscribed) {
+
+//        final AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+
+
+        View view = LayoutInflater.from(getContext()).inflate(R.layout.notice_board_dialog,null);
+        LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.ll_notice_dialog);
+        Button subButton = (Button) view.findViewById(R.id.subscribe_btn);
+
+        if (HomeActivity.mUserId != null && HomeActivity.mUserId.equals(noticeBoard.getAdminId())) {
+            subButton.setVisibility(View.GONE);
+        }else {
+            linearLayout.setVisibility(View.GONE);
+        }
+
+
+
+
+        TextView noticeName = (TextView)view.findViewById(R.id.notice_board_name_textView);
+        RecyclerView messageRecyclerView = (RecyclerView)view.findViewById(R.id.recyclerViewDialog);
+
+        final EditText messageEditText = (EditText) view.findViewById(R.id._input_notice_message);
+        final ImageButton postBtn = (ImageButton)  view.findViewById(R.id._notice_post_btn);
+
+        noticeName.setText(noticeBoard.getName());
+
+
+        if (hasSubscribed) {
+            subButton.setText("Unsubscribe");
+        }else {
+            subButton.setText("Subscribe");
+        }
+
+
+        subButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (HomeActivity.mUserId !=null && !HomeActivity.mUserId.equals("")) {
+                    CommonRequest.RequestType type;
+                    if (hasSubscribed) {
+                        type = CommonRequest.RequestType.COMMON_REQUEST_UNSUBSCRIBE_NOTICE_BOARD;
+
+                    } else {
+                        type = CommonRequest.RequestType.COMMON_REQUEST_SUBSCRIBE_NOTICE_BOARD;
+                    }
+
+                    requestSubscribeAndUnsub(noticeBoard, type);
+                }else {
+                    Toast.makeText(getContext(), "Please login first...", Toast.LENGTH_SHORT).show();
+                }
+
+                if (dialog!=null)
+                dialog.dismiss();
+
+            }
+        });
+
+
+
+        postBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String msg = messageEditText.getText().toString().trim();
+                if (!msg.isEmpty()) {
+                    NoticeBoardMessage message = new NoticeBoardMessage(msg);
+                    message.setAdminId(noticeBoard.getId());
+
+                    /*PostNoticeBoardMessageRequest postNoticeBoardMessageRequest = new PostNoticeBoardMessageRequest(getContext(),message,MapFragment.this);
+                    postNoticeBoardMessageRequest.executeRequest();
+                    noticeBoard.getMessagesList().add(message);
+                    messageAdapter.notifyDataSetChanged();
+                    messageEditText.setText("");*/
+                }
+            }
+        });
+
+
+
+        messageAdapter = new DialogNoticeBoardMessageAdapter(getContext(),noticeBoard);
+
+        messageRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        messageRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        messageRecyclerView.setAdapter(messageAdapter);
+
+
+//        dialog.setCancelable(false);
+        builder.setView(view);
+        dialog = builder.create();
+        dialog.show();
+    }
+
 
     /**
      * request for map data
@@ -569,6 +664,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         }else {
             Toast.makeText(getApplicationContext(), "Please wait, Getting location...", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void requestForNoticeBoardMsg(NoticeBoard mNoticeBoard,boolean hasSubscribed) {
+        GetNoticeBoardMessageRequest getNoticeBoardMessageRequest = new GetNoticeBoardMessageRequest(getContext(),mNoticeBoard, hasSubscribed,this);
+        getNoticeBoardMessageRequest.executeRequest();
+    }
+
+    private void requestSubscribeAndUnsub(NoticeBoard mNoticeBoard, CommonRequest.RequestType requestType) {
+        SubscribeUnsubscribeNoticeBoardRequest request = new SubscribeUnsubscribeNoticeBoardRequest(getContext(),mNoticeBoard.getId(),HomeActivity.mUserId,requestType,MapFragment.this);
+        request.executeRequest();
     }
 
 
@@ -614,6 +719,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 profile.setuToken(noticeBoard.getAdminId());
                 profile.setuLatLng(noticeBoard.getLocation());
                 profile.setuSpeciality("nnnnnnnnnn");
+                profile.setuName(noticeBoard.getName());
                 noticeBoardProfileList.add(profile);
 
             }
@@ -635,6 +741,24 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 nearestNoticeBoardList.addAll(mNoticeBoards);
                 noticeAdapterNearYou.notifyDataSetChanged();
             }*/
+        }
+    }
+
+    @Override
+    public void GetNoticeBoardMessageResponse(CommonRequest.ResponseCode responseCode, NoticeBoard mNoticeBoard, boolean hasSubscribed) {
+        if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
+            showNoticeBoardDialog(mNoticeBoard, hasSubscribed);
+        }
+    }
+
+    @Override
+    public void SubscribeUnsubscribeNoticeBoardResponse(CommonRequest.ResponseCode responseCode, String errorMsg) {
+        if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
+            Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
+        }else if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SERVER_ERROR_WITH_MESSAGE) {
+            Toast.makeText(getContext(), errorMsg, Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -857,6 +981,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             TextView titleView = (TextView)getView().findViewById(R.id.user_title);
             ImageView actionEmail = (ImageView) getView().findViewById(R.id.action_email);
             ImageView actionCall = (ImageView) getView().findViewById(R.id.action_call);
+        actionCall.setVisibility(View.VISIBLE);
             CircularImageView proPicNetworkImageView = (CircularImageView)getView().findViewById(R.id.user_pic);
             Picasso.with(AppController.getAppContext()).load(profile.getuPictureURL()).into(proPicNetworkImageView);
 //            proPicNetworkImageView.setImageUrl(profile.getuPictureURL(), VolleySingleton.getInstance(getApplicationContext()).getImageLoader());
@@ -908,6 +1033,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
      */
 
     private ClusterManager<Profile> mClusterManager;
+
+
 
 
     private class ProfileRenderer extends DefaultClusterRenderer<Profile> {
@@ -982,7 +1109,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                     }
 
                     if (p.getuSpeciality().equals("nnnnnnnnnn")) {
-                        mImageView.setImageResource(R.drawable.ic_notice);
+                        mImageViewC.setImageResource(R.drawable.ic_notice);
+                        drawable = mImageViewC.getDrawable();
                     }
                 /*if (p.getProfession() != null){
                     drawable = getResources().getDrawable(getClusterDrawable(p.getProfession()));
@@ -1073,6 +1201,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         // Does nothing, but you could go into the user's profile page, for example.
         if (profile.getuSpeciality() != null &&!profile.getuSpeciality().equals("nnnnnnnnnn")) {
             markerClickWindow(profile);
+        }else {
+            NoticeBoard noticeBoard = new NoticeBoard();
+            noticeBoard.setId(profile.getuId());
+            noticeBoard.setName(profile.getuName());
+            requestForNoticeBoardMsg(noticeBoard, false);
         }
 
         return true;
@@ -1168,6 +1301,64 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             return false;
         }
     };
+
+
+
+    class DialogNoticeBoardMessageAdapter extends RecyclerView.Adapter<DialogNoticeBoardMessageAdapter.ViewHolder>{
+        private Context mContext;
+        private NoticeBoard mNoticeBoard;
+
+        public DialogNoticeBoardMessageAdapter(Context mContext, NoticeBoard mNoticeBoard) {
+            this.mContext = mContext;
+            this.mNoticeBoard = mNoticeBoard;
+        }
+
+        @Override
+        public DialogNoticeBoardMessageAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View itemView = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.noticeboard_message_card, parent, false);
+            return new DialogNoticeBoardMessageAdapter.ViewHolder(itemView);
+        }
+
+
+        @Override
+        public void onBindViewHolder(DialogNoticeBoardMessageAdapter.ViewHolder holder, final int position) {
+            final NoticeBoardMessage noticeBoardMessage = mNoticeBoard.getMessagesList().get(position);
+            holder.noticeMessage.setText(noticeBoardMessage.getMsg());
+            holder.timestamp.setText(utility.getTimeAndDate(noticeBoardMessage.getTimestamp()));
+
+            if (HomeActivity.mUserId!=null && HomeActivity.mUserId.equals(mNoticeBoard.getAdminId())) {
+                holder.deleteImageView.setVisibility(View.VISIBLE);
+            }
+
+            holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    /*requestDeleteNoticeBoardMessage(noticeBoardMessage);
+                    mNoticeBoard.getMessagesList().remove(position);
+                    messageAdapter.notifyDataSetChanged();*/
+                }
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return mNoticeBoard.getMessagesList().size();
+        }
+
+        public class ViewHolder extends RecyclerView.ViewHolder {
+            public TextView noticeMessage;
+            public TextView timestamp;
+            public ImageView deleteImageView;
+            public ViewHolder(View itemView) {
+                super(itemView);
+                noticeMessage = (TextView) itemView.findViewById(R.id.notice_Msg_TextView);
+                timestamp = (TextView) itemView.findViewById(R.id.notice_Msg_time_TextView);
+                deleteImageView = (ImageView) itemView.findViewById(R.id.msg_delete);
+                deleteImageView.setVisibility(View.GONE);
+            }
+        }
+    }
 
 
 }

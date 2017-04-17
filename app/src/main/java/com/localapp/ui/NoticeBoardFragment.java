@@ -39,6 +39,7 @@ import com.localapp.request.GetNoticeBoardMessageRequest;
 import com.localapp.request.MyNoticeBoardRequest;
 import com.localapp.request.PostNoticeBoardMessageRequest;
 import com.localapp.request.SubscribeUnsubscribeNoticeBoardRequest;
+import com.util.utility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -363,8 +364,9 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
 
     @Override
     public void GetNoticeBoardMessageResponse(CommonRequest.ResponseCode responseCode, NoticeBoard mNoticeBoard,boolean hasSubscribed) {
-
-        showNoticeBoardDialog(mNoticeBoard,hasSubscribed);
+        if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
+            showNoticeBoardDialog(mNoticeBoard, hasSubscribed);
+        }
     }
 
     @Override
@@ -376,9 +378,13 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
     }
 
     @Override
-    public void SubscribeUnsubscribeNoticeBoardResponse(CommonRequest.ResponseCode responseCode) {
+    public void SubscribeUnsubscribeNoticeBoardResponse(CommonRequest.ResponseCode responseCode, String errorMsg) {
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
             Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
+        }else if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SERVER_ERROR_WITH_MESSAGE) {
+            Toast.makeText(getContext(), errorMsg, Toast.LENGTH_SHORT).show();
+        }else {
+            Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -430,7 +436,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
             if (size>0) {
                 NoticeBoardMessage message = noticeBoard.getMessagesList().get(size-1);
                 holder.noticeLastMsg.setText(message.getMsg());
-                holder.noticeTime.setText(message.getTimestamp());
+                holder.noticeTime.setText(utility.getTimeAndDate(message.getTimestamp()));
             }
 
 
@@ -595,7 +601,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
         public void onBindViewHolder(ViewHolder holder, final int position) {
             final NoticeBoardMessage noticeBoardMessage = mNoticeBoard.getMessagesList().get(position);
             holder.noticeMessage.setText(noticeBoardMessage.getMsg());
-            holder.timestamp.setText(noticeBoardMessage.getTimestamp());
+            holder.timestamp.setText(utility.getTimeAndDate(noticeBoardMessage.getTimestamp()));
 
             if (HomeActivity.mUserId!=null && HomeActivity.mUserId.equals(mNoticeBoard.getAdminId())) {
                 holder.deleteImageView.setVisibility(View.VISIBLE);

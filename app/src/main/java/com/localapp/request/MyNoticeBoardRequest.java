@@ -87,6 +87,8 @@ public class MyNoticeBoardRequest extends CommonRequest{
 
                     String msgID = null;
                     String msgText = null;
+                    String timeStamp = null;
+
 
 
 
@@ -100,7 +102,8 @@ public class MyNoticeBoardRequest extends CommonRequest{
                     if (lastMsgObject != null) {
                         msgID = lastMsgObject.getString("id");
                         msgText = lastMsgObject.getString("text");
-                        message.add(new NoticeBoardMessage(msgID,msgText));
+                        timeStamp = lastMsgObject.getString("timestamp");
+                        message.add(new NoticeBoardMessage(msgID,msgText,timeStamp));
                     }
 
                     mNoticeBoard.setMessagesList(message);

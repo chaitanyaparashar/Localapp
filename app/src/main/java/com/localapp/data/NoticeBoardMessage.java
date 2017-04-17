@@ -23,6 +23,11 @@ public class NoticeBoardMessage {
         this.msg = msg;
     }
 
+    public NoticeBoardMessage(String id, String msg, String timestamp) {
+        this.id = id;
+        this.msg = msg;
+        this.timestamp = timestamp;
+    }
 
     public String getTimestamp() {
         return timestamp;

@@ -44,7 +44,7 @@ public class SubscribeUnsubscribeNoticeBoardRequest extends CommonRequest{
 
     @Override
     public void onResponseHandler(JSONObject response) {
-        mUnsubscribeNoticeBoardCallback.SubscribeUnsubscribeNoticeBoardResponse(ResponseCode.COMMON_RES_SUCCESS);
+        mUnsubscribeNoticeBoardCallback.SubscribeUnsubscribeNoticeBoardResponse(ResponseCode.COMMON_RES_SUCCESS, null);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class SubscribeUnsubscribeNoticeBoardRequest extends CommonRequest{
 
         if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
             resCode = COMMON_RES_CONNECTION_TIMEOUT;
-            mUnsubscribeNoticeBoardCallback.SubscribeUnsubscribeNoticeBoardResponse(resCode);
+            mUnsubscribeNoticeBoardCallback.SubscribeUnsubscribeNoticeBoardResponse(resCode,null);
         }
         if (errorMsg == VolleyErrorHelper.COMMON_NETWORK_ERROR_TIMEOUT)
         {
@@ -73,13 +73,13 @@ public class SubscribeUnsubscribeNoticeBoardRequest extends CommonRequest{
 //            mRequestData.setmErrorMessage(errorMsg);
         }
 
-        mUnsubscribeNoticeBoardCallback.SubscribeUnsubscribeNoticeBoardResponse(resCode);
+        mUnsubscribeNoticeBoardCallback.SubscribeUnsubscribeNoticeBoardResponse(resCode, errorMsg);
 
     }
 
 
     public  interface SubscribeUnsubscribeNoticeBoardCallback {
-        void SubscribeUnsubscribeNoticeBoardResponse(CommonRequest.ResponseCode responseCode);
+        void SubscribeUnsubscribeNoticeBoardResponse(CommonRequest.ResponseCode responseCode, String errorMsg);
     }
 
 

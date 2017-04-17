@@ -8,6 +8,7 @@ import com.localapp.data.NoticeBoard;
 import com.localapp.request.helper.VolleyErrorHelper;
 import com.localapp.ui.HomeActivity;
 import com.google.android.gms.maps.model.LatLng;
+import com.util.utility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -64,6 +65,7 @@ public class GetNearestNoticeBoardRequest extends CommonRequest {
                 String noticeBoardId = jsonObject.getString("id");
                 String noticeBoardName = jsonObject.getString("name");
                 String noticeBoardAdminId = jsonObject.getString("adminId");
+
                 LatLng latLng = null;
                 try {
                     JSONArray lngJsonArray = jsonObject.getJSONArray("longlat");
@@ -78,8 +80,9 @@ public class GetNearestNoticeBoardRequest extends CommonRequest {
                 mNoticeBoard.setId(noticeBoardId);
                 mNoticeBoard.setLocation(latLng);
 
-                if (HomeActivity.mPicUrl == null || !HomeActivity.mUserId.equals(mNoticeBoard.getAdminId()))
-                mNoticeBoardList.add(mNoticeBoard);
+                if (HomeActivity.mUserId == null || !HomeActivity.mUserId.equals(mNoticeBoard.getAdminId())) {
+                    mNoticeBoardList.add(mNoticeBoard);
+                }
             }
 
             mRequestCallback.GetNearestNoticeBoardResponse(COMMON_RES_SUCCESS,mNoticeBoardList);

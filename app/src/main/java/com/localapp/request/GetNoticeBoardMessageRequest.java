@@ -7,6 +7,7 @@ import com.android.volley.VolleyError;
 import com.localapp.data.NoticeBoard;
 import com.localapp.data.NoticeBoardMessage;
 import com.localapp.request.helper.VolleyErrorHelper;
+import com.util.utility;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -62,9 +63,12 @@ public class GetNoticeBoardMessageRequest extends CommonRequest {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String msgID = jsonObject.getString("id");
                 String msgText = jsonObject.getString("text");
+                String timeStamp = jsonObject.getString("timestamp");
 
                 NoticeBoardMessage message =new NoticeBoardMessage(msgID,msgText);
+                message.setTimestamp(timeStamp);
                 mNoticeBoardMessageList.add(message);
+
             }
 
             mNoticeBoard.setMessagesList(mNoticeBoardMessageList);

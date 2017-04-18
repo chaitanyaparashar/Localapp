@@ -1,4 +1,5 @@
 package com.localapp.ui;
+
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -8,21 +9,17 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.util.Log;
-import android.util.Patterns;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -30,6 +27,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
@@ -42,6 +40,9 @@ import com.facebook.ProfileTracker;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
 import com.localapp.data.LoginData;
@@ -52,9 +53,9 @@ import com.localapp.request.ForgetPasswordRequest;
 import com.localapp.request.LoginRequest;
 import com.localapp.request.SignUpRequest;
 import com.localapp.request.helper.VolleySingleton;
-import com.google.i18n.phonenumbers.NumberParseException;
-import com.google.i18n.phonenumbers.PhoneNumberUtil;
-import com.google.i18n.phonenumbers.Phonenumber;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -69,19 +70,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import static android.app.Activity.RESULT_OK;
-
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- */
-public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResponseCallback, LoginRequest.LoginResponseCallback,
-        ForgetPasswordRequest.ForgetPasswordRequestCallback {
-
+public class SignUpActivity extends AppCompatActivity implements SignUpRequest.SignUpResponseCallback{
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 111;
     public static int PICK_IMAGE_REQUEST = 100;
 
@@ -111,31 +100,22 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
     ProgressDialog mProgressDialog;
 
     String[] professionString = {"Select Profession", "Student", "Housewife", "Helth and wellness", "Repair and Maintenance",
-    "Professionals","Wedding Events","Skills","Beauty"};
-
-
-
-    public SignUpFragment() {
-        // Required empty public constructor
-    }
-
+            "Professionals","Wedding Events","Skills","Beauty"};
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_sign_up);
+        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+        actionBar.hide();
 
+        setupView();
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public void setupView(){
+        signUpBtn = (Button) findViewById(R.id._signUp);
 
-        View view = inflater.inflate(R.layout.fragment_sign_up, container, false);
-
-        signUpBtn = (Button) view.findViewById(R.id._signUp);
-
-        session = new SessionManager(getActivity());
-
+        session = new SessionManager(this);
         /***************** fb login *****************/
         List<String> fbPermissions = new ArrayList<>();
         fbPermissions.add("public_profile");
@@ -146,9 +126,10 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         fbPermissions.add("user_relationships");
         fbPermissions.add("user_work_history");
 
-        fb_LoginButton = (LoginButton) view.findViewById(R.id.fb_login_button);
+
+        fb_LoginButton = (LoginButton) findViewById(R.id.fb_login_button);
         fb_LoginButton.setReadPermissions(fbPermissions);
-        fb_LoginButton.setFragment(this);
+//        fb_LoginButton.setFragment(this);
         fbCallbackManager = CallbackManager.Factory.create();
         fb_LoginButton.registerCallback(fbCallbackManager, fbCallback);
         LoginManager.getInstance().registerCallback(fbCallbackManager, fbCallback);
@@ -167,7 +148,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
             }
         };
 
-        fb_FillBtn = (Button) view.findViewById(R.id.fb_fill_btn);
+        fb_FillBtn = (Button) findViewById(R.id.fb_fill_btn);
         fb_FillBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -175,24 +156,24 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
             }
         });
 
-        picUploadBtn = (Button) view.findViewById(R.id.upload_btn);
+        picUploadBtn = (Button) findViewById(R.id.upload_btn);
 
-        profilePic = (CircularNetworkImageView) view.findViewById(R.id.image_pic);
+        profilePic = (CircularNetworkImageView) findViewById(R.id.image_pic);
 
-        mNameView = (EditText) view.findViewById(R.id.input_name);
-        mNumberView = (EditText) view.findViewById(R.id.input_phoneNumber);
-        mEmailView = (EditText) view.findViewById(R.id.input_email);
-        mPasswordView = (EditText) view.findViewById(R.id.input_password);
-        cPasswordView = (EditText) view.findViewById(R.id.input_password_c);
-        mInfoView = (EditText) view.findViewById(R.id.input_brief_intro);
-        mDetailView = (EditText) view.findViewById(R.id.input_details_des);
-        mSignInView = (TextView) view.findViewById(R.id.sign_in_text);
+        mNameView = (EditText) findViewById(R.id.input_name);
+        mNumberView = (EditText) findViewById(R.id.input_phoneNumber);
+        mEmailView = (EditText) findViewById(R.id.input_email);
+        mPasswordView = (EditText) findViewById(R.id.input_password);
+        cPasswordView = (EditText) findViewById(R.id.input_password_c);
+        mInfoView = (EditText) findViewById(R.id.input_brief_intro);
+        mDetailView = (EditText) findViewById(R.id.input_details_des);
+        mSignInView = (TextView) findViewById(R.id.sign_in_text);
 
-
-        spinner = (Spinner) view.findViewById(R.id.spinner);
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(getContext(),android.R.layout.simple_spinner_item,professionString);
+        spinner = (Spinner) findViewById(R.id.spinner);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,professionString);
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(spinnerAdapter);
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -257,10 +238,11 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
                 }
             }
         });
+
         mSignInView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                signInDialog();
+//                signInDialog();
             }
         });
 
@@ -278,19 +260,16 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
 
         permissionsRequestReadExternalStorage();
 
-        // Inflate the layout for this fragment
-        return view;
     }
 
-
     void permissionsRequestReadExternalStorage() {
-        if (ContextCompat.checkSelfPermission(getActivity(),
+        if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
 
             // No explanation needed, we can request the permission.
 
-            ActivityCompat.requestPermissions(getActivity(),
+            ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
                     MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
 
@@ -301,16 +280,16 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
 
             Uri uri = data.getData();
-            String path = getRealPathFromURI_API19(getContext(),uri);
+            String path = getRealPathFromURI_API19(this,uri);
 
             try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), uri);
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                 // Log.d(TAG, String.valueOf(bitmap));
                 imgFile = new File(path);
 
@@ -323,8 +302,6 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
 
         fbCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
-
-
 
     public static String getRealPathFromURI_API19(Context context, Uri uri){
 
@@ -357,6 +334,8 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
                 // If request is cancelled, the result arrays are empty.
@@ -377,7 +356,6 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
             // other 'case' lines to check for other
             // permissions this app might request
         }
-
     }
 
     public boolean phone_val(String ph_number)
@@ -512,11 +490,11 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         }
 
         if (imgFile == null) {
-            Toast.makeText(getContext(), "Please select a pic", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please select a pic", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage("Please wait...");
         mProgressDialog.show();
 
@@ -535,7 +513,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
 
 
         SignUpData data = new SignUpData(name, email,profession,password, number,privacy, brifIntro, detail, null,null, null,imgFile);
-        SignUpRequest request = new SignUpRequest(getContext(),data,this);
+        SignUpRequest request = new SignUpRequest(this,data,this);
 
         request.executeRequest();
 
@@ -544,7 +522,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
 
     private void onSignUpFailed(String errorMsg) {
         signUpBtn.setEnabled(true);
-        Toast.makeText(getActivity(), errorMsg, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show();
     }
 
 
@@ -553,7 +531,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         mProgressDialog.dismiss();
         switch (res) {
             case COMMON_RES_SUCCESS:
-                Toast.makeText(getActivity(), "Registration successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Registration successfully", Toast.LENGTH_SHORT).show();
                 onSignUpSuccess(data);
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:
@@ -568,7 +546,6 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
                 onSignUpFailed(data.getmErrorMessage());
                 break;
         }
-
     }
 
     private void onSignUpSuccess(SignUpData data) {
@@ -578,114 +555,9 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         HomeActivity.mPicUrl = data.getPicUrl();
         session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mPicUrl, HomeActivity.mLastKnownLocation);
 
-        mNameView.setEnabled(false);
-        mNumberView.setEnabled(false);
-        mEmailView.setEnabled(false);
-        mInfoView.setEnabled(false);
-        mDetailView.setEnabled(false);
-
-        signUpBtn.setText("LogOut");
-    }
-
-    private AlertDialog mSignInDialog;
-    private void signInDialog() {
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
-        final EditText _email, _password;
-
-        View mDialogView = LayoutInflater.from(getActivity()).inflate(R.layout.signin_dialog,null);
-        _email = (EditText) mDialogView.findViewById(R.id.input_email);
-        _password = (EditText) mDialogView.findViewById(R.id.input_password);
-        builder.setView(mDialogView);
-        builder.setCancelable(false);
-        builder.setTitle("Log in to Localapp");
-
-        builder.setPositiveButton("SIGNIN", null);
-        builder.setNegativeButton("CANCEL",null);
-
-        mSignInDialog = builder.create();
-        mSignInDialog.show();
-
-        mSignInDialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String mEmail = _email.getText().toString();
-                String mPassword = _password.getText().toString();
-
-                if (mEmail.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(mEmail).matches()) {
-                    _email.setError("enter a valid email address");
-                    return;
-                }else if (mPassword.isEmpty() || mPassword.length() <6 || mPassword.length() >16) {
-                    _password.setError("enter a valid password");
-                    return;
-                }
-
-
-
-                LoginData loginData = new LoginData(mEmail, mPassword);
-                LoginRequest request = new LoginRequest(getActivity(),loginData,SignUpFragment.this);
-                request.executeRequest();
-                mProgressDialog = new ProgressDialog(getActivity());
-                mProgressDialog.setMessage("Please wait...");
-                mProgressDialog.show();
-//                forgetPassword("Vijayicfaics@gmail.com");
-            }
-        });
-
 
     }
 
-    @Override
-    public void onLoginResponse(CommonRequest.ResponseCode responseCode, LoginData data) {
-        mProgressDialog.dismiss();
-        switch (responseCode) {
-            case COMMON_RES_SUCCESS:
-                mSignInDialog.dismiss();
-                onLoginSuccess(data);
-                break;
-            case COMMON_RES_CONNECTION_TIMEOUT:
-                onLoginFailed("Connection timeout");
-                break;
-            case COMMON_RES_FAILED_TO_CONNECT:
-                onLoginFailed("No internet connection");
-                break;
-            case COMMON_RES_INTERNAL_ERROR:
-                break;
-            case COMMON_RES_SERVER_ERROR_WITH_MESSAGE:
-                onLoginFailed(data.getErrorMessage());
-                break;
-        }
-    }
-
-    private void onLoginSuccess(LoginData data) {
-        //TODO: -----
-        HomeActivity.mLoginToken = data.getAccessToken();
-        HomeActivity.mUserId = data.getUserId();
-        HomeActivity.mPicUrl = data.getPicUrl();
-//        session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mPicUrl, HomeActivity.mLastKnownLocation);
-
-        mNameView.setText(data.getmName());
-        mNumberView.setText(data.getmMobile());
-        mEmailView.setText(data.getEmail());
-        mInfoView.setText(data.getmSpeciality());
-        profilePic.setImageUrl(data.getPicUrl(), VolleySingleton.getInstance(AppController.getAppContext()).getImageLoader());
-//        mDetailView.setText(data.getmName());
-
-        mNameView.setEnabled(false);
-        mNumberView.setEnabled(false);
-        mEmailView.setEnabled(false);
-        mInfoView.setEnabled(false);
-        mDetailView.setEnabled(false);
-
-        signUpBtn.setText("LogOut");
-
-
-    }
-
-    private void onLoginFailed(String msg) {
-        Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
-    }
 
     FacebookCallback<LoginResult> fbCallback = new FacebookCallback<LoginResult>() {
         @Override
@@ -769,28 +641,11 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         public void onError(FacebookException error) {
 
 
-                Toast.makeText(getActivity(), error.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(SignUpActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
 
 
         }
     };
-
-    private void forgetPassword(String mEmail) {
-        ForgetPasswordRequest passwordRequest = new ForgetPasswordRequest(getActivity(),mEmail,this);
-        passwordRequest.executeRequest();
-    }
-
-
-    @Override
-    public void ForgetPasswordResponse(CommonRequest.ResponseCode responseCode) {
-        if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
-            Toast.makeText(getActivity(), "Check your email", Toast.LENGTH_SHORT).show();
-        }else {
-            Toast.makeText(getActivity(), "Something went wrong \\u1F1EB", Toast.LENGTH_SHORT).show();
-
-        }
-    }
-
 
 
     /**
@@ -805,7 +660,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            mProgressDialog = new ProgressDialog(getActivity());
+            mProgressDialog = new ProgressDialog(SignUpActivity.this);
             mProgressDialog.setMessage("Getting data...");
             mProgressDialog.show();
         }
@@ -872,7 +727,7 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         @Override
         protected void onPostExecute(String file_url) {
             // dismiss the dialog after the file was downloaded
-           mProgressDialog.dismiss();
+            mProgressDialog.dismiss();
 
             // Displaying downloaded image into image view
             // Reading image path from sdcard
@@ -884,6 +739,4 @@ public class SignUpFragment extends Fragment implements SignUpRequest.SignUpResp
         }
 
     }
-
-
 }

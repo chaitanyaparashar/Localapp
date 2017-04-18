@@ -10,9 +10,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import com.localapp.R;
@@ -28,7 +30,7 @@ public class HomeActivity extends AppCompatActivity{
     FragmentTransaction transaction;
     Fragment fragmentToLaunch;
 
-    public static Context mapContext = null;
+
 
     SessionManager session;
     public static String mLoginToken = "";
@@ -40,11 +42,11 @@ public class HomeActivity extends AppCompatActivity{
 
     TabLayout tabLayout;
 
-    private SectionsPagerAdapter mSectionsPagerAdapter;
+    public static SectionsPagerAdapter mSectionsPagerAdapter;
     /**
      * The {@link ViewPager} that will host the section contents.
      */
-    private ViewPager mViewPager;
+    public static ViewPager mViewPager;
 
     private int[] tabIcons = {
             R.drawable.ic_map,
@@ -75,7 +77,7 @@ public class HomeActivity extends AppCompatActivity{
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
-        mViewPager.setOffscreenPageLimit(4);
+        mViewPager.setOffscreenPageLimit(3);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
@@ -85,7 +87,12 @@ public class HomeActivity extends AppCompatActivity{
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                tab.getIcon().setColorFilter(Color.parseColor("#2196f3"), PorterDuff.Mode.SRC_IN);
+                try {
+                    tab.getIcon().setColorFilter(Color.parseColor("#2196f3"), PorterDuff.Mode.SRC_IN);
+                }catch (NullPointerException e){
+                    e.printStackTrace();
+                }
+
 
                 /*if (tab.getPosition() == 0) {
 //                    ((MapFragment)mSectionsPagerAdapter.getItem(1)).gggg();
@@ -93,6 +100,7 @@ public class HomeActivity extends AppCompatActivity{
                     i.putExtra("requestCode", 20);
                     startActivityForResult(i, 20);*//*
                 }*/
+
             }
 
             @Override
@@ -133,7 +141,6 @@ public class HomeActivity extends AppCompatActivity{
             tabLayout.getTabAt(1).setIcon(tabIcons[1]);
             tabLayout.getTabAt(2).setIcon(tabIcons[2]);
             tabLayout.getTabAt(3).setIcon(tabIcons[3]);
-
 
             tabLayout.getTabAt(0).getIcon().setColorFilter(Color.parseColor("#2196f3"), PorterDuff.Mode.SRC_IN);
         }catch (NullPointerException e){
@@ -225,6 +232,7 @@ public class HomeActivity extends AppCompatActivity{
 
 //        int totalPage = 2;
 
+
         public SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
@@ -242,11 +250,13 @@ public class HomeActivity extends AppCompatActivity{
                 case 2:
                     return new NoticeBoardFragment();
                 case 3:
-                    return new SignUpFragment();
+                    return new ProfileFragment();
+
 
             }
             return null;
         }
+
 
         @Override
         public int getCount() {

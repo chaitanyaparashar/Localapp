@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_update"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.localapp.ui.UpdateActivity">
+
+    <RelativeLayout
+        android:orientation="horizontal"
+        android:elevation="3dp"
+        android:id="@+id/header"
+        android:background="#FFFFFF"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <ImageButton
+            android:id="@+id/cancel_button"
+            android:layout_marginStart="10dp"
+            android:layout_centerVertical="true"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:onClick="onBack"
+            android:background="@drawable/ic_cross"/>
+
+        <TextView
+            android:layout_toRightOf="@+id/cancel_button"
+            android:layout_marginStart="20dp"
+            android:textColor="#000"
+            android:textSize="16sp"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit Profile"/>
+
+        <ImageButton
+            android:layout_marginEnd="10dp"
+            android:id="@+id/update_button"
+            android:backgroundTint="#2196f3"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:onClick="onUpdate"
+            android:background="@drawable/ic_check_symbol"/>
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/_personal"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!--  Name Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+            <EditText
+                android:id="@+id/input_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="10dp"
+                android:inputType="textPersonName"
+                android:drawableLeft="@drawable/ic_name"
+                android:hint="Name" />
+        </android.support.design.widget.TextInputLayout>
+
+        <!--  Phone Number Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+
+            <EditText android:id="@+id/input_phoneNumber"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="phone"
+                android:drawablePadding="10dp"
+                android:drawableLeft="@drawable/ic_phone"
+                android:drawableRight="@drawable/ic_password_visible"
+                android:hint="Phone Number" />
+        </android.support.design.widget.TextInputLayout>
+
+
+        <!--  Email Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+            <EditText android:id="@+id/input_email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="10dp"
+                android:inputType="textEmailAddress"
+                android:drawableLeft="@drawable/ic_email"
+                android:hint="Email" />
+        </android.support.design.widget.TextInputLayout>
+        </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/_about"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!--  Profession Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp">
+            <EditText android:id="@+id/input_profession"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="10dp"
+                android:editable="false"
+                android:drawableStart="@drawable/ic_profession"
+                android:drawableEnd="@android:drawable/arrow_down_float"
+                android:hint="Select Profession" />
+        </android.support.design.widget.TextInputLayout>
+
+
+
+        <!--  Brief Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp">
+            <EditText
+                android:id="@+id/input_brief_intro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:maxLines="2"
+                android:drawablePadding="10dp"
+                android:drawableLeft="@drawable/ic_brief_intro"
+                android:hint="Brief Intro" />
+        </android.support.design.widget.TextInputLayout>
+        <TextView
+            android:layout_gravity="right"
+            android:textColor="#2196f3"
+            android:layout_marginBottom="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Maximum 10 words"/>
+
+
+        <!--  Details Label -->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/input_details_des"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textMultiLine"
+                android:drawablePadding="10dp"
+                android:drawableLeft="@drawable/ic_detail_description"
+                android:hint="Detail Description" />
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:layout_gravity="right"
+            android:textColor="#2196f3"
+            android:layout_marginBottom="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Optional"/>
+
+        </LinearLayout>
+
+</LinearLayout>

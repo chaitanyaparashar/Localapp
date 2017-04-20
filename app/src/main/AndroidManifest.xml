@@ -68,7 +68,9 @@
             android:name=".camera.Camera2Activity"
             android:screenOrientation="portrait" />
         <activity android:name=".VideoPlay" />
-        <activity android:name=".ui.SignUpActivity"></activity>
+        <activity android:name=".ui.SignUpActivity" />
+        <activity android:name=".ui.UpdateActivity" />
+        <activity android:name=".ui.SelectProfessionActivity"></activity>
     </application>
 
 </manifest>

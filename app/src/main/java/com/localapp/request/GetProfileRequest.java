@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.android.volley.VolleyError;
 import com.localapp.data.LoginData;
+import com.localapp.data.Profile;
 import com.localapp.request.helper.VolleyErrorHelper;
 
 import org.json.JSONException;
@@ -20,52 +21,52 @@ import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_SERVER_
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_SUCCESS;
 
 /**
- * Created by 4 way on 03-03-2017.
+ * Created by 4 way on 19-04-2017.
  */
 
-public class LoginRequest extends CommonRequest {
-
-    private static final String JSON_FIELD_EMAIL = "email";
-    private static final String JSON_FIELD_PASSWORD = "password";
-
-    private LoginData mLoginData;
+public class GetProfileRequest extends CommonRequest {
+    private Profile mProfile;
     private Map<String, String> mParams;
     Context mContext;
-    private LoginResponseCallback mLoginResponseCallback;
+    private GetProfileRequestCallback mGetProfileRequestCallback;
 
 
-    public interface LoginResponseCallback {
-        void onLoginResponse(ResponseCode responseCode, LoginData data);
+    public interface GetProfileRequestCallback {
+        void onProfileResponse(CommonRequest.ResponseCode responseCode,Profile mProfile);
     }
 
-    public LoginRequest(Context context, LoginData data, LoginResponseCallback cb) {
-        super(context, RequestType.COMMON_REQUEST_LOGIN, CommonRequestMethod.COMMON_REQUEST_METHOD_POST, null);
-        mContext = context;
-        mLoginData = data;
+    public GetProfileRequest(Context mContext, Profile mProfile,GetProfileRequestCallback mGetProfileRequestCallback) {
+        super(mContext,RequestType.COMMON_REQUEST_GET_PROFILE,CommonRequestMethod.COMMON_REQUEST_METHOD_POST,null);
+
+        this.mProfile = mProfile;
+        this.mContext = mContext;
 
         mParams = new HashMap<>();
-        mParams.put(JSON_FIELD_EMAIL, mLoginData.getEmail());
-        mParams.put(JSON_FIELD_PASSWORD, mLoginData.getPassword());
+        mParams.put("userId",mProfile.getuId());
+        mParams.put("token",mProfile.getuToken());
         super.setParams(mParams);
 
-        mLoginResponseCallback = cb;
+        this.mGetProfileRequestCallback = mGetProfileRequestCallback;
+
     }
+
 
     @Override
     public void onResponseHandler(JSONObject response) {
-        //TODO: Need to change parsing as per response from server
+//TODO: Need to change parsing as per response from server
         try {
             JSONObject jsonObject = response.getJSONObject("data");
-            mLoginData.setUserId(jsonObject.getString("id"));
-            mLoginData.setAccessToken(jsonObject.getString("token"));
-            mLoginData.setmName(jsonObject.getString("name"));
-            mLoginData.setmMobile(jsonObject.getString("mobile"));
-            mLoginData.setmSpeciality(jsonObject.getString("speciality"));
-            mLoginData.setPicUrl(jsonObject.getString("picUrl"));
-            mLoginData.setmProfession(jsonObject.getString("profession"));
-            mLoginData.setmNotes(jsonObject.getString("notes"));
+            mProfile.setuId(jsonObject.getString("id"));
+            mProfile.setuToken(jsonObject.getString("token"));
+            mProfile.setuName(jsonObject.getString("name"));
+            mProfile.setuMobile(jsonObject.getString("mobile"));
+            mProfile.setuEmail(jsonObject.getString("email"));
+            mProfile.setuSpeciality(jsonObject.getString("speciality"));
+            mProfile.setuPictureURL(jsonObject.getString("picUrl"));
+            mProfile.setProfession(jsonObject.getString("profession"));
+            mProfile.setuNotes(jsonObject.getString("notes"));
 
-            mLoginResponseCallback.onLoginResponse(COMMON_RES_SUCCESS, mLoginData);
+            mGetProfileRequestCallback.onProfileResponse(COMMON_RES_SUCCESS, mProfile);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -80,7 +81,7 @@ public class LoginRequest extends CommonRequest {
 
         if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
             resCode = COMMON_RES_CONNECTION_TIMEOUT;
-            mLoginResponseCallback.onLoginResponse(resCode, mLoginData);
+            mGetProfileRequestCallback.onProfileResponse(resCode, mProfile);
         }
         if (errorMsg == VolleyErrorHelper.COMMON_NETWORK_ERROR_TIMEOUT)
         {
@@ -94,9 +95,9 @@ public class LoginRequest extends CommonRequest {
         }else
         {
             resCode = COMMON_RES_SERVER_ERROR_WITH_MESSAGE;
-            mLoginData.setErrorMessage(errorMsg);
+            mProfile.setErrorMsg(errorMsg);
         }
 
-        mLoginResponseCallback.onLoginResponse(resCode, mLoginData);
+        mGetProfileRequestCallback.onProfileResponse(resCode, mProfile);
     }
 }

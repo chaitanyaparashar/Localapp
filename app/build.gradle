@@ -15,8 +15,10 @@ android {
         applicationId "com.localapp"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 3
+        versionCode 5
         versionName "1.0"
+        multiDexEnabled true
+
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         signingConfig signingConfigs.config
@@ -58,7 +60,8 @@ dependencies {
     compile 'com.googlecode.libphonenumber:libphonenumber:7.0.4'
     compile 'com.github.siyamed:android-shape-imageview:0.9.+@aar'
     compile 'com.theartofdev.edmodo:android-image-cropper:2.2.+'
-    compile 'com.facebook.android:facebook-android-sdk:[4,5)'
+//    compile 'com.facebook.android:facebook-android-sdk:[4,5)'
+    compile 'com.facebook.android:facebook-android-sdk:4.+'
     compile 'com.github.NaikSoftware:StompProtocolAndroid:1.1.7'
     //for mttq
     compile 'org.fusesource.mqtt-client:mqtt-client:1.12'

@@ -48,7 +48,7 @@
                     android:padding="10dp"
                     android:layout_width="130dp"
                     android:layout_height="130dp"
-                    android:src="@mipmap/ic_launcher"
+                    android:src="@drawable/ic_user"
                     android:layout_gravity="center"
                     app:siBorderWidth="3dp"
                     app:siBorderColor="#FFFFFF"
@@ -128,27 +128,21 @@
 
 
                 <!--  Profession Label -->
-                <LinearLayout
-                    android:orientation="horizontal"
+                <!--  Profession Label -->
+                <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:weightSum="5">
-
-                    <ImageView
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:layout_width="35dp"
-                        android:layout_height="35dp"
-                        android:tint="#2196f3"
-                        android:src="@drawable/ic_profession"/>
-
-                    <Spinner
-                        android:layout_gravity="center"
-                        android:layout_weight="4"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp">
+                    <EditText android:id="@+id/input_profession"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/spinner" />
-                </LinearLayout>
+                        android:drawablePadding="10dp"
+                        android:editable="false"
+                        android:drawableStart="@drawable/ic_profession"
+                        android:drawableEnd="@android:drawable/arrow_down_float"
+                        android:hint="Select Profession" />
+                </android.support.design.widget.TextInputLayout>
 
                 <!--  Password Label -->
                 <android.support.design.widget.TextInputLayout

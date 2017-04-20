@@ -27,18 +27,18 @@ import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_SERVER_
 
 public class SignUpRequest {
 
-    private static final String JSON_FIELD_NAME = "name";
-    private static final String JSON_FIELD_PASSWORD = "password";
-    private static final String JSON_FIELD_EMAIL_ID = "email";
-    private static final String JSON_FIELD_PROFESSION = "profession";
-    private static final String JSON_FIELD_MOBILE_NUMBER = "mobile";
-    private static final String JSON_FIELD_MOBILE_PRIVACY = "mobilePrivacy";
-    private static final String JSON_FIELD_SPECIALITY = "speciality";
-    private static final String JSON_FIELD_NOTES = "notes";
-    private static final String JSON_FIELD_FILE = "file";
-    private static final String JSON_FIELD_M_PLACE = "place";
-    private static final String JSON_FIELD_M_LOCATION = "location";
-    private static final String JSON_FIELD_TYPE = "type";
+    public static final String JSON_FIELD_NAME = "name";
+    public static final String JSON_FIELD_PASSWORD = "password";
+    public static final String JSON_FIELD_EMAIL_ID = "email";
+    public static final String JSON_FIELD_PROFESSION = "profession";
+    public static final String JSON_FIELD_MOBILE_NUMBER = "mobile";
+    public static final String JSON_FIELD_MOBILE_PRIVACY = "mobilePrivacy";
+    public static final String JSON_FIELD_SPECIALITY = "speciality";
+    public static final String JSON_FIELD_NOTES = "notes";
+    public static final String JSON_FIELD_FILE = "file";
+    public static final String JSON_FIELD_M_PLACE = "place";
+    public static final String JSON_FIELD_M_LOCATION = "location";
+    public static final String JSON_FIELD_TYPE = "type";
 
 
     private Context mContext;

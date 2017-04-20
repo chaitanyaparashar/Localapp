@@ -1,12 +1,14 @@
 package com.localapp.ui;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
@@ -18,12 +20,16 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -78,10 +84,12 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
     EditText mNameView, mNumberView, mEmailView,
             mPasswordView, cPasswordView, mInfoView,
-            mDetailView,mLocationTypeView;
+            mDetailView,mLocationTypeView,mProfessionView;
     boolean numberVisibility = true;
 
-    Spinner spinner;
+    ExpandableListAdapter listAdapter;
+    ExpandableListView expListView;
+
 
     // Custom ImageView: with extended CircularImageView and customize like NetworkImageView
     CircularNetworkImageView profilePic;
@@ -99,8 +107,6 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
     ProgressDialog mProgressDialog;
 
-    String[] professionString = {"Select Profession", "Student", "Housewife", "Helth and wellness", "Repair and Maintenance",
-            "Professionals","Wedding Events","Skills","Beauty"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,28 +169,22 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         mNameView = (EditText) findViewById(R.id.input_name);
         mNumberView = (EditText) findViewById(R.id.input_phoneNumber);
         mEmailView = (EditText) findViewById(R.id.input_email);
+        mProfessionView = (EditText) findViewById(R.id.input_profession);
         mPasswordView = (EditText) findViewById(R.id.input_password);
         cPasswordView = (EditText) findViewById(R.id.input_password_c);
         mInfoView = (EditText) findViewById(R.id.input_brief_intro);
         mDetailView = (EditText) findViewById(R.id.input_details_des);
         mSignInView = (TextView) findViewById(R.id.sign_in_text);
 
-        spinner = (Spinner) findViewById(R.id.spinner);
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item,professionString);
-        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(spinnerAdapter);
-
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        mProfessionView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String item = parent.getSelectedItem().toString();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-
+            public void onClick(View v) {
+                showPopup(SignUpActivity.this);
             }
         });
+
+
+
 
         mNumberView.setTag("0");//privacy 0 means visible and 1 means hide
         mNumberView.setOnTouchListener(new View.OnTouchListener() {
@@ -242,7 +242,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         mSignInView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                signInDialog();
+                finish();
             }
         });
 
@@ -261,6 +261,66 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         permissionsRequestReadExternalStorage();
 
     }
+
+
+    // The method that displays the popup.
+    private void showPopup(final Activity context) {
+
+        // Inflate the popup_layout.xml
+        LinearLayout viewGroup = (LinearLayout) context.findViewById(R.id.activity_select_profession);
+        LayoutInflater layoutInflater = (LayoutInflater) context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = layoutInflater.inflate(R.layout.activity_select_profession, null);
+
+
+
+
+        // get the listview
+        expListView = (ExpandableListView) layout.findViewById(R.id.lvExp);
+
+        // preparing list data
+//        prepareListData();
+
+        listAdapter = new ExpandableListAdapter(this);
+
+        // setting list adapter
+        expListView.setAdapter(listAdapter);
+
+
+
+
+        // Creating the PopupWindow
+        final PopupWindow popup = new PopupWindow(context);
+        popup.setContentView(layout);
+        popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                String items = "";
+                for(int mGroupPosition =0; mGroupPosition < listAdapter.getGroupCount(); mGroupPosition++)
+                {
+                    items = items +  listAdapter.getItemAtPostion(mGroupPosition);
+
+                }
+                if (items.length() > 2) {
+                    mProfessionView.setText(items.substring(0,items.length()-1));
+                }
+
+            }
+        });
+
+
+        popup.setFocusable(true);
+
+
+        // Clear the default translucent background
+        popup.setBackgroundDrawable(new BitmapDrawable());
+
+
+        popup.showAsDropDown(mProfessionView);
+
+    }
+
+
 
     void permissionsRequestReadExternalStorage() {
         if (ContextCompat.checkSelfPermission(this,
@@ -358,13 +418,11 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         }
     }
 
-    public boolean phone_val(String ph_number)
-    {
+    public boolean phone_val(String ph_number) {
         return android.util.Patterns.PHONE.matcher(ph_number).matches();
     }
 
-    private boolean isValidMobile(String phone2)
-    {
+    private boolean isValidMobile(String phone2) {
         boolean check=false;
         if(!Pattern.matches("[a-zA-Z]+", phone2))
         {
@@ -392,7 +450,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         String name = mNameView.getText().toString();
         String number = mNumberView.getText().toString();
         String email = mEmailView.getText().toString();
-        String profession = mNameView.getText().toString();
+        String profession = mProfessionView.getText().toString().trim();
         String password = mPasswordView.getText().toString();
         String cPassword = cPasswordView.getText().toString();
         String brifIntro = mInfoView.getText().toString();
@@ -449,10 +507,12 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
             mEmailView.setError(null);
         }
 
-        if (spinner.getSelectedItemPosition() == 0){
-            onSignUpFailed("Please select your profession");
-            valid = false;
+        if (profession.isEmpty() || profession.length() <1) {
+            mProfessionView.setError("Please select your profession");
+            valid =  false;
             return valid;
+        }else {
+            mProfessionView.setError(null);
         }
 
 
@@ -505,7 +565,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         String name = mNameView.getText().toString();
         String number = mNumberView.getText().toString();
         String email = mEmailView.getText().toString();
-        String profession = spinner.getSelectedItem().toString();
+        String profession = mProfessionView.getText().toString().trim();
         String password = mPasswordView.getText().toString();
         String brifIntro = mInfoView.getText().toString();
         String detail = mDetailView.getText().toString();
@@ -548,6 +608,12 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        setResult(RESULT_CANCELED);
+    }
+
     private void onSignUpSuccess(SignUpData data) {
         //TODO: Implement signup success logic here
         HomeActivity.mLoginToken = data.getmToken();
@@ -555,7 +621,10 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         HomeActivity.mPicUrl = data.getPicUrl();
         session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mPicUrl, HomeActivity.mLastKnownLocation);
 
-
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("result",true);
+        setResult(10,returnIntent);
+        finish();
     }
 
 

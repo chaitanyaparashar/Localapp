@@ -38,6 +38,8 @@ public abstract class CommonRequest {
     private static final String UNSUBSCRIBE_NOTICE_BOARD_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/unsuscribeNoticeBoard";
     private static final String DELETE_NOTICE_BOARD_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/DeleteNoticeBoard";
     private static final String DELETE_NOTICE_BOARD_MSG_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/deleteMessageFromNoticeBoard";
+    private static final String GET_PROFILE_REQUEST_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/getUserById";
+    private static final String UPDATE_PROFILE_REQUEST_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/update";
 
     public enum RequestType {
         COMMON_REQUEST_LOGIN,
@@ -55,7 +57,10 @@ public abstract class CommonRequest {
         COMMON_REQUEST_SUBSCRIBE_NOTICE_BOARD,
         COMMON_REQUEST_UNSUBSCRIBE_NOTICE_BOARD,
         COMMON_REQUEST_DELETE_NOTICE_BOARD,
-        COMMON_REQUEST_DELETE_NOTICE_BOARD_MSG
+        COMMON_REQUEST_DELETE_NOTICE_BOARD_MSG,
+        COMMON_REQUEST_GET_PROFILE,
+        COMMON_REQUEST_UPDATE_PROFILE
+
     }
 
     public enum ResponseCode  {
@@ -188,11 +193,12 @@ public abstract class CommonRequest {
             case COMMON_REQUEST_DELETE_NOTICE_BOARD_MSG:
                 url = DELETE_NOTICE_BOARD_MSG_URL;
                 break;
-
-
-
-
-
+            case COMMON_REQUEST_GET_PROFILE:
+                url = GET_PROFILE_REQUEST_URL;
+                break;
+            case COMMON_REQUEST_UPDATE_PROFILE:
+                url = UPDATE_PROFILE_REQUEST_URL;
+                break;
 
 
         }

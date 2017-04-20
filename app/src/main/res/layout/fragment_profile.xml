@@ -6,7 +6,7 @@
 
 
     <LinearLayout
-        android:visibility="gone"
+        android:id="@+id/profile_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -24,7 +24,7 @@
                 android:layout_centerVertical="true"
                 android:layout_width="180dp"
                 android:layout_height="180dp"
-                android:src="@drawable/test_image"
+                android:src="@drawable/ic_user"
                 android:layout_gravity="center"
                 android:id="@+id/image_pic" />
 
@@ -111,8 +111,6 @@
                         android:layout_height="wrap_content"
                         android:drawableStart="@drawable/ic_name"
                         android:drawablePadding="10dp"
-                        android:hint="Enter sample text..."
-                        android:text="Dr. Khailah Bharti"
                         android:textColor="#000"
                         android:padding="5dp"
                         android:layout_gravity="center"
@@ -145,8 +143,6 @@
                         android:layout_height="wrap_content"
                         android:drawableStart="@drawable/ic_phone"
                         android:drawablePadding="10dp"
-                        android:hint="Enter sample text..."
-                        android:text="1234567890"
                         android:textColor="#000"
                         android:padding="5dp"
                         android:layout_gravity="center"
@@ -179,8 +175,6 @@
                         android:layout_height="wrap_content"
                         android:drawableStart="@drawable/ic_email"
                         android:drawablePadding="10dp"
-                        android:hint="Enter sample text..."
-                        android:text="dr.khailah@example.com"
                         android:textColor="#000"
                         android:padding="5dp"
                         android:layout_gravity="center"
@@ -243,8 +237,6 @@
                         android:layout_height="wrap_content"
                         android:drawableStart="@drawable/ic_profession"
                         android:drawablePadding="10dp"
-                        android:hint="Enter sample text..."
-                        android:text="Doctor, Yoga Trainer"
                         android:textColor="#000"
                         android:padding="5dp"
                         android:layout_gravity="center"
@@ -276,8 +268,6 @@
                         android:layout_height="wrap_content"
                         android:drawableStart="@drawable/ic_brief_intro"
                         android:drawablePadding="10dp"
-                        android:hint="Enter sample text..."
-                        android:text="Doctor, Yoga Trainer"
                         android:textColor="#000"
                         android:padding="5dp"
                         android:layout_gravity="center"
@@ -309,8 +299,6 @@
                         android:layout_height="wrap_content"
                         android:drawableStart="@drawable/ic_detail_description"
                         android:drawablePadding="10dp"
-                        android:hint="Enter sample text..."
-                        android:text="Doctor, Yoga Trainer"
                         android:textColor="#000"
                         android:padding="5dp"
                         android:layout_gravity="center"
@@ -323,7 +311,7 @@
 
                 <Button
                     android:layout_marginTop="10dp"
-                    android:id="@+id/_loginUp"
+                    android:id="@+id/_logout_btn"
                     android:layout_gravity="bottom"
                     android:text="Logout"
                     android:textColor="#FFFFFF"
@@ -346,6 +334,7 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
+            android:id="@+id/login_layout"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

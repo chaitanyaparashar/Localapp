@@ -19,11 +19,9 @@ public class Profile implements ClusterItem {
     private LatLng uLatLng;
     private String uSpeciality;
     private String uNotes;
-
-
     private String uPrivacy;
-
     private String profession;
+    private String errorMsg;
 
     public Profile(String uId ) {
         this.uId = uId;
@@ -32,6 +30,14 @@ public class Profile implements ClusterItem {
     public Profile(LatLng position, String name) {
         this.uLatLng = position;
         this.uName = name;
+    }
+
+    public String getErrorMsg() {
+        return errorMsg;
+    }
+
+    public void setErrorMsg(String errorMsg) {
+        this.errorMsg = errorMsg;
     }
 
     public String getuPrivacy() {

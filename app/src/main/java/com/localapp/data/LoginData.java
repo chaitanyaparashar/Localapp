@@ -17,11 +17,32 @@ public class LoginData {
     private String picUrl;
     private String mErrorMessage;
 
+
+
+    private String mNotes;
+    private String mProfession;
+
     public LoginData(String mEmail, String mPassword) {
         this.mEmail = mEmail;
         this.mPassword = mPassword;
     }
 
+
+    public String getmNotes() {
+        return mNotes;
+    }
+
+    public void setmNotes(String mNotes) {
+        this.mNotes = mNotes;
+    }
+
+    public String getmProfession() {
+        return mProfession;
+    }
+
+    public void setmProfession(String mProfession) {
+        this.mProfession = mProfession;
+    }
 
     public String getUserId() {
         return userId;

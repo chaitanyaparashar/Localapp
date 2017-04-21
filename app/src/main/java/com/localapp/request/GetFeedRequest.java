@@ -134,7 +134,7 @@ public class GetFeedRequest extends CommonRequest {
                 mRequestData.addMessage(message);
 
                 if (message.getMessageType() == FeedFragment.MessageType.EMERGENCY && !message.getAccepted().equals("1") &&
-                        !message.getMsgIdOnlyForFrontEnd().equals("null") && !HomeActivity.mUserId.equals(message.getmUserID())) {
+                        !message.getMsgIdOnlyForFrontEnd().equals("null") && HomeActivity.mUserId != null && !HomeActivity.mUserId.equals(message.getmUserID())) {
 
                     mRequestDataEmergency.addMessage(message);
                 }

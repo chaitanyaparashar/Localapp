@@ -1,6 +1,10 @@
 package com.util;
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.localapp.ui.HomeActivity;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -46,4 +50,14 @@ public class utility {
                 return n+"th";
         }
     }
+
+    public static boolean isLocationAvailable(Context mContext) {
+        if (HomeActivity.mLastKnownLocation == null) {
+            Toast.makeText(mContext, "Please wait for getting your location...", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        return true;
+    }
+
 }

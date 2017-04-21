@@ -147,15 +147,17 @@ public class MyNoticeBoardRequest extends CommonRequest{
 
                     String msgID = null;
                     String msgText = null;
+                    String timeStamp = null;
                     if (lastMsgObject != null) {
                         msgID = lastMsgObject.getString("id");
                         msgText = lastMsgObject.getString("text");
+                        timeStamp = lastMsgObject.getString("timestamp");
                     }
 
 
                     NoticeBoard mNoticeBoard = new NoticeBoard(noticeBoardAdminId,noticeBoardName);
                     List<NoticeBoardMessage> message = new ArrayList<>();
-                    message.add(new NoticeBoardMessage(msgID,msgText));
+                    message.add(new NoticeBoardMessage(msgID,msgText,timeStamp));
 
                     mNoticeBoard.setId(noticeBoardId);
                     mNoticeBoard.setLocation(latLng);

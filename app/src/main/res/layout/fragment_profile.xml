@@ -29,6 +29,7 @@
                 android:id="@+id/image_pic" />
 
             <ImageButton
+                android:visibility="gone"
                 android:elevation="3dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -309,6 +310,19 @@
                 </LinearLayout>
 
 
+
+                <Button
+
+                    android:layout_marginTop="10dp"
+                    android:id="@+id/_share_btn"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Share App"
+                    android:drawableTint="#2196f3"
+                    android:drawableTop="@android:drawable/ic_menu_share"
+                    android:background="@drawable/editor_states"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
                 <Button
                     android:layout_marginTop="10dp"
                     android:id="@+id/_logout_btn"
@@ -318,6 +332,8 @@
                     android:background="@drawable/submit_button_state"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content" />
+
+
 
 
             </LinearLayout>

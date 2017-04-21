@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -46,6 +47,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
     public static final int REQUEST_PERSONAL = 0;
     public static final int REQUEST_ABOUT = 1;
 
+    boolean numberVisibility = true;
     ExpandableListAdapter listAdapter;
     ExpandableListView expListView;
     ArrayList<String> listDataHeader;
@@ -78,6 +80,36 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
                 showPopup(UpdateActivity.this);
             }
         });
+
+        mNumberView.setTag("0");//privacy 0 means visible and 1 means hide
+        mNumberView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if(event.getRawX() >= (mNumberView.getRight() - mNumberView.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        // your action here
+                        if (numberVisibility) {
+                            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_hidden, 0);
+                            numberVisibility = false;
+                            mNumberView.setTag("1");
+                        }else {
+                            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_visible, 0);
+                            numberVisibility = true;
+                            mNumberView.setTag("0");
+                        }
+
+                    }
+                }
+                return false;
+            }
+        });
+
+
 
         if (whichUpdate == REQUEST_PERSONAL) {
             personalLayout.setVisibility(View.VISIBLE);
@@ -200,6 +232,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
             mProfile.setuName(mNameView.getText().toString().trim());
             mProfile.setuMobile(mNumberView.getText().toString().trim());
             mProfile.setuEmail(mEmailView.getText().toString().trim());
+            mProfile.setuPrivacy(mNumberView.getTag().toString());
         }else {
             mProfile.setProfession(mProfessionView.getText().toString().trim());
             mProfile.setuSpeciality(mInfoView.getText().toString().trim());
@@ -218,6 +251,14 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
         mProfessionView.setText(mProfileData.getProfession());
         mInfoView.setText(mProfileData.getuSpeciality());
         mDetailView.setText(mProfileData.getuNotes());
+
+        if (mProfileData.getuPrivacy().equals("0")) {
+            mNumberView.setTag("0");
+            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_hidden, 0);
+        }else {
+            mNumberView.setTag("1");
+            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_visible, 0);
+        }
     }
 
     @Override

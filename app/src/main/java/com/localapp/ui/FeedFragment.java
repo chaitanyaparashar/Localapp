@@ -91,6 +91,7 @@ import static com.localapp.ui.FeedFragment.MediaType.MEDIA_AUDIO;
 import static com.localapp.ui.FeedFragment.MediaType.MEDIA_IMAGE;
 import static com.localapp.ui.FeedFragment.MediaType.MEDIA_VIDEO;
 import static com.localapp.ui.ThreadAdapter.getEmojiResourceIdByMsgType;
+import static com.util.utility.isLocationAvailable;
 
 
 /**
@@ -518,7 +519,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         @Override
         public void onClick(View v) {
             String text = chatText.getText().toString().trim();
-            if (!text.matches("")) {
+            if (!text.matches("") && isLocationAvailable(getContext())) {
 
                 Message messageData = new Message();
 //                messageData.setToken("58c93b21f81fde4c11fe02e1");
@@ -1015,7 +1016,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
             Message message = emergencyMessageList.get(position);
 
 //            proPicImageView.setImageUrl(message.getMediaURL(), VolleySingleton.getInstance(context).getImageLoader());
-            Picasso.with(context).load(message.getMediaURL()).into(proPicImageView);
+            Picasso.with(context).load(message.getPicUrl()).into(proPicImageView);
             msgTextView.setText(message.getmText());
             if (message.getMessageType() != null) {
                 messageTypeImageView.setImageResource(getEmojiResourceIdByMsgType(message.getMessageType()));

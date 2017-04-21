@@ -311,6 +311,9 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         List<String> student = new ArrayList<String>();
         student.add("Student");
 
+        List<Integer> housewifeIcon = new ArrayList<>();
+        housewifeIcon.add(R.drawable.ic_housewifes);
+
         List<Integer> studentIcon = new ArrayList<>();
         studentIcon.add(R.drawable.ic_student);
 
@@ -326,6 +329,13 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         health.add("Physiotherapy");
         health.add("Yoga Trainer");
 
+        List<Integer> healhIcons = new ArrayList<>();
+        healhIcons.add(R.drawable.ic_dietician);
+        healhIcons.add(R.drawable.ic_fitness_trainer);
+        healhIcons.add(R.drawable.ic_nurse);
+        healhIcons.add(R.drawable.ic_physiotharepy);
+        healhIcons.add(R.drawable.ic_yoga_trainer);
+
 
         List<String> repair = new ArrayList<String>();
         repair.add("AC Repair");
@@ -336,6 +346,16 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         repair.add("Laptop Repair");
         repair.add("Loundry");
         repair.add("Plumber");
+
+        List<Integer> repairIcons = new ArrayList<>();
+        repairIcons.add(R.drawable.ic_ac_repaire);
+        repairIcons.add(R.drawable.ic_carpenter);
+        repairIcons.add(R.drawable.ic_construction_epair);
+        repairIcons.add(R.drawable.ic_electrician);
+        repairIcons.add(R.drawable.ic_house_painter);
+        repairIcons.add(R.drawable.ic_laptop_repair);
+        repairIcons.add(R.drawable.ic_loundry);
+        repairIcons.add(R.drawable.ic_plumber);
 
         List<String> professionals = new ArrayList<String>();
         professionals.add("Web Designer");
@@ -363,7 +383,29 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         professionals.add("Marketeer");
 
         List<Integer> professionalsIcons = new ArrayList<>();
-
+        professionalsIcons.add(R.drawable.ic_web_designer);
+        professionalsIcons.add(R.drawable.ic_social_marketing);
+        professionalsIcons.add(R.drawable.ic_lawyer);
+        professionalsIcons.add(R.drawable.ic_realestate);
+        professionalsIcons.add(R.drawable.ic_insurance_agent);
+        professionalsIcons.add(R.drawable.ic_cctv);
+        professionalsIcons.add(R.drawable.ic_ca);
+        professionalsIcons.add(R.drawable.ic_graph);
+        professionalsIcons.add(R.drawable.ic_operator);
+        professionalsIcons.add(R.drawable.ic_software_engineer);
+        professionalsIcons.add(R.drawable.ic_engineer);
+        professionalsIcons.add(R.drawable.ic_sales_professional);
+        professionalsIcons.add(R.drawable.ic_writer);
+        professionalsIcons.add(R.drawable.ic_interior_design);
+        professionalsIcons.add(R.drawable.ic_graphic_designer);
+        professionalsIcons.add(R.drawable.ic_adminstrator);
+        professionalsIcons.add(R.drawable.ic_hr);
+        professionalsIcons.add(R.drawable.ic_security);
+        professionalsIcons.add(R.drawable.ic_driver);
+        professionalsIcons.add(R.drawable.ic_doctor);
+        professionalsIcons.add(R.drawable.ic_advisor);
+        professionalsIcons.add(R.drawable.ic_architect);
+        professionalsIcons.add(R.drawable.ic_marketeer);
 
         List<String> wedding = new ArrayList<String>();
         wedding.add("Decor");
@@ -372,6 +414,17 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         wedding.add("Bartender");
         wedding.add("Photograph");
         wedding.add("Musician");
+
+        List<Integer> weddingIcon = new ArrayList<>();
+        weddingIcon.add(R.drawable.ic_decor);
+        weddingIcon.add(R.drawable.ic_dj);
+        weddingIcon.add(R.drawable.ic_cep);
+        weddingIcon.add(R.drawable.ic_bartender);
+        weddingIcon.add(R.drawable.ic_photograph);
+        weddingIcon.add(R.drawable.ic_musician);
+
+
+
         List<String> skills = new ArrayList<String>();
         skills.add("Salsa");
         skills.add("Drum");
@@ -379,10 +432,22 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         skills.add("Guitar");
         skills.add("Zumba");
 
+        List<Integer> skillsIcon = new ArrayList<>();
+        skillsIcon.add(R.drawable.ic_salsa);
+        skillsIcon.add(R.drawable.ic_drum);
+        skillsIcon.add(R.drawable.ic_keyboard_lessons);
+        skillsIcon.add(R.drawable.ic_guitar);
+        skillsIcon.add(R.drawable.ic_zumba);
+
         List<String> beauty = new ArrayList<String>();
         beauty.add("Saloon");
         beauty.add("Makeup Artist");
         beauty.add("Spa");
+
+        List<Integer> beautyIcon = new ArrayList<>();
+        beautyIcon.add(R.drawable.ic_saloon);
+        beautyIcon.add(R.drawable.ic_makeupartist);
+        beautyIcon.add(R.drawable.ic_spa);
 
         listDataChild.put(listDataHeader.get(0), student); // Header, Child data
         listDataChild.put(listDataHeader.get(1), professionals);
@@ -394,5 +459,12 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         listDataChild.put(listDataHeader.get(7), housewife);
 
         listDrawableChild.put(listDataHeader.get(0), studentIcon);
+        listDrawableChild.put(listDataHeader.get(1), professionalsIcons);
+        listDrawableChild.put(listDataHeader.get(2), skillsIcon);
+        listDrawableChild.put(listDataHeader.get(3), healhIcons);
+        listDrawableChild.put(listDataHeader.get(4), repairIcons);
+        listDrawableChild.put(listDataHeader.get(5), weddingIcon);
+        listDrawableChild.put(listDataHeader.get(6), beautyIcon);
+        listDrawableChild.put(listDataHeader.get(7), housewifeIcon);
     }
 }

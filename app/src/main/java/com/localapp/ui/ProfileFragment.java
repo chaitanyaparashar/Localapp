@@ -47,12 +47,14 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
     private TextView uNmaeTextView,uNumberTextView,
             uEmailTextView,uProdessionTextView,uBreifInfo,
             uDetailTextView;
-    private Button logoutBtn;
+    private Button logoutBtn,shareBtn;
 
     //Login
     private EditText _email, _password;
     private Button _loginBtn, _signupBtn;
     private TextView _forgotPass;
+
+
 
     ProgressDialog mProgressDialog;
 
@@ -128,7 +130,9 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
         uBreifInfo = (TextView) view.findViewById(R.id._brief_intro);
         uDetailTextView = (TextView) view.findViewById(R.id._details);
         logoutBtn = (Button) view.findViewById(R.id._logout_btn);
+        shareBtn = (Button) view.findViewById(R.id._share_btn);
         logoutBtn.setOnClickListener(onClickListener);
+        shareBtn.setOnClickListener(onClickListener);
         editAbout.setOnClickListener(onClickListener);
         editPersonal.setOnClickListener(onClickListener);
     }
@@ -151,6 +155,16 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
                 case R.id.edit_about: startActivityForResult(new Intent(getContext(),UpdateActivity.class).putExtra("request",REQUEST_ABOUT),UPDATE_REQUEST_CODE);
                     break;
                 case R.id._logout_btn: onLogout();
+                    break;
+
+                case R.id._share_btn:
+                    String shareBody = "https://play.google.com/store/apps/details?id=com.localapp";
+                    Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+                    sharingIntent.setType("text/plain");
+                    sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Check out \"Localapp\"");
+                    sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+                    startActivity(Intent.createChooser(sharingIntent, "Share \"Localapp\" via"));
+
                     break;
             }
         }

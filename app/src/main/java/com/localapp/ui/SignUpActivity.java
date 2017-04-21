@@ -208,7 +208,6 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
                             mNumberView.setTag("0");
                         }
 
-                        return true;
                     }
                 }
                 return false;

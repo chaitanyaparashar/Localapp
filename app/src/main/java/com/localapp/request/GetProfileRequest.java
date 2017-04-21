@@ -65,6 +65,8 @@ public class GetProfileRequest extends CommonRequest {
             mProfile.setuPictureURL(jsonObject.getString("picUrl"));
             mProfile.setProfession(jsonObject.getString("profession"));
             mProfile.setuNotes(jsonObject.getString("notes"));
+            mProfile.setuPrivacy(jsonObject.getString("mobilePrivacy"));
+
 
             mGetProfileRequestCallback.onProfileResponse(COMMON_RES_SUCCESS, mProfile);
         } catch (JSONException e) {

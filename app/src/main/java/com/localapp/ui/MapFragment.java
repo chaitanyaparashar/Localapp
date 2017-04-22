@@ -19,7 +19,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -35,6 +34,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -44,8 +44,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.NetworkImageView;
 
 import com.github.siyamed.shapeimageview.CircularImageView;
 import com.localapp.R;
@@ -61,9 +59,7 @@ import com.localapp.request.GetNearestNoticeBoardRequest;
 import com.localapp.request.GetNoticeBoardMessageRequest;
 import com.localapp.request.GetUsersRequest;
 import com.localapp.request.ImageSearchRequest;
-import com.localapp.request.PostNoticeBoardMessageRequest;
 import com.localapp.request.SubscribeUnsubscribeNoticeBoardRequest;
-import com.localapp.request.helper.VolleySingleton;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -89,7 +85,7 @@ import java.util.Random;
 import java.util.StringTokenizer;
 
 import static com.localapp.appcontroller.AppController.getAppContext;
-import static com.localapp.appcontroller.AppController.isActivityVisible;
+import static com.util.utility.getProfessionList;
 
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GetUsersRequest.GetUsersResponseCallback,
@@ -122,6 +118,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     private AutoCompleteTextView searchBoxView;
     private Snackbar closeAppSnackbar;
 
+    private ArrayAdapter<String> autoCompleteAdapter;
+    private List<String> searchContaintList;
+
+
     DialogNoticeBoardMessageAdapter messageAdapter;
 
 
@@ -149,6 +149,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         session = new SessionManager(getActivity());
         profileList = new ArrayList<>();
         noticeBoardProfileList = new ArrayList<>();
+        searchContaintList = new ArrayList<>();
+        autoCompleteAdapter = new ArrayAdapter<String>(getContext(),
+                android.R.layout.simple_dropdown_item_1line, searchContaintList);
 
         setupView(view);    //initialization view object
 
@@ -191,6 +194,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
 
         searchBoxView.addTextChangedListener(textWatcherForSearchBox);
+        searchBoxView.setAdapter(autoCompleteAdapter);
         searchBtn.setOnClickListener(searchOnClickListener);
         searchCameraBtn.setOnClickListener(searchOnClickListener);
         studentBtn.setOnClickListener(filterClickListener);
@@ -375,25 +379,29 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             switch (v.getId()) {
                 case R.id.emergency_iv:
                     emergencyBtn.setImageResource(R.drawable.ic_health_selected);
+                    indexs = filterIndexByProfession(profileList, ExpandableListAdapter.PROFESSION_GROUP_HEALTH);
+                    if (indexs != null && indexs.size() > 0) {
+                        addMarkerByProfile(true, indexs);
+                    }
 
                     break;
                 case R.id.student_iv:
                     studentBtn.setImageResource(R.drawable.ic_student_selected);
-                    indexs = filterIndexByProfession(profileList, "Student");
+                    indexs = filterIndexByProfession(profileList, ExpandableListAdapter.PROFESSION_GROUP_STUDENT);
                     if (indexs != null && indexs.size() > 0) {
                         addMarkerByProfile(true, indexs);
                     }
                     break;
                 case R.id.professionals_iv:
                     professionalBtn.setImageResource(R.drawable.ic_professionals_selected);
-                    indexs = filterIndexByProfession(profileList, "Professionals");
+                    indexs = filterIndexByProfession(profileList, ExpandableListAdapter.PROFESSION_GROUP_PROFESSIONALS);
                     if (indexs != null && indexs.size() > 0) {
                         addMarkerByProfile(true, indexs);
                     }
                     break;
                 case R.id.repair_iv:
                     repairBtn.setImageResource(R.drawable.ic_repair_selected);
-                    indexs = filterIndexByProfession(profileList, "Repair and Maintenance");
+                    indexs = filterIndexByProfession(profileList, ExpandableListAdapter.PROFESSION_GROUP_REPAIR);
                     if (indexs != null && indexs.size() > 0) {
                         addMarkerByProfile(true, indexs);
                     }
@@ -405,10 +413,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
                 case R.id.hobbies_iv:
                     hobbiesBtn.setImageResource(R.drawable.ic_hobby_selected);
-                    /*indexs = filterIndexByProfession(profileList, "Repair and Maintenance");
+                    indexs = filterIndexByProfession(profileList, ExpandableListAdapter.PROFESSION_GROUP_SKILLS);
                     if (indexs != null && indexs.size() > 0) {
                         addMarkerByProfile(true, indexs);
-                    }*/
+                    }
                     break;
 
             }
@@ -690,6 +698,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 //                addMarkerByProfile(false, null);
 //                addItems();
                 mClusterManager.cluster();
+
+                setSearchHintData(profileList);
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:
                 break;
@@ -831,12 +841,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             dataString = pName + " " + pNotes + " " + pSpeciality+ " " + pProfession;
             dataString = dataString.toLowerCase();
 
-            StringTokenizer st = new StringTokenizer(dataString);
+            StringTokenizer st = new StringTokenizer(dataString,", \n");
             boolean isFound = false;
             while (st.hasMoreTokens()) {
                 if (st.nextToken().equals(searchString)) {
                     isFound = true;
                 }
+            }
+
+            if (pName.toLowerCase().equals(searchString)){  //for full name
+                isFound = true;
             }
 
             if (isFound) {
@@ -850,13 +864,59 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         return profileIndex;
     }
 
+
+    public void setSearchHintData(List<Profile> mProfileList){
+        String[] uSpeciality = new String[0];
+        String[] uNotes = new String[0];
+        String[] profession = new String[0];
+        if (searchContaintList.size() > 0) {
+            searchContaintList.clear();
+        }
+        for (Profile profile:mProfileList){
+
+            try {
+                uSpeciality = profile.getuSpeciality().split(" ");
+                uNotes = profile.getuNotes().split(" ");
+                profession = profile.getProfession().split(",");
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+            if (!searchContaintList.contains(profile.getuName())){
+                searchContaintList.add(profile.getuName());
+            }
+
+            for (String s:uSpeciality){
+                if (!searchContaintList.contains(s)){
+                    searchContaintList.add(s);
+                }
+            }
+
+            for (String s:uNotes){
+                if (!searchContaintList.contains(s)){
+                    searchContaintList.add(s);
+                }
+            }
+
+            for (String s:profession){
+                if (!searchContaintList.contains(s)){
+                    searchContaintList.add(s);
+                }
+            }
+
+
+        }
+
+        autoCompleteAdapter.notifyDataSetChanged();
+    }
+
     /**
      * filter index by profession
      * @param profileList
-     * @param profession
+     * @param professionGroup
      * @return
      */
-    ArrayList<Integer> filterIndexByProfession(ArrayList<Profile> profileList, String profession) {
+    /*ArrayList<Integer> filterIndexByProfession(ArrayList<Profile> profileList, String profession) {
         profession = profession.toLowerCase();
         ArrayList<Integer> profileIndex = new ArrayList<>();
 
@@ -869,6 +929,35 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             if (profession.equals(profileProfession.toLowerCase())) {
                 profileIndex.add(i);
             }
+        }
+        return profileIndex;
+    }*/
+
+    ArrayList<Integer> filterIndexByProfession(ArrayList<Profile> profileList, String professionGroup) {
+
+        ArrayList<Integer> profileIndex = new ArrayList<>();
+
+        int size = profileList.size();
+
+        for (int i = 0; i < size; i++) {
+            Profile profile = profileList.get(i);
+            String[] profileProfession = profile.getProfession().split(",");
+
+            for (String profession:profileProfession){
+                try {
+                    if (getProfessionList(professionGroup).contains(profession)) {
+                        profileIndex.add(i);
+                        break;
+                    }
+                }catch (NullPointerException e){
+                    e.printStackTrace();
+                }
+
+            }
+
+
+
+
         }
         return profileIndex;
     }
@@ -919,7 +1008,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         @Override
         public void onClick(View v) {
             if (v.getId() == R.id.search_btn) {
-                String searchQuery = searchBoxView.getText().toString();
+                String searchQuery = searchBoxView.getText().toString().trim();
                 if (!TextUtils.isEmpty(searchQuery)) {
                     ArrayList<Integer> indexs = search(profileList, searchQuery);
                     if (indexs != null && indexs.size() > 0) {
@@ -931,6 +1020,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 i.putExtra("requestCode", 20);
                 startActivityForResult(i, 20);
             }
+
+            searchBoxView.clearFocus();
 
         }
     };

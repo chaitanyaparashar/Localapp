@@ -23,14 +23,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -51,12 +48,9 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
-import com.localapp.data.LoginData;
 import com.localapp.data.SignUpData;
 import com.localapp.login_session.SessionManager;
 import com.localapp.request.CommonRequest;
-import com.localapp.request.ForgetPasswordRequest;
-import com.localapp.request.LoginRequest;
 import com.localapp.request.SignUpRequest;
 import com.localapp.request.helper.VolleySingleton;
 
@@ -269,7 +263,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         LinearLayout viewGroup = (LinearLayout) context.findViewById(R.id.activity_select_profession);
         LayoutInflater layoutInflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View layout = layoutInflater.inflate(R.layout.activity_select_profession, null);
+        View layout = layoutInflater.inflate(R.layout.expendable_list, null);
 
 
 

@@ -8,18 +8,15 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.PopupMenu;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Button;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -130,7 +127,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
         LinearLayout viewGroup = (LinearLayout) context.findViewById(R.id.activity_select_profession);
         LayoutInflater layoutInflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View layout = layoutInflater.inflate(R.layout.activity_select_profession, null);
+        View layout = layoutInflater.inflate(R.layout.expendable_list, null);
 
 
 
@@ -200,8 +197,14 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
     }
 
 
-
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        LinearLayout mainLayout;
+        mainLayout = (LinearLayout)findViewById(R.id.activity_update);
+        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(mainLayout.getWindowToken(), 0);
+    }
 
     public void onBack(View view) {
         onBackPressed();
@@ -254,10 +257,12 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
 
         if (mProfileData.getuPrivacy().equals("0")) {
             mNumberView.setTag("0");
-            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_hidden, 0);
+            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_visible, 0);
+            numberVisibility = true;
         }else {
             mNumberView.setTag("1");
-            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_visible, 0);
+            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_hidden, 0);
+            numberVisibility = false;
         }
     }
 

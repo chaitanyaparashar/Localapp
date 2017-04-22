@@ -4,11 +4,14 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.localapp.ui.ExpandableListAdapter;
 import com.localapp.ui.HomeActivity;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 
 import static android.support.test.espresso.core.deps.guava.base.Preconditions.checkArgument;
@@ -58,6 +61,22 @@ public class utility {
         }
 
         return true;
+    }
+
+
+    public static List<String> getProfessionList (String professionGroup) {
+
+        switch (professionGroup) {
+            case ExpandableListAdapter.PROFESSION_GROUP_STUDENT: return ExpandableListAdapter.PROFESSION_GROUP_STUDENT_LIST;
+            case ExpandableListAdapter.PROFESSION_GROUP_PROFESSIONALS: return ExpandableListAdapter.PROFESSION_GROUP_PROFESSIONALS_LIST;
+            case ExpandableListAdapter.PROFESSION_GROUP_SKILLS: return ExpandableListAdapter.PROFESSION_GROUP_SKILLS_LIST;
+            case ExpandableListAdapter.PROFESSION_GROUP_HEALTH: return ExpandableListAdapter.PROFESSION_GROUP_HEALTH_LIST;
+            case ExpandableListAdapter.PROFESSION_GROUP_REPAIR: return ExpandableListAdapter.PROFESSION_GROUP_REPAIR_LIST;
+            case ExpandableListAdapter.PROFESSION_GROUP_WEDDING: return ExpandableListAdapter.PROFESSION_GROUP_WEDDING_LIST;
+            case ExpandableListAdapter.PROFESSION_GROUP_BEAUTY: return ExpandableListAdapter.PROFESSION_GROUP_BEAUTY_LIST;
+            case ExpandableListAdapter.PROFESSION_GROUP_HOUSEWIFE: return ExpandableListAdapter.PROFESSION_GROUP_HOUSEWIFE_LIST;
+            default: return null;
+        }
     }
 
 }

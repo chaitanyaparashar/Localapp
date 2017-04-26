@@ -8,7 +8,6 @@ import com.localapp.data.NoticeBoard;
 import com.localapp.request.helper.VolleyErrorHelper;
 import com.localapp.ui.HomeActivity;
 import com.google.android.gms.maps.model.LatLng;
-import com.util.utility;
 
 import org.json.JSONArray;
 import org.json.JSONException;

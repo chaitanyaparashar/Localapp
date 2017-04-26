@@ -7,7 +7,6 @@ import com.android.volley.VolleyError;
 import com.localapp.data.NoticeBoard;
 import com.localapp.data.NoticeBoardMessage;
 import com.localapp.request.helper.VolleyErrorHelper;
-import com.util.utility;
 
 import org.json.JSONArray;
 import org.json.JSONException;

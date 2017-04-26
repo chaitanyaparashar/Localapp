@@ -23,6 +23,16 @@ public class Profile implements ClusterItem {
     private String profession;
     private String errorMsg;
 
+    public String getFcmToken() {
+        return fcmToken;
+    }
+
+    public void setFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
+    }
+
+    private String fcmToken;
+
     public Profile(String uId ) {
         this.uId = uId;
     }

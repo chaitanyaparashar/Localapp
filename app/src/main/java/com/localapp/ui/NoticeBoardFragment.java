@@ -28,9 +28,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.localapp.R;
 import com.localapp.data.NoticeBoard;
 import com.localapp.data.NoticeBoardMessage;
+import com.localapp.data.NotificationData;
+import com.localapp.fcm.FcmNotificationRequest;
 import com.localapp.request.CommonRequest;
 import com.localapp.request.DeleteNoticeBoardMessageRequest;
 import com.localapp.request.DeleteNoticeBoardRequest;
@@ -39,7 +42,7 @@ import com.localapp.request.GetNoticeBoardMessageRequest;
 import com.localapp.request.MyNoticeBoardRequest;
 import com.localapp.request.PostNoticeBoardMessageRequest;
 import com.localapp.request.SubscribeUnsubscribeNoticeBoardRequest;
-import com.util.utility;
+import com.localapp.util.utility;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,11 +125,15 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
         noticeCreateFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 if (HomeActivity.mUserId !=null && !HomeActivity.mUserId.equals("")) {
                     startActivity(new Intent(getContext(), CreateNoticeActivity.class));
                 }else {
                     Toast.makeText(getContext(), "Please login first...", Toast.LENGTH_SHORT).show();
                 }
+
+
+
 
             }
         });

@@ -40,6 +40,7 @@ public abstract class CommonRequest {
     private static final String DELETE_NOTICE_BOARD_MSG_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/deleteMessageFromNoticeBoard";
     private static final String GET_PROFILE_REQUEST_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/getUserById";
     private static final String UPDATE_PROFILE_REQUEST_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/update";
+    private static final String FCM_PUSH_NOTIFICATION_URL = "https://fcm.googleapis.com/fcm/send";
 
     public enum RequestType {
         COMMON_REQUEST_LOGIN,
@@ -59,7 +60,8 @@ public abstract class CommonRequest {
         COMMON_REQUEST_DELETE_NOTICE_BOARD,
         COMMON_REQUEST_DELETE_NOTICE_BOARD_MSG,
         COMMON_REQUEST_GET_PROFILE,
-        COMMON_REQUEST_UPDATE_PROFILE
+        COMMON_REQUEST_UPDATE_PROFILE,
+        COMMON_REQUEST_FCM_PUSH_NOTIFICATION
 
     }
 
@@ -198,6 +200,10 @@ public abstract class CommonRequest {
                 break;
             case COMMON_REQUEST_UPDATE_PROFILE:
                 url = UPDATE_PROFILE_REQUEST_URL;
+                break;
+
+            case COMMON_REQUEST_FCM_PUSH_NOTIFICATION:
+                url = FCM_PUSH_NOTIFICATION_URL;
                 break;
 
 

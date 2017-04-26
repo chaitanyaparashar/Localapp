@@ -7,10 +7,34 @@
     <string name="title_activity_maps">Map</string>
     <string name="facebook_app_id">235015976963905</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 
     <string name="title_activity_camera">CameraActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+
+
+    <!-- Map Fragment -->
+    <string name="alert_msg_location_setting">Your location Settings is set to \'OFF\'. \nPlease Enable Location to use this app</string>
+    <string name="enable_location">Enable Location</string>
+    <string name="location_Settings">Location Settings</string>
+    <string name="alert_msg_access_location">Please allow this app to access location!</string>
+    <string name="permission_access">Permission access</string>
+    <string name="grant">Grant</string>
+    <string name="cancel">Cancel</string>
+    <string name="unsubscribe">Unsubscribe</string>
+    <string name="subscribe">Subscribe</string>
+    <string name="login_first">Please login first…</string>
+    <string name="please_wait_getting_location">Please wait, Getting location…</string>
+    <string name="no_internet_msg">No internet connection"</string>
+    <string name="success">success</string>
+    <string name="something_went_wrong">Something went wrong</string>
+    <string name="permission_denied">permission denied</string>
+    <string name="please_wait_msg">Please wait …</string>
+    <string name="close_app_msg">Press back again to exit Localapp</string>
+
+    <string name="FCM_AUTHORIZATION_KEY" templateMergeStrategy="preserve" translatable="false">key=AAAAh1gj7-8:APA91bFJLVxy4cWJ1Q9T8L3UlkpzZk5wRBoHzFjpEMbO1grFkPdzoJ39jaeF2rQUcXEqSvUsKSCoehZbOq_XmuWNZ-rW_UUZlFvurMG-_kEpOZvkgCwdfCANDpC2bKb63bVbNUH7wEde</string>
+
+
+
 </resources>

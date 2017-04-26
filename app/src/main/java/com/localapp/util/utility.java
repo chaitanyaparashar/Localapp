@@ -1,4 +1,4 @@
-package com.util;
+package com.localapp.util;
 
 import android.content.Context;
 import android.util.Log;
@@ -9,7 +9,6 @@ import com.localapp.ui.HomeActivity;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -26,6 +25,7 @@ public class utility {
 
     public static String getTimeAndDate(String milliseconds) {
 //        DateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
+
         DateFormat sdfDay = new SimpleDateFormat("d");
         DateFormat sdf = new SimpleDateFormat("MMM yyyy EEEE,  hh:mm a");
 

@@ -76,7 +76,7 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 import com.squareup.picasso.Picasso;
-import com.util.utility;
+import com.localapp.util.utility;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -85,7 +85,7 @@ import java.util.Random;
 import java.util.StringTokenizer;
 
 import static com.localapp.appcontroller.AppController.getAppContext;
-import static com.util.utility.getProfessionList;
+import static com.localapp.util.utility.getProfessionList;
 
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GetUsersRequest.GetUsersResponseCallback,
@@ -144,6 +144,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         MapsInitializer.initialize(this.getActivity());
 
+
+        Bundle extras = getActivity().getIntent().getExtras();
+
+        if(extras != null){
+            String data1 = extras.getString("data1");
+
+            Toast.makeText(getContext(), data1, Toast.LENGTH_SHORT).show();
+        }
 
 
         session = new SessionManager(getActivity());
@@ -527,14 +535,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     private void showAlertForLocationSetting(final int status) {
         String msg, title, btnText;
         if (status == 1) {
-            msg = "Your location Settings is set to 'OFF'. \nPlease Enable Location to " +
-                    "use this app";
-            title = "Enable Location";
-            btnText = "Location Settings";
+            msg = getString(R.string.alert_msg_location_setting);
+            title = getString(R.string.enable_location);
+            btnText = getString(R.string.location_Settings);
         }else {
-            msg = "Please allow this app to access location!";
-            title = "Permission access";
-            btnText = "Grant";
+            msg = getString(R.string.alert_msg_access_location);
+            title = getString(R.string.permission_access);
+            btnText = getString(R.string.grant);
         }
 
         final AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
@@ -550,7 +557,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 }
             }
         })
-        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 getActivity().finish();
@@ -559,6 +566,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
         dialog.show();
     }
+
+
 
     AlertDialog dialog;
     public void showNoticeBoardDialog(final NoticeBoard noticeBoard, final boolean hasSubscribed) {
@@ -591,9 +600,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
 
         if (hasSubscribed) {
-            subButton.setText("Unsubscribe");
+            subButton.setText(R.string.unsubscribe);
         }else {
-            subButton.setText("Subscribe");
+            subButton.setText(R.string.subscribe);
         }
 
 
@@ -611,7 +620,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
                     requestSubscribeAndUnsub(noticeBoard, type);
                 }else {
-                    Toast.makeText(getContext(), "Please login first...", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), R.string.login_first, Toast.LENGTH_SHORT).show();
                 }
 
                 if (dialog!=null)
@@ -670,7 +679,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             GetNearestNoticeBoardRequest nearestNoticeBoardRequest = new GetNearestNoticeBoardRequest(getContext(), this, HomeActivity.mLastKnownLocation);
             nearestNoticeBoardRequest.executeRequest();
         }else {
-            Toast.makeText(getApplicationContext(), "Please wait, Getting location...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), R.string.please_wait_getting_location, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -682,6 +691,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     private void requestSubscribeAndUnsub(NoticeBoard mNoticeBoard, CommonRequest.RequestType requestType) {
         SubscribeUnsubscribeNoticeBoardRequest request = new SubscribeUnsubscribeNoticeBoardRequest(getContext(),mNoticeBoard.getId(),HomeActivity.mUserId,requestType,MapFragment.this);
         request.executeRequest();
+    }
+
+
+    private void requestProfileById(Profile mProfile){
+
     }
 
 
@@ -704,7 +718,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             case COMMON_RES_CONNECTION_TIMEOUT:
                 break;
             case COMMON_RES_FAILED_TO_CONNECT:
-                Toast.makeText(getContext(), "No internet connection", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), R.string.no_internet_msg, Toast.LENGTH_SHORT).show();
                 break;
             case COMMON_RES_INTERNAL_ERROR:
                 break;
@@ -764,11 +778,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     @Override
     public void SubscribeUnsubscribeNoticeBoardResponse(CommonRequest.ResponseCode responseCode, String errorMsg) {
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
-            Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.success, Toast.LENGTH_SHORT).show();
         }else if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SERVER_ERROR_WITH_MESSAGE) {
             Toast.makeText(getContext(), errorMsg, Toast.LENGTH_SHORT).show();
         }else {
-            Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.something_went_wrong, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -798,6 +812,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 markerClickWindow(profileList.get(filterIndex.get(0)));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(profileList.get(filterIndex.get(0)).getuLatLng(), 16.8f));
             }
+        }
+    }
+
+
+    void showNotificationProfile(Profile mProfile) {
+
+        mProfile.setuPrivacy("0");
+        if (mClusterManager != null) {
+            mClusterManager.clearItems();
+
+            mClusterManager.addItem(mProfile);
+
+            mClusterManager.cluster();
+
+            markerClickWindow(mProfile);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mProfile.getuLatLng(), 16.8f));
+
         }
     }
 
@@ -1043,7 +1074,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    Toast.makeText(getApplicationContext(), "permission denied", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
                 }
                 return;
 
@@ -1268,19 +1299,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         return true;
     }
 
-    /**
-     *
-     * @param profession
-     * @return
-     */
-    public int getClusterDrawable(String profession) {
-        switch (profession){
-            case "Student":return R.drawable.ic_student;
-            case "Repair and Maintenance":return R.drawable.ic_repair_and_maintainance;
-            case "Professionals":return R.drawable.ic_professionals;
-        }
-        return R.mipmap.ic_launcher;
-    }
 
     @Override
     public void onClusterInfoWindowClick(Cluster<Profile> cluster) {
@@ -1321,7 +1339,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             ImageSearchRequest searchRequest = new ImageSearchRequest(getContext(),new File(resultData.getPath()),this);
             searchRequest.executeRequest();
             mProgressDialog = new ProgressDialog(getContext());
-            mProgressDialog.setMessage("Please wait ...");
+            mProgressDialog.setMessage(getString(R.string.please_wait_msg));
             mProgressDialog.show();
         }
     }
@@ -1347,7 +1365,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             case COMMON_RES_CONNECTION_TIMEOUT:
                 break;
             case COMMON_RES_FAILED_TO_CONNECT:
-                Toast.makeText(getContext(), "No internet connection", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(),R.string.no_internet_msg, Toast.LENGTH_SHORT).show();
                 break;
             case COMMON_RES_INTERNAL_ERROR:
                 break;
@@ -1383,7 +1401,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 return true;
             }else {
                 if (onlyOneTime == 0 && event.getAction()!= KeyEvent.ACTION_DOWN) {
-                    closeAppSnackbar = Snackbar.make(getView(), "Press back again to exit Localapp", Snackbar.LENGTH_LONG);
+                    closeAppSnackbar = Snackbar.make(getView(), R.string.close_app_msg, Snackbar.LENGTH_LONG);
                     closeAppSnackbar.show();
                     onlyOneTime++;
                     return true;

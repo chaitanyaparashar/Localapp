@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "581299335151",
+    "firebase_url": "https://localapp-1487486077406.firebaseio.com",
+    "project_id": "localapp-1487486077406",
+    "storage_bucket": "localapp-1487486077406.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:581299335151:android:5aca3aa68a1227e0",
+        "android_client_info": {
+          "package_name": "com.localapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "581299335151-p4fi7dtq1lvqlr8kol3cmnpl6gd5ebjn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABpgDcImYU_r6SeBmAe6G7Q9mr17fa8C0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,6 +1,10 @@
 package com.localapp.ui;
 
 
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -12,6 +16,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.WindowManager;
+import android.widget.Toast;
+
 import com.localapp.R;
 import com.localapp.login_session.SessionManager;
 import com.google.android.gms.maps.model.LatLng;
@@ -171,6 +177,7 @@ public class HomeActivity extends AppCompatActivity{
             Double lat = Double.valueOf(user.get(SessionManager.KEY_LAT));
             Double lng = Double.valueOf(user.get(SessionManager.KEY_LNG));
 
+
             mLastKnownLocation = new LatLng(lat,lng);
         }catch (NullPointerException e){
             e.printStackTrace();
@@ -180,5 +187,25 @@ public class HomeActivity extends AppCompatActivity{
 
     }
 
+    public void clearNotification(Context mContext) {
+        Toast.makeText(this, "sdfghk", Toast.LENGTH_SHORT).show();
+        NotificationManager notificationManager = (NotificationManager) mContext
+                .getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(0);
+    }
 
+
+    public class NotificationReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            clearNotification(context);
+
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 }

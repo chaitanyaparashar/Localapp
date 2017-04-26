@@ -40,19 +40,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.siyamed.shapeimageview.CircularImageView;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.localapp.VideoPlay;
 import com.localapp.audio.ViewProxy;
 import com.localapp.camera.Camera2Activity;
 import com.localapp.data.GetFeedRequestData;
 import com.localapp.data.Message;
+import com.localapp.data.NotificationData;
+import com.localapp.fcm.FcmNotificationRequest;
+import com.localapp.login_session.SessionManager;
 import com.localapp.request.BroadcastRequest;
 import com.localapp.request.CommonRequest;
 import com.localapp.request.EmergencyMsgAcceptRequest;
 import com.localapp.request.GetFeedRequest;
 import com.localapp.request.PicUrlRequest;
-import com.localapp.request.helper.VolleySingleton;
 import com.squareup.picasso.Picasso;
-import com.util.RecyclerTouchListener;
+import com.localapp.util.RecyclerTouchListener;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.SphericalUtil;
 import com.localapp.R;
@@ -91,7 +94,7 @@ import static com.localapp.ui.FeedFragment.MediaType.MEDIA_AUDIO;
 import static com.localapp.ui.FeedFragment.MediaType.MEDIA_IMAGE;
 import static com.localapp.ui.FeedFragment.MediaType.MEDIA_VIDEO;
 import static com.localapp.ui.ThreadAdapter.getEmojiResourceIdByMsgType;
-import static com.util.utility.isLocationAvailable;
+import static com.localapp.util.utility.isLocationAvailable;
 
 
 /**
@@ -109,6 +112,8 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     private static final String mTopic = "localapp";
     private static final String mTopicAcceptMsg = "accept";
 //    private static final String mTopic = "vijay";
+
+    private SessionManager sessionManager;
 
     private MQTT mqtt = null;
     private ProgressDialog progressDialog = null;
@@ -201,6 +206,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
 
 
+        sessionManager = new SessionManager(getContext());
 
         linearLayoutMsgArea = (LinearLayout) view.findViewById(R.id.linear_layout_msg_area);
         typeMessageAreaPreventClickView = (View) view.findViewById(R.id.type_message_area_prevent_click_View);
@@ -228,12 +234,15 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         emergencyMessageList = new ArrayList<>();
         emergencyListAdapter = new EmergencyListAdapter(getActivity(),emergencyMessageList);
         emergencyMessageListView.setAdapter(emergencyListAdapter);
+
         emergencyMessageListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (view.getId() == R.id.accept_btn) {
                     Message message = emergencyMessageList.get(position);
                     emergencyMessageList.remove(position);
+
+                    sendNotification(message.getFcmToken());
                     EmergencyMsgAcceptRequest msgAcceptRequest = new EmergencyMsgAcceptRequest(getContext(),message.getMsgIdOnlyForFrontEnd(), "1",FeedFragment.this);
                     if (connection.isConnected()) {
                         connection.publish(mTopicAcceptMsg, message.getMsgIdOnlyForFrontEnd().getBytes(), QoS.AT_LEAST_ONCE, false);
@@ -391,6 +400,18 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     }
 
 
+    private void sendNotification(String fcmToken){
+        if (ProfileFragment.myProfile != null) {
+            NotificationData data = new NotificationData(fcmToken);
+            data.setName(ProfileFragment.myProfile.getuName());
+            data.setEmail(ProfileFragment.myProfile.getuEmail());
+            data.setMobile(ProfileFragment.myProfile.getuMobile());
+            FcmNotificationRequest request = new FcmNotificationRequest(getContext(), data);
+            request.executeRequest();
+        }
+    }
+
+
     private void subscribe() {
         Topic[] topics = {new Topic(mTopic, QoS.AT_LEAST_ONCE),new Topic(mTopicAcceptMsg,QoS.AT_LEAST_ONCE)};
         connection.subscribe(topics).then(onui(new Callback<byte[]>() {
@@ -399,7 +420,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                 connection.receive().then(onui(new Callback<org.fusesource.mqtt.client.Message>() {
                     @Override
                     public void onSuccess(org.fusesource.mqtt.client.Message message) {
-                        String receivedMesageTopic = message.getTopic();
+                        String receivedMessageTopic = message.getTopic();
                         byte[] payload = message.getPayload();
                         String messagePayLoad = new String(payload);
                         message.ack();
@@ -413,6 +434,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                             messageData.setMediaURL(jsonObject.getString("mediaUrl"));
                             messageData.setMediaType(MediaType.values()[Integer.parseInt(jsonObject.getString("mediaType"))]);
                             messageData.setToken(jsonObject.getString("token"));
+                            messageData.setFcmToken(jsonObject.getString("fcmToken"));
                             messageData.setmText(jsonObject.getString("msg"));
                             messageData.setTimeStamp(jsonObject.getString("timestamp"));
                             messageData.setMessageType(getMessageType(jsonObject.getInt("messageType")));
@@ -422,7 +444,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                             e.printStackTrace();
                         }
 
-                        if (receivedMesageTopic.equals(mTopic)) {
+                        if (receivedMessageTopic.equals(mTopic)) {
                             if (HomeActivity.mUserId == null || !HomeActivity.mUserId.equals(messageData.getmUserID()) &&
                                     isMessageForMe(messageData.getMessageType(), messageData.getmLatLng())) {
                                 messages.add(messageData);
@@ -530,6 +552,12 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                     messageData.setmUserID("");
                 }
 
+                if (sessionManager.getFcmToken() != null) {
+                    messageData.setFcmToken(sessionManager.getFcmToken());
+                }else {
+                    messageData.setFcmToken(FirebaseInstanceId.getInstance().getToken());
+                }
+
                 if (HomeActivity.mPicUrl !=null) {
                     messageData.setPicUrl(HomeActivity.mPicUrl);
                 }
@@ -568,6 +596,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
 
                 mParams =  new HashMap<>();
                 mParams.put("token",messageData.getToken());
+                mParams.put("fcmToken",messageData.getFcmToken());
                 mParams.put("userId",messageData.getmUserID());
                 mParams.put("picUrl",messageData.getPicUrl());
                 mParams.put("mediaUrl","");
@@ -660,13 +689,6 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
             selectedEmojiResourceID = emojiResourceID[position];
             camShoutImgBtn.setImageResource(selectedEmojiResourceID);
             emojiGridView.setVisibility(View.GONE);
-        }
-    };
-
-    View.OnClickListener sendVoiceClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-//            Toast.makeText(getContext(), "Voice", Toast.LENGTH_SHORT).show();
         }
     };
 

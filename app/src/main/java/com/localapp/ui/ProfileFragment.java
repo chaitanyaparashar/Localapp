@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.siyamed.shapeimageview.CircularImageView;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
 import com.localapp.data.LoginData;
@@ -28,6 +29,7 @@ import com.localapp.login_session.SessionManager;
 import com.localapp.request.CommonRequest;
 import com.localapp.request.GetProfileRequest;
 import com.localapp.request.LoginRequest;
+import com.localapp.request.UpdateProfileRequest;
 import com.localapp.request.helper.VolleySingleton;
 import com.squareup.picasso.Picasso;
 
@@ -39,7 +41,7 @@ import static com.localapp.ui.UpdateActivity.REQUEST_PERSONAL;
  * Created by 4 way on 02-03-2017.
  */
 
-public class ProfileFragment extends Fragment implements LoginRequest.LoginResponseCallback,GetProfileRequest.GetProfileRequestCallback{
+public class ProfileFragment extends Fragment implements LoginRequest.LoginResponseCallback,GetProfileRequest.GetProfileRequestCallback,UpdateProfileRequest.UpdateProfileResponseCallback{
     private LinearLayout profileLayout,loginLayout;
     private CircularImageView userPic;
     private ImageButton camButton;
@@ -53,6 +55,8 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
     private EditText _email, _password;
     private Button _loginBtn, _signupBtn;
     private TextView _forgotPass;
+
+    public static Profile myProfile;
 
 
 
@@ -83,6 +87,7 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
             loginLayout.setVisibility(View.GONE);
             profileRequest();
         }else {
+            myProfile = null;
             loginLayout.setVisibility(View.VISIBLE);
             profileLayout.setVisibility(View.GONE);
         }
@@ -178,6 +183,8 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
         uProdessionTextView.setText(profile.getProfession());
         uBreifInfo.setText(profile.getuSpeciality());
         uDetailTextView.setText(profile.getuNotes());
+
+        myProfile = profile;
     }
 
     public void setProfileData(LoginData profileData) {
@@ -188,6 +195,10 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
         uProdessionTextView.setText(profileData.getmProfession());
         uBreifInfo.setText(profileData.getmSpeciality());
         uDetailTextView.setText(profileData.getmNotes());
+
+        myProfile = new Profile(profileData.getUserId());
+        myProfile.setuEmail(profileData.getEmail());
+        myProfile.setuMobile(profileData.getmMobile());
     }
 
     private void onLogin() {
@@ -235,6 +246,7 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
         session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mPicUrl, HomeActivity.mLastKnownLocation);
 
         setProfileData(data);
+        fcmTokenUpdateRequest();
 
         profileLayout.setVisibility(View.VISIBLE);
         loginLayout.setVisibility(View.GONE);
@@ -257,6 +269,7 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
             case UPDATE_REQUEST_CODE:
                 if (resultCode != Activity.RESULT_CANCELED && data.getBooleanExtra("result",false)) {
                     profileRequest();
+                    fcmTokenUpdateRequest();
                 }
                 break;
 
@@ -294,6 +307,18 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
         request.executeRequest();
     }
 
+    private void fcmTokenUpdateRequest() {
+        String fcm_token = FirebaseInstanceId.getInstance().getToken();
+        if (fcm_token != null) {
+            Profile profile = new Profile(HomeActivity.mUserId);
+            profile.setFcmToken(fcm_token);
+            profile.setuToken(HomeActivity.mLoginToken);
+            UpdateProfileRequest request = new UpdateProfileRequest(getContext(),profile,this);
+            request.executeRequest();
+        }
+
+    }
+
     @Override
     public void onProfileResponse(CommonRequest.ResponseCode responseCode, Profile mProfile) {
         switch (responseCode) {
@@ -314,5 +339,10 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
                 toast(mProfile.getErrorMsg());
                 break;
         }
+    }
+
+    @Override
+    public void onUpdateProfileResponse(CommonRequest.ResponseCode responseCode) {
+
     }
 }

@@ -48,6 +48,7 @@ public class UpdateProfileRequest extends CommonRequest{
         mParams.put(JSON_FIELD_PROFESSION, mProfile.getProfession());
         mParams.put(JSON_FIELD_MOBILE_PRIVACY, mProfile.getuPrivacy());
         mParams.put("token", mProfile.getuToken());
+        mParams.put("fcmToken",mProfile.getFcmToken());
 
         super.setParams(mParams);
         super.setPostHeader(mParams);

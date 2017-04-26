@@ -12,12 +12,15 @@ import java.util.HashMap;
 
 public class SessionManager {
     SharedPreferences pref;
+    SharedPreferences prefFcm;
     SharedPreferences.Editor editor;
+    SharedPreferences.Editor fcmEditor;
 
     Context _context;
     int PRIVATE_MODE = 0;
 
     private static final String PREF_NAME = "LoginSession";
+    private static final String PREF_FCM = "fcm";
 
     // All Shared Preferences Keys
     private static final String IS_LOGIN = "IsLoggedIn";
@@ -29,12 +32,22 @@ public class SessionManager {
     public static final String KEY_LAT = "lastKnownLat";
     public static final String KEY_LNG = "lastKnownLng";
 
+
+    public static final String KEY_FCM_TOKEN = "fcmToken";
+
+
+
     // Constructor
     public SessionManager(Context context){
         this._context = context;
         pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();
+
+        prefFcm = _context.getSharedPreferences(PREF_FCM, Context.MODE_PRIVATE);
+        fcmEditor = prefFcm.edit();
     }
+
+
 
     /**
      * Create login session
@@ -53,6 +66,12 @@ public class SessionManager {
 
         // commit changes
         editor.commit();
+    }
+
+
+    public void saveFcmToken(String fcmToke) {
+        fcmEditor.putString(KEY_FCM_TOKEN, fcmToke);
+        fcmEditor.commit();
     }
 
     public void saveLastLocation (LatLng latLng) {
@@ -103,6 +122,11 @@ public class SessionManager {
         return user;
     }
 
+
+    public String getFcmToken(){
+        return prefFcm.getString(KEY_FCM_TOKEN,null);
+    }
+
     /**
      * Clear session details
      * */
@@ -121,6 +145,11 @@ public class SessionManager {
 
         // Staring Login Activity
         _context.startActivity(i);*/
+    }
+
+    public void clearFcmToken(){
+        fcmEditor.clear();
+        fcmEditor.commit();
     }
 
     /**

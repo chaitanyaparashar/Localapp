@@ -2,10 +2,12 @@ package com.localapp.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -71,10 +73,20 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
         mInfoView = (EditText) findViewById(R.id.input_brief_intro);
         mDetailView = (EditText) findViewById(R.id.input_details_des);
 
-        mProfessionView.setOnClickListener(new View.OnClickListener() {
+        /*mProfessionView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showPopup(UpdateActivity.this);
+            }
+        });
+*/
+        mProfessionView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    showPopup(UpdateActivity.this);
+                }
+                return false;
             }
         });
 
@@ -165,7 +177,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
 
 
 
-        // Creating the PopupWindow
+        /*// Creating the PopupWindow
         final PopupWindow popup = new PopupWindow(context);
         popup.setContentView(layout);
         popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
@@ -192,7 +204,29 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
         popup.setBackgroundDrawable(new BitmapDrawable());
 
 
-        popup.showAsDropDown(mProfessionView);
+        popup.showAsDropDown(mProfessionView);*/
+
+
+
+
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(layout);
+
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                String items = "";
+                for(int mGroupPosition =0; mGroupPosition < listAdapter.getGroupCount(); mGroupPosition++) {
+                    items = items +  listAdapter.getItemAtPostion(mGroupPosition);
+
+                }
+                if (items.length() > 2) {
+                    mProfessionView.setText(items.substring(0,items.length()-1));
+                }
+            }
+        });
+        builder.show();
 
     }
 

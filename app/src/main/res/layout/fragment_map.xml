@@ -3,6 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="true"
+    android:id="@+id/fmap_layout"
+    android:focusableInTouchMode="true"
     tools:context="com.localapp.ui.MapFragment">
 
 
@@ -170,6 +173,7 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:maxLines="1"
+            android:selectAllOnFocus="true"
             android:background="@android:color/transparent"
             android:singleLine="true"
             android:hint="Search here..."
@@ -196,6 +200,7 @@
 
     <com.google.android.gms.maps.MapView
         android:focusableInTouchMode="true"
+        android:focusable="true"
         android:id="@+id/map_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

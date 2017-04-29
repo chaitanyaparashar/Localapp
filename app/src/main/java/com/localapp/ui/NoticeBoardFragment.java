@@ -164,15 +164,12 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
     };
 
 
-    int onlyOneTime = 0;
+
     View.OnKeyListener onKeyListener = new View.OnKeyListener() {
         @Override
         public boolean onKey(View v, int keyCode, KeyEvent event) {
-            if( keyCode == KeyEvent.KEYCODE_BACK && event.getAction()!= KeyEvent.ACTION_DOWN && onlyOneTime == 0) {
-
-                closeAppSnackbar = Snackbar.make(getView(), "Press back again to exit Localapp", Snackbar.LENGTH_LONG);
-                closeAppSnackbar.show();
-                onlyOneTime++;
+            if( keyCode == KeyEvent.KEYCODE_BACK && event.getAction()!= KeyEvent.ACTION_DOWN) {
+                HomeActivity.mViewPager.setCurrentItem(0);
                 return true;
             }
             return false;

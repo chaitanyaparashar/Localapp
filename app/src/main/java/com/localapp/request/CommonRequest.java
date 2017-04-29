@@ -27,7 +27,7 @@ public abstract class CommonRequest {
     private static final String MAP_REQUEST_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/pinOnMap";
     private static final String FEED_REQUEST_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/feed?";
     private static final String BROADCAST_REQUEST_URL = "http://52.172.157.120:8080/broadcast";
-    private static final String PASSWORD_REQUEST_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/forgot/password?";
+    private static final String PASSWORD_REQUEST_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/forgot/Password?";
     private static final String MSG_ACCEPT_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/message/update";
     private static final String CREATE_NOTICE_BOARD_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/createNoticeBoard";
     private static final String GET_MY_NOTICE_BOARD_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/getAllCreatedNoticeBoard";
@@ -39,6 +39,7 @@ public abstract class CommonRequest {
     private static final String DELETE_NOTICE_BOARD_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/DeleteNoticeBoard";
     private static final String DELETE_NOTICE_BOARD_MSG_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/deleteMessageFromNoticeBoard";
     private static final String GET_PROFILE_REQUEST_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/getUserById";
+    private static final String GET_PROFILE_BY_ID_REQUEST_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/getProfileById?";
     private static final String UPDATE_PROFILE_REQUEST_URL = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/update";
     private static final String FCM_PUSH_NOTIFICATION_URL = "https://fcm.googleapis.com/fcm/send";
 
@@ -61,7 +62,8 @@ public abstract class CommonRequest {
         COMMON_REQUEST_DELETE_NOTICE_BOARD_MSG,
         COMMON_REQUEST_GET_PROFILE,
         COMMON_REQUEST_UPDATE_PROFILE,
-        COMMON_REQUEST_FCM_PUSH_NOTIFICATION
+        COMMON_REQUEST_FCM_PUSH_NOTIFICATION,
+        COMMON_REQUEST_GET_PROFILE_BY_ID
 
     }
 
@@ -204,6 +206,9 @@ public abstract class CommonRequest {
 
             case COMMON_REQUEST_FCM_PUSH_NOTIFICATION:
                 url = FCM_PUSH_NOTIFICATION_URL;
+                break;
+            case COMMON_REQUEST_GET_PROFILE_BY_ID:
+                url = GET_PROFILE_BY_ID_REQUEST_URL;
                 break;
 
 

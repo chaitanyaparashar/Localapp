@@ -3,11 +3,13 @@ package com.localapp.data;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
 
+import java.io.Serializable;
+
 /**
  * Created by 4 way on 20-02-2017.
  */
 
-public class Profile implements ClusterItem {
+public class Profile implements ClusterItem ,Serializable {
     public static String TAG = "Profile";
 
     private String uId;
@@ -152,5 +154,11 @@ public class Profile implements ClusterItem {
     @Override
     public String getSnippet() {
         return null;
+    }
+
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }

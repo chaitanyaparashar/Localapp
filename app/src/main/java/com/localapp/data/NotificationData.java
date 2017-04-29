@@ -1,5 +1,7 @@
 package com.localapp.data;
 
+import com.google.android.gms.maps.model.LatLng;
+
 /**
  * Created by 4 way on 25-04-2017.
  */
@@ -12,6 +14,9 @@ public class NotificationData {
     private String img_url;
     private String mobile;
     private String email;
+    private LatLng latLng;
+    private String profession;
+    private Profile profile;
 
     public String getName() {
         return name;
@@ -72,4 +77,23 @@ public class NotificationData {
     }
 
 
+    public void setLatLng(LatLng latLng) {
+        this.latLng = latLng;
+    }
+
+    public void setProfession(String profession) {
+        this.profession = profession;
+    }
+
+    public String getProfession() {
+        return profession;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
+    }
+
+    public Profile getProfile() {
+        return profile;
+    }
 }

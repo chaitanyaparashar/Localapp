@@ -19,9 +19,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -33,11 +35,11 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -57,6 +59,7 @@ import com.localapp.login_session.SessionManager;
 import com.localapp.request.CommonRequest;
 import com.localapp.request.GetNearestNoticeBoardRequest;
 import com.localapp.request.GetNoticeBoardMessageRequest;
+import com.localapp.request.GetProfileRequest;
 import com.localapp.request.GetUsersRequest;
 import com.localapp.request.ImageSearchRequest;
 import com.localapp.request.SubscribeUnsubscribeNoticeBoardRequest;
@@ -75,6 +78,7 @@ import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
+import com.localapp.request.helper.GetProfileByIdRequest;
 import com.squareup.picasso.Picasso;
 import com.localapp.util.utility;
 
@@ -90,15 +94,17 @@ import static com.localapp.util.utility.getProfessionList;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GetUsersRequest.GetUsersResponseCallback,
         ClusterManager.OnClusterClickListener<Profile>, ClusterManager.OnClusterInfoWindowClickListener<Profile>, ClusterManager.OnClusterItemClickListener<Profile>, ClusterManager.OnClusterItemInfoWindowClickListener<Profile>,
-        ImageSearchRequest.ImageSearchResponseCallback, GetNearestNoticeBoardRequest.GetNearestNoticeBoardRequestCallback,GetNoticeBoardMessageRequest.GetNoticeBoardMessageRequestCallback,SubscribeUnsubscribeNoticeBoardRequest.SubscribeUnsubscribeNoticeBoardCallback {
+        ImageSearchRequest.ImageSearchResponseCallback, GetNearestNoticeBoardRequest.GetNearestNoticeBoardRequestCallback,GetNoticeBoardMessageRequest.GetNoticeBoardMessageRequestCallback,SubscribeUnsubscribeNoticeBoardRequest.SubscribeUnsubscribeNoticeBoardCallback,GetProfileByIdRequest.GetProfileByIdRequestCallback {
 
 
 
     public static String TAG = "MapFragment";
     private static final int REQUEST_LOCATION_CODE = 200;
+    private static final int REQUEST_CAMERA_CODE = 201;
     final static String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.CALL_PHONE,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO,Manifest.permission.CAMERA};
+    final static String[] CAMERA_PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO};
 
     SessionManager session;
 
@@ -147,11 +153,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
         Bundle extras = getActivity().getIntent().getExtras();
 
-        if(extras != null){
-            String data1 = extras.getString("data1");
+        //for notification
 
-            Toast.makeText(getContext(), data1, Toast.LENGTH_SHORT).show();
+        try {
+            if(extras != null){
+                String notificationUserID = extras.getString("userId");
+                profileRequest(notificationUserID);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
         }
+
 
 
         session = new SessionManager(getActivity());
@@ -189,6 +201,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
      */
     private void setupView(View view) {
 
+
         studentBtn = (ImageView) view.findViewById(R.id.student_iv);
         hobbiesBtn = (ImageView) view.findViewById(R.id.hobbies_iv);
         professionalBtn = (ImageView) view.findViewById(R.id.professionals_iv);
@@ -202,6 +215,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
 
         searchBoxView.addTextChangedListener(textWatcherForSearchBox);
+        searchBoxView.setOnKeyListener(onKeyListener);
         searchBoxView.setAdapter(autoCompleteAdapter);
         searchBtn.setOnClickListener(searchOnClickListener);
         searchCameraBtn.setOnClickListener(searchOnClickListener);
@@ -213,6 +227,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         hobbiesBtn.setOnClickListener(filterClickListener);
 
     }
+
+
 
     /**
      *
@@ -340,9 +356,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         super.onResume();
         AppController.activityResumed();
 
+
         mMapView.onResume();
 
-        getView().setFocusableInTouchMode(true);
+        try {
+            getView().setFocusableInTouchMode(true);
+        }catch (NullPointerException e) {
+            e.printStackTrace();
+        }
         getView().requestFocus();
         getView().setOnKeyListener(onKeyListener);
     }
@@ -381,52 +402,54 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     View.OnClickListener filterClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            ArrayList<Integer> indexs;
-            initFilterButtonSelection();
-            isSelectedFilterButton = true;
-            switch (v.getId()) {
-                case R.id.emergency_iv:
-                    emergencyBtn.setImageResource(R.drawable.ic_health_selected);
-                    indexs = filterIndexByProfession(profileList, ExpandableListAdapter.PROFESSION_GROUP_HEALTH);
-                    if (indexs != null && indexs.size() > 0) {
-                        addMarkerByProfile(true, indexs);
-                    }
+            if (uDetailLayout.getVisibility() != View.VISIBLE) {
+                ArrayList<Integer> indexs;
+                initFilterButtonSelection();
+                isSelectedFilterButton = true;
+                switch (v.getId()) {
+                    case R.id.emergency_iv:
+                        emergencyBtn.setImageResource(R.drawable.ic_health_selected);
+                        indexs = filterIndexByProfession(profileList, ExpandableListAdapter.PROFESSION_GROUP_HEALTH);
+                        if (indexs != null && indexs.size() > 0) {
+                            addMarkerByProfile(true, indexs);
+                        }
 
-                    break;
-                case R.id.student_iv:
-                    studentBtn.setImageResource(R.drawable.ic_student_selected);
-                    indexs = filterIndexByProfession(profileList, ExpandableListAdapter.PROFESSION_GROUP_STUDENT);
-                    if (indexs != null && indexs.size() > 0) {
-                        addMarkerByProfile(true, indexs);
-                    }
-                    break;
-                case R.id.professionals_iv:
-                    professionalBtn.setImageResource(R.drawable.ic_professionals_selected);
-                    indexs = filterIndexByProfession(profileList, ExpandableListAdapter.PROFESSION_GROUP_PROFESSIONALS);
-                    if (indexs != null && indexs.size() > 0) {
-                        addMarkerByProfile(true, indexs);
-                    }
-                    break;
-                case R.id.repair_iv:
-                    repairBtn.setImageResource(R.drawable.ic_repair_selected);
-                    indexs = filterIndexByProfession(profileList, ExpandableListAdapter.PROFESSION_GROUP_REPAIR);
-                    if (indexs != null && indexs.size() > 0) {
-                        addMarkerByProfile(true, indexs);
-                    }
-                    break;
-                case R.id.notice_board_iv:
-                    notice_boardBtn.setImageResource(R.drawable.ic_notice_selected);
-                    requestForNearbyNoticeBoard();
-                    break;
+                        break;
+                    case R.id.student_iv:
+                        studentBtn.setImageResource(R.drawable.ic_student_selected);
+                        indexs = filterIndexByProfession(profileList, ExpandableListAdapter.PROFESSION_GROUP_STUDENT);
+                        if (indexs != null && indexs.size() > 0) {
+                            addMarkerByProfile(true, indexs);
+                        }
+                        break;
+                    case R.id.professionals_iv:
+                        professionalBtn.setImageResource(R.drawable.ic_professionals_selected);
+                        indexs = filterIndexByProfession(profileList, ExpandableListAdapter.PROFESSION_GROUP_PROFESSIONALS);
+                        if (indexs != null && indexs.size() > 0) {
+                            addMarkerByProfile(true, indexs);
+                        }
+                        break;
+                    case R.id.repair_iv:
+                        repairBtn.setImageResource(R.drawable.ic_repair_selected);
+                        indexs = filterIndexByProfession(profileList, ExpandableListAdapter.PROFESSION_GROUP_REPAIR);
+                        if (indexs != null && indexs.size() > 0) {
+                            addMarkerByProfile(true, indexs);
+                        }
+                        break;
+                    case R.id.notice_board_iv:
+                        notice_boardBtn.setImageResource(R.drawable.ic_notice_selected);
+                        requestForNearbyNoticeBoard();
+                        break;
 
-                case R.id.hobbies_iv:
-                    hobbiesBtn.setImageResource(R.drawable.ic_hobby_selected);
-                    indexs = filterIndexByProfession(profileList, ExpandableListAdapter.PROFESSION_GROUP_SKILLS);
-                    if (indexs != null && indexs.size() > 0) {
-                        addMarkerByProfile(true, indexs);
-                    }
-                    break;
+                    case R.id.hobbies_iv:
+                        hobbiesBtn.setImageResource(R.drawable.ic_hobby_selected);
+                        indexs = filterIndexByProfession(profileList, ExpandableListAdapter.PROFESSION_GROUP_SKILLS);
+                        if (indexs != null && indexs.size() > 0) {
+                            addMarkerByProfile(true, indexs);
+                        }
+                        break;
 
+                }
             }
 
         }
@@ -674,6 +697,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     }
 
 
+    private void profileRequest(String profileID) {
+        Profile mProfile = new Profile(profileID);
+
+        GetProfileByIdRequest request = new GetProfileByIdRequest(getContext(),mProfile,this);
+        request.executeRequest();
+    }
+
+
     private void requestForNearbyNoticeBoard() {
         if (HomeActivity.mLastKnownLocation != null) {
             GetNearestNoticeBoardRequest nearestNoticeBoardRequest = new GetNearestNoticeBoardRequest(getContext(), this, HomeActivity.mLastKnownLocation);
@@ -694,9 +725,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     }
 
 
-    private void requestProfileById(Profile mProfile){
 
-    }
 
 
     @Override
@@ -707,11 +736,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                     profileList.clear();
                 }
                 profileList = data.getProfileList();
-                mClusterManager.clearItems();
-                mClusterManager.addItems(profileList);
+                if(uDetailLayout.getVisibility() != View.VISIBLE) {
+                    mClusterManager.clearItems();
+                    mClusterManager.addItems(profileList);
 //                addMarkerByProfile(false, null);
 //                addItems();
-                mClusterManager.cluster();
+                    mClusterManager.cluster();
+                }
 
                 setSearchHintData(profileList);
                 break;
@@ -993,6 +1024,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         return profileIndex;
     }
 
+
+
     /**
      * text watcher for search box
      */
@@ -1004,8 +1037,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            InputMethodManager imm = (InputMethodManager) getActivity()
-                    .getSystemService(Context.INPUT_METHOD_SERVICE);
 
             if (TextUtils.isEmpty(searchBoxView.getText()) && profileList != null) {
                 addMarkerByProfile(false, null);
@@ -1015,19 +1046,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 searchCameraBtn.setVisibility(View.GONE);
             }
 
-            if (imm.isAcceptingText()) {
-                searchBoxView.setCursorVisible(true);
-            } else {
-                Log.d(TAG,"Software Keyboard was not shown");
-                searchBoxView.setCursorVisible(false);
-            }
 
         }
 
 
         @Override
         public void afterTextChanged(Editable s) {
+            if (TextUtils.isEmpty(searchBoxView.getText()) && profileList != null) {
+                addMarkerByProfile(false, null);
+                searchCameraBtn.setVisibility(View.VISIBLE);
+                searchBoxView.clearFocus();
 
+            }else {
+                searchCameraBtn.setVisibility(View.GONE);
+            }
         }
     };
 
@@ -1047,15 +1079,30 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                     }
                 }
             }else {
-                Intent i = new Intent(getContext(), Camera2Activity.class);
-                i.putExtra("requestCode", 20);
-                startActivityForResult(i, 20);
+                if (isCameraPermissionGrated()){
+                    openCamera();
+                }else {
+                    requestPermissions(CAMERA_PERMISSIONS,REQUEST_CAMERA_CODE);
+                }
+
             }
 
             searchBoxView.clearFocus();
 
         }
     };
+
+    void openCamera(){
+        Intent i = new Intent(getContext(), Camera2Activity.class);
+        i.putExtra("requestCode", 20);
+        startActivityForResult(i, 20);
+    }
+
+    boolean isCameraPermissionGrated(){
+        return (ContextCompat.checkSelfPermission(getContext(),Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getContext(),Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getContext(),Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED);
+    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -1075,8 +1122,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
                     Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
+
+                    searchBoxView.requestFocus();
+
                 }
                 return;
+
+            case REQUEST_CAMERA_CODE:
+                if (grantResults.length > 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[2] == PackageManager.PERMISSION_GRANTED){
+                    openCamera();
+                }else {
+                    Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
+                }
 
         }
 
@@ -1156,7 +1214,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
     private ClusterManager<Profile> mClusterManager;
 
-
+    @Override
+    public void onProfileIdResponse(CommonRequest.ResponseCode responseCode, Profile mProfile) {
+        if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
+            showNotificationProfile(mProfile);
+        }
+    }
 
 
     private class ProfileRenderer extends DefaultClusterRenderer<Profile> {
@@ -1308,6 +1371,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     @Override
     public boolean onClusterItemClick(Profile profile) {
         // Does nothing, but you could go into the user's profile page, for example.
+        searchBoxView.clearFocus();
         if (profile.getuSpeciality() != null &&!profile.getuSpeciality().equals("nnnnnnnnnn")) {
             markerClickWindow(profile);
         }else {
@@ -1398,16 +1462,27 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 uDetailLayout.setVisibility(View.GONE);
                 initFilterButtonSelection();
                 addMarkerByProfile(false, null);
+                searchBoxView.clearFocus();
                 return true;
             }else {
                 if (onlyOneTime == 0 && event.getAction()!= KeyEvent.ACTION_DOWN) {
                     closeAppSnackbar = Snackbar.make(getView(), R.string.close_app_msg, Snackbar.LENGTH_LONG);
                     closeAppSnackbar.show();
+                    closeAppSnackbar.addCallback(snackbarBaseCallback);
+                    searchBoxView.clearFocus();
                     onlyOneTime++;
                     return true;
                 }
             }
             return false;
+        }
+    };
+
+    BaseTransientBottomBar.BaseCallback<Snackbar> snackbarBaseCallback = new BaseTransientBottomBar.BaseCallback<Snackbar>() {
+        @Override
+        public void onDismissed(Snackbar transientBottomBar, int event) {
+            super.onDismissed(transientBottomBar, event);
+            onlyOneTime = 0;
         }
     };
 

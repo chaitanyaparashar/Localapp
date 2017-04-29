@@ -1,9 +1,12 @@
 package com.localapp.ui;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -15,6 +18,7 @@ import android.os.Vibrator;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -47,6 +51,7 @@ import com.localapp.camera.Camera2Activity;
 import com.localapp.data.GetFeedRequestData;
 import com.localapp.data.Message;
 import com.localapp.data.NotificationData;
+import com.localapp.data.Profile;
 import com.localapp.fcm.FcmNotificationRequest;
 import com.localapp.login_session.SessionManager;
 import com.localapp.request.BroadcastRequest;
@@ -114,6 +119,10 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
 //    private static final String mTopic = "vijay";
 
     private SessionManager sessionManager;
+    final static String[] CAMERA_PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO};
+    final static String[] AUDIO_PERMISSIONS = {Manifest.permission.RECORD_AUDIO,Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private static final int REQUEST_AUIDO_CODE = 300;
+    private static final int REQUEST_CAMERA_CODE = 201;
 
     private MQTT mqtt = null;
     private ProgressDialog progressDialog = null;
@@ -406,6 +415,10 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
             data.setName(ProfileFragment.myProfile.getuName());
             data.setEmail(ProfileFragment.myProfile.getuEmail());
             data.setMobile(ProfileFragment.myProfile.getuMobile());
+            data.setImg_url(ProfileFragment.myProfile.getuPictureURL());
+            data.setLatLng(HomeActivity.mLastKnownLocation);
+            data.setProfession(ProfileFragment.myProfile.getProfession());
+            data.setProfile(ProfileFragment.myProfile);
             FcmNotificationRequest request = new FcmNotificationRequest(getContext(), data);
             request.executeRequest();
         }
@@ -708,12 +721,33 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     View.OnClickListener cameraClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-//            startActivity(new Intent(getContext(), Camera2Activity.class));
-            Intent intent = new Intent(getContext(),Camera2Activity.class);
-            intent.putExtra("requestCode", CAMERA_REQUEST);
-            startActivityForResult(intent, CAMERA_REQUEST);
+            if (isCameraPermissionGrated()){
+                openCamera();
+            }else {
+                requestPermissions(CAMERA_PERMISSIONS,REQUEST_CAMERA_CODE);
+            }
+
         }
     };
+
+
+    void openCamera(){
+        Intent intent = new Intent(getContext(),Camera2Activity.class);
+        intent.putExtra("requestCode", CAMERA_REQUEST);
+        startActivityForResult(intent, CAMERA_REQUEST);
+    }
+
+    boolean isCameraPermissionGrated(){
+        return (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getContext(),Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getContext(),Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED);
+    }
+
+    boolean isAudioPermissionGranted() {
+        return (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getContext(),Manifest.permission.RECORD_AUDIO)
+                == PackageManager.PERMISSION_GRANTED);
+    }
 
     TextWatcher textWatcher = new TextWatcher() {
         @Override
@@ -1080,6 +1114,27 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         }
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case REQUEST_CAMERA_CODE:
+                if (grantResults.length > 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[2] == PackageManager.PERMISSION_GRANTED){
+                openCamera();
+            }else {
+                Toast.makeText(getContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
+            }
+
+            break;
+            case REQUEST_AUIDO_CODE:
+                if (!(grantResults.length > 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED)){
+                    Toast.makeText(getContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
+            }
+            break;
+
+        }
+    }
 
     @Override
     public void PicUrlResponse(CommonRequest.ResponseCode responseCode, String picUrl,MediaType mediaType) {
@@ -1149,6 +1204,20 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         mAudioPath = getActivity().getExternalCacheDir().getAbsolutePath();
         mAudioPath = Environment
                 .getExternalStorageDirectory() + "/Localapp";
+        File folder = null;
+        String state = Environment.getExternalStorageState();
+        if (state.contains(Environment.MEDIA_MOUNTED)) {
+            folder = new File(Environment
+                    .getExternalStorageDirectory() + "/Localapp");
+        } else {
+            folder = new File(Environment
+                    .getExternalStorageDirectory() + "/Localapp");
+        }
+
+        boolean success = true;
+        if (!folder.exists()) {
+            success = folder.mkdirs();
+        }
 
 
         recordPanel = view.findViewById(R.id.record_panel);
@@ -1177,9 +1246,14 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                 ViewProxy.setAlpha(slideText, 1);
                 startedDraggingX = -1;
 
-                 startRecording();
-                isStartRecording = true;
-                isCanceled = false;
+                if (isAudioPermissionGranted()){
+                    startRecording();
+                    isStartRecording = true;
+                    isCanceled = false;
+                }else {
+                    requestPermissions(AUDIO_PERMISSIONS,REQUEST_AUIDO_CODE);
+                }
+
 
                 sendImageViewBtn.getParent()
                         .requestDisallowInterceptTouchEvent(true);
@@ -1345,7 +1419,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         public void run() {
             timeInMilliseconds = SystemClock.uptimeMillis() - startTime;
             updatedTime = timeSwapBuff + timeInMilliseconds;
-            final String hms = String.format(
+            @SuppressLint("DefaultLocale") final String hms = String.format(
                     "%02d:%02d",
                     TimeUnit.MILLISECONDS.toMinutes(updatedTime)
                             - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS
@@ -1389,15 +1463,11 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         getView().setOnKeyListener(onKeyListener);
     }
 
-    int onlyOneTime = 0;
     View.OnKeyListener onKeyListener = new View.OnKeyListener() {
         @Override
         public boolean onKey(View v, int keyCode, KeyEvent event) {
-            if( keyCode == KeyEvent.KEYCODE_BACK && event.getAction()!= KeyEvent.ACTION_DOWN && onlyOneTime == 0) {
-
-                closeAppSnackbar = Snackbar.make(getView(), "Press back again to exit Localapp", Snackbar.LENGTH_LONG);
-                closeAppSnackbar.show();
-                onlyOneTime++;
+            if( keyCode == KeyEvent.KEYCODE_BACK && event.getAction()!= KeyEvent.ACTION_DOWN ) {
+                HomeActivity.mViewPager.setCurrentItem(0);
                 return true;
             }
             return false;

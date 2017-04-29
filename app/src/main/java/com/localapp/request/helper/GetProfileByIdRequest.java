@@ -1,17 +1,18 @@
-package com.localapp.request;
+package com.localapp.request.helper;
 
 import android.content.Context;
 import android.util.Log;
 
 import com.android.volley.VolleyError;
-import com.localapp.data.LoginData;
+import com.google.android.gms.maps.model.LatLng;
 import com.localapp.data.Profile;
-import com.localapp.request.helper.VolleyErrorHelper;
+import com.localapp.request.CommonRequest;
+import com.localapp.request.GetProfileRequest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_CONNECTION_TIMEOUT;
@@ -21,41 +22,37 @@ import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_SERVER_
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_SUCCESS;
 
 /**
- * Created by 4 way on 19-04-2017.
+ * Created by 4 way on 29-04-2017.
  */
 
-public class GetProfileRequest extends CommonRequest {
+public class GetProfileByIdRequest extends CommonRequest {
+
     private Profile mProfile;
     private Map<String, String> mParams;
     Context mContext;
-    private GetProfileRequestCallback mGetProfileRequestCallback;
+    private GetProfileByIdRequestCallback mGetProdileByIdRequestCallback;
 
-
-    public interface GetProfileRequestCallback {
-        void onProfileResponse(CommonRequest.ResponseCode responseCode,Profile mProfile);
+    public interface GetProfileByIdRequestCallback {
+        void onProfileIdResponse(CommonRequest.ResponseCode responseCode, Profile mProfile);
     }
 
-    public GetProfileRequest(Context mContext, Profile mProfile,GetProfileRequestCallback mGetProfileRequestCallback) {
-        super(mContext,RequestType.COMMON_REQUEST_GET_PROFILE,CommonRequestMethod.COMMON_REQUEST_METHOD_POST,null);
-
-
+    public GetProfileByIdRequest(Context mContext, Profile mProfile,GetProfileByIdRequestCallback mGetProdileByIdRequestCallback) {
+        super(mContext,RequestType.COMMON_REQUEST_GET_PROFILE_BY_ID,CommonRequestMethod.COMMON_REQUEST_METHOD_GET,null);
 
         this.mProfile = mProfile;
         this.mContext = mContext;
+        String url = getRequestTypeURL(RequestType.COMMON_REQUEST_GET_PROFILE_BY_ID);
+        url += "id=" + mProfile.getuId();
+        super.setURL(url);
 
-        mParams = new HashMap<>();
-        mParams.put("userId",mProfile.getuId());
-        mParams.put("token",mProfile.getuToken());
-        super.setParams(mParams);
-
-        this.mGetProfileRequestCallback = mGetProfileRequestCallback;
+        this.mGetProdileByIdRequestCallback = mGetProdileByIdRequestCallback;
 
     }
+
 
 
     @Override
     public void onResponseHandler(JSONObject response) {
-//TODO: Need to change parsing as per response from server
         try {
             JSONObject jsonObject = response.getJSONObject("data");
             mProfile.setuId(jsonObject.getString("id"));
@@ -69,8 +66,20 @@ public class GetProfileRequest extends CommonRequest {
             mProfile.setuNotes(jsonObject.getString("notes"));
             mProfile.setuPrivacy(jsonObject.getString("mobilePrivacy"));
 
+            LatLng latLng = null;
+            try {
+                JSONArray lngJsonArray = jsonObject.getJSONArray("longlat");
+                if (lngJsonArray.length()>0) {
+                    latLng = new LatLng(Double.parseDouble(lngJsonArray.getString(0)), Double.parseDouble(lngJsonArray.getString(1)));
+                }
+            }catch (JSONException e){
+                Log.v("Request",e.getMessage());
+            }
 
-            mGetProfileRequestCallback.onProfileResponse(COMMON_RES_SUCCESS, mProfile);
+            mProfile.setuLatLng(latLng);
+
+
+            mGetProdileByIdRequestCallback.onProfileIdResponse(COMMON_RES_SUCCESS, mProfile);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -85,7 +94,7 @@ public class GetProfileRequest extends CommonRequest {
 
         if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
             resCode = COMMON_RES_CONNECTION_TIMEOUT;
-            mGetProfileRequestCallback.onProfileResponse(resCode, mProfile);
+            mGetProdileByIdRequestCallback.onProfileIdResponse(resCode, mProfile);
         }
         if (errorMsg == VolleyErrorHelper.COMMON_NETWORK_ERROR_TIMEOUT)
         {
@@ -102,6 +111,8 @@ public class GetProfileRequest extends CommonRequest {
             mProfile.setErrorMsg(errorMsg);
         }
 
-        mGetProfileRequestCallback.onProfileResponse(resCode, mProfile);
+        mGetProdileByIdRequestCallback.onProfileIdResponse(resCode, mProfile);
     }
+
+
 }

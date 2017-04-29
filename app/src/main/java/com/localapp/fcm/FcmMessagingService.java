@@ -11,6 +11,8 @@ import android.support.v7.app.NotificationCompat;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.localapp.R;
+import com.localapp.data.Profile;
+import com.localapp.login_session.SessionManager;
 import com.localapp.ui.HomeActivity;
 
 /**
@@ -19,20 +21,25 @@ import com.localapp.ui.HomeActivity;
 
 public class FcmMessagingService extends FirebaseMessagingService {
 
+
     @Override
     public void onMessageReceived(RemoteMessage remoteMessage) {
-        if (remoteMessage.getData().size() >0 ) {
-            String title,message,img_url,mobile,email;
+        if (remoteMessage.getData().size() >0 && SessionManager.getInstance(this).isLoggedIn()) {
+            String title,message,img_url,mobile,email,userId;
+
 
             title = remoteMessage.getData().get("title");
             message = remoteMessage.getData().get("message");
             img_url = remoteMessage.getData().get("img_url");
             mobile = remoteMessage.getData().get("mobile");
             email = remoteMessage.getData().get("email");
+            userId = remoteMessage.getData().get("userId");
+
+
 
             Intent intent =  new Intent(this, HomeActivity.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            intent.putExtra("data1","hi how are you");
+            intent.putExtra("userId",userId);
 
             PendingIntent pendingIntent = PendingIntent.getActivity(this,0,intent,PendingIntent.FLAG_UPDATE_CURRENT);
 

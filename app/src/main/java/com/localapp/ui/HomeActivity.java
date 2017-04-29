@@ -58,7 +58,7 @@ public class HomeActivity extends AppCompatActivity{
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        session = new SessionManager(this);
+        session = SessionManager.getInstance(this);
 
 //        if (session.isLoggedIn()) {
             getLastLoginDetails();
@@ -187,22 +187,6 @@ public class HomeActivity extends AppCompatActivity{
 
     }
 
-    public void clearNotification(Context mContext) {
-        Toast.makeText(this, "sdfghk", Toast.LENGTH_SHORT).show();
-        NotificationManager notificationManager = (NotificationManager) mContext
-                .getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancel(0);
-    }
-
-
-    public class NotificationReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            clearNotification(context);
-
-        }
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

@@ -8,7 +8,6 @@
     <string name="facebook_app_id">235015976963905</string>
 
 
-
     <string name="title_activity_camera">CameraActivity</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
@@ -34,7 +33,6 @@
     <string name="close_app_msg">Press back again to exit Localapp</string>
 
     <string name="FCM_AUTHORIZATION_KEY" templateMergeStrategy="preserve" translatable="false">key=AAAAh1gj7-8:APA91bFJLVxy4cWJ1Q9T8L3UlkpzZk5wRBoHzFjpEMbO1grFkPdzoJ39jaeF2rQUcXEqSvUsKSCoehZbOq_XmuWNZ-rW_UUZlFvurMG-_kEpOZvkgCwdfCANDpC2bKb63bVbNUH7wEde</string>
-
 
 
 </resources>

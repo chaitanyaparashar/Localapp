@@ -11,6 +11,9 @@ import java.util.HashMap;
  */
 
 public class SessionManager {
+
+
+    private static SessionManager mInstance;
     SharedPreferences pref;
     SharedPreferences prefFcm;
     SharedPreferences.Editor editor;
@@ -35,6 +38,12 @@ public class SessionManager {
 
     public static final String KEY_FCM_TOKEN = "fcmToken";
 
+    public static synchronized SessionManager getInstance(Context context) {
+        if (mInstance == null) {
+            mInstance = new SessionManager(context);
+        }
+        return mInstance;
+    }
 
 
     // Constructor

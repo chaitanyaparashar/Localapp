@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -17,6 +18,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -170,10 +172,20 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         mDetailView = (EditText) findViewById(R.id.input_details_des);
         mSignInView = (TextView) findViewById(R.id.sign_in_text);
 
-        mProfessionView.setOnClickListener(new View.OnClickListener() {
+//        mProfessionView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                showPopup(SignUpActivity.this);
+//            }
+//        });
+
+        mProfessionView.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void onClick(View v) {
-                showPopup(SignUpActivity.this);
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    showPopup(SignUpActivity.this);
+                }
+                return false;
             }
         });
 
@@ -242,17 +254,26 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         picUploadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent();
-                // Show only images, no videos or anything else
-                intent.setType("image/*");
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                // Always show the chooser (if there are multiple options available)
-                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+                if (isStoragePermissionGranted()){
+                    getPicFromGallry();
+                }else {
+                    permissionsRequestReadExternalStorage();
+                }
             }
         });
 
-        permissionsRequestReadExternalStorage();
 
+
+    }
+
+
+    void getPicFromGallry(){
+        Intent intent = new Intent();
+        // Show only images, no videos or anything else
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        // Always show the chooser (if there are multiple options available)
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
 
@@ -282,15 +303,14 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
 
 
-        // Creating the PopupWindow
+  /*      // Creating the PopupWindow
         final PopupWindow popup = new PopupWindow(context);
         popup.setContentView(layout);
         popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
             @Override
             public void onDismiss() {
                 String items = "";
-                for(int mGroupPosition =0; mGroupPosition < listAdapter.getGroupCount(); mGroupPosition++)
-                {
+                for(int mGroupPosition =0; mGroupPosition < listAdapter.getGroupCount(); mGroupPosition++) {
                     items = items +  listAdapter.getItemAtPostion(mGroupPosition);
 
                 }
@@ -309,7 +329,27 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         popup.setBackgroundDrawable(new BitmapDrawable());
 
 
-        popup.showAsDropDown(mProfessionView);
+//        popup.showAsDropDown(mProfessionView);
+//        popup.showAtLocation(mProfessionView,PopupWindow.INPUT_METHOD_FROM_FOCUSABLE,0,0);*/
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(layout);
+
+        builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                String items = "";
+                for(int mGroupPosition =0; mGroupPosition < listAdapter.getGroupCount(); mGroupPosition++) {
+                    items = items +  listAdapter.getItemAtPostion(mGroupPosition);
+
+                }
+                if (items.length() > 2) {
+                    mProfessionView.setText(items.substring(0,items.length()-1));
+                }
+            }
+        });
+        builder.show();
+
 
     }
 
@@ -332,6 +372,11 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         }
     }
 
+
+    boolean isStoragePermissionGranted() {
+       return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -339,7 +384,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
 
             Uri uri = data.getData();
-            String path = getRealPathFromURI_API19(this,uri);
+            String path = getRealPathFromURI(this,uri);//getRealPathFromURI_API19(this,uri);
 
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
@@ -350,13 +395,14 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
                 profilePic.setImageBitmap(bitmap);
             } catch (IOException e) {
                 e.printStackTrace();
+                Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
             }
         }
 
         fbCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    public static String getRealPathFromURI_API19(Context context, Uri uri){
+    /*public static String getRealPathFromURI_API19(Context context, Uri uri){
 
 
         String filePath = "";
@@ -383,6 +429,30 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         }
         cursor.close();
         return filePath;
+    }*/
+
+    public String getRealPathFromURI(Context context, Uri contentUri) {
+        try {
+            Cursor cursor = getContentResolver().query(contentUri, null, null, null, null);
+            cursor.moveToFirst();
+            String document_id = cursor.getString(0);
+            document_id = document_id.substring(document_id.lastIndexOf(":")+1);
+            cursor.close();
+
+            cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,null
+                    , MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
+            cursor.moveToFirst();
+            String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
+            cursor.close();
+
+            return path;
+        }catch (Exception e){
+            Log.e("SignupActivity","getRealPathFromURI error: "+e.getMessage());
+            return null;
+        }
+
+
+
     }
 
     @Override
@@ -397,11 +467,13 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
+                    getPicFromGallry();
 
                 } else {
 
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
+                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
@@ -704,6 +776,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
 
             Toast.makeText(SignUpActivity.this, error.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.d("fbError",error.getMessage());
 
 
         }

@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +28,7 @@ import com.localapp.data.LoginData;
 import com.localapp.data.Profile;
 import com.localapp.login_session.SessionManager;
 import com.localapp.request.CommonRequest;
+import com.localapp.request.ForgetPasswordRequest;
 import com.localapp.request.GetProfileRequest;
 import com.localapp.request.LoginRequest;
 import com.localapp.request.UpdateProfileRequest;
@@ -41,7 +43,8 @@ import static com.localapp.ui.UpdateActivity.REQUEST_PERSONAL;
  * Created by 4 way on 02-03-2017.
  */
 
-public class ProfileFragment extends Fragment implements LoginRequest.LoginResponseCallback,GetProfileRequest.GetProfileRequestCallback,UpdateProfileRequest.UpdateProfileResponseCallback{
+public class ProfileFragment extends Fragment implements LoginRequest.LoginResponseCallback,GetProfileRequest.GetProfileRequestCallback,UpdateProfileRequest.UpdateProfileResponseCallback,
+        ForgetPasswordRequest.ForgetPasswordRequestCallback{
     private LinearLayout profileLayout,loginLayout;
     private CircularImageView userPic;
     private ImageButton camButton;
@@ -151,7 +154,7 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
                     break;
                 case R.id.link_signup: startActivityForResult(new Intent(getContext(),SignUpActivity.class),SIGN_UP_REQUEST_CODE);
                     break;
-                case R.id.link_forgotPassword:
+                case R.id.link_forgotPassword: onForgetPassword();
                     break;
                 case R.id.cam_btn:
                     break;
@@ -162,14 +165,7 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
                 case R.id._logout_btn: onLogout();
                     break;
 
-                case R.id._share_btn:
-                    String shareBody = "https://play.google.com/store/apps/details?id=com.localapp";
-                    Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
-                    sharingIntent.setType("text/plain");
-                    sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Check out \"Localapp\"");
-                    sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
-                    startActivity(Intent.createChooser(sharingIntent, "Share \"Localapp\" via"));
-
+                case R.id._share_btn: onAppShare();
                     break;
             }
         }
@@ -184,7 +180,10 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
         uBreifInfo.setText(profile.getuSpeciality());
         uDetailTextView.setText(profile.getuNotes());
 
+        fcmTokenUpdateRequest();
+
         myProfile = profile;
+
     }
 
     public void setProfileData(LoginData profileData) {
@@ -238,6 +237,21 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
         HomeActivity.mPicUrl = null;
     }
 
+    private void onForgetPassword() {
+        String mEmail = _email.getText().toString();
+        if (mEmail.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(mEmail).matches()) {
+            _email.setError("enter a valid email address");
+            return;
+        }
+
+        ForgetPasswordRequest request = new ForgetPasswordRequest(getContext(),mEmail,this);
+        request.executeRequest();
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setMessage("Please wait...");
+        mProgressDialog.show();
+    }
+
+
     private void onLoginSuccess(LoginData data) {
         //TODO: -----
         HomeActivity.mLoginToken = data.getAccessToken();
@@ -251,6 +265,16 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
         profileLayout.setVisibility(View.VISIBLE);
         loginLayout.setVisibility(View.GONE);
 
+    }
+
+
+    private void onAppShare() {
+        String shareBody = "https://play.google.com/store/apps/details?id=com.localapp";
+        Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+        sharingIntent.setType("text/plain");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Check out \"Localapp\"");
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+        startActivity(Intent.createChooser(sharingIntent, "Share \"Localapp\" via"));
     }
 
     private void toast(String msg) {
@@ -269,7 +293,6 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
             case UPDATE_REQUEST_CODE:
                 if (resultCode != Activity.RESULT_CANCELED && data.getBooleanExtra("result",false)) {
                     profileRequest();
-                    fcmTokenUpdateRequest();
                 }
                 break;
 
@@ -345,4 +368,44 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
     public void onUpdateProfileResponse(CommonRequest.ResponseCode responseCode) {
 
     }
+
+    @Override
+    public void ForgetPasswordResponse(CommonRequest.ResponseCode responseCode, String msg) {
+        mProgressDialog.dismiss();
+        switch (responseCode) {
+            case COMMON_RES_SUCCESS:
+                toast("Password reset successfully, check your email!");
+                break;
+            case COMMON_RES_CONNECTION_TIMEOUT:
+                toast("Connection timeout");
+                break;
+            case COMMON_RES_FAILED_TO_CONNECT:
+                toast("No internet connection");
+                break;
+            case COMMON_RES_INTERNAL_ERROR:
+                break;
+            case COMMON_RES_SERVER_ERROR_WITH_MESSAGE:
+                toast(msg);
+                break;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        getView().setFocusableInTouchMode(true);
+        getView().requestFocus();
+        getView().setOnKeyListener(onKeyListener);
+    }
+
+    View.OnKeyListener onKeyListener = new View.OnKeyListener() {
+        @Override
+        public boolean onKey(View v, int keyCode, KeyEvent event) {
+            if( keyCode == KeyEvent.KEYCODE_BACK && event.getAction()!= KeyEvent.ACTION_DOWN ) {
+                HomeActivity.mViewPager.setCurrentItem(0);
+                return true;
+            }
+            return false;
+        }
+    };
 }

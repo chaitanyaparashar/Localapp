@@ -7,6 +7,7 @@ import android.util.Log;
 import com.android.volley.AuthFailureError;
 import com.localapp.R;
 import com.localapp.data.NotificationData;
+import com.localapp.ui.HomeActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,6 +48,7 @@ public class FcmNotificationRequest {
             param.put("img_url",mData.getImg_url());
             param.put("mobile",mData.getMobile());
             param.put("email",mData.getEmail());
+            param.put("userId", HomeActivity.mUserId);
 
             mJsonObject.put("data", param);
             mJsonObject.put("to", mData.getFcmToke());//"eFePheo6GIw:APA91bHeXiDGOavcP8THQ95KcjvK_srchXzKbnOcrnQioroXzQrNhoQzkFDkbgd6ubYnZICdRD4jsldzzixRkIRFC5-54MlADNcrIS-3MBcroQgOclxH3C_vDiMHvmjjCbyfzA691jeW");

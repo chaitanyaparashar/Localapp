@@ -4,8 +4,7 @@
     android:id="@+id/activity_select_profession"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:background="@android:drawable/dialog_holo_light_frame">
+    android:orientation="vertical">
 
     <ExpandableListView
         android:id="@+id/lvExp"

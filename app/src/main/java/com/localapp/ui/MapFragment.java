@@ -99,19 +99,18 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
 
     public static String TAG = "MapFragment";
+
     private static final int REQUEST_LOCATION_CODE = 200;
     private static final int REQUEST_CAMERA_CODE = 201;
+    final static String[] CAMERA_PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO};
     final static String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION,
             Manifest.permission.CALL_PHONE,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.RECORD_AUDIO,Manifest.permission.CAMERA};
-    final static String[] CAMERA_PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO};
 
     SessionManager session;
 
-//    private ImageLoader mImageLoader;
     private GoogleMap mMap;
     private MapView mMapView;
-    Location mCurrentLocation, mLastLocation;
     private LocationManager mLocationManager;
     public ArrayList<Profile> profileList;
     public ArrayList<Profile> noticeBoardProfileList;
@@ -119,6 +118,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     private ImageView professionalBtn, studentBtn,
             repairBtn, emergencyBtn,
             notice_boardBtn,hobbiesBtn;
+
     private ImageView searchBtn,searchCameraBtn;
     private RelativeLayout uDetailLayout;
     private AutoCompleteTextView searchBoxView;
@@ -154,7 +154,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         Bundle extras = getActivity().getIntent().getExtras();
 
         //for notification
-
         try {
             if(extras != null){
                 String notificationUserID = extras.getString("userId");
@@ -170,8 +169,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         profileList = new ArrayList<>();
         noticeBoardProfileList = new ArrayList<>();
         searchContaintList = new ArrayList<>();
-        autoCompleteAdapter = new ArrayAdapter<String>(getContext(),
-                android.R.layout.simple_dropdown_item_1line, searchContaintList);
+        autoCompleteAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, searchContaintList);
 
         setupView(view);    //initialization view object
 
@@ -268,7 +266,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
 
 
-//        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(28.545623, 77.330507), 9.5f));
         if (HomeActivity.mLastKnownLocation != null) {
             request(HomeActivity.mLastKnownLocation);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(HomeActivity.mLastKnownLocation, 16.2f));
@@ -395,6 +392,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     }
 
 
+
+
+
     /**
      * filter map marker
      */
@@ -455,6 +455,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         }
     };
 
+
     private void initFilterButtonSelection (){
         emergencyBtn.setImageResource(R.drawable.ic_health);
         studentBtn.setImageResource(R.drawable.ic_student);
@@ -464,6 +465,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         hobbiesBtn.setImageResource(R.drawable.ic_hobby);
         isSelectedFilterButton = false;
     }
+
 
     /**
      * locationListener
@@ -1418,12 +1420,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 for(Profile p : profileList){
                     if(p.getuId() != null && p.getuId().contentEquals(uProfile.getuId())){
                         indexs.add(profileList.indexOf(p));
-                        if (indexs.size() > 0) {
-                            addMarkerByProfile(true, indexs);
-                        }
+
                         break;
                     }
-                    //something here
+
+                }
+
+                if (indexs.size() > 0) {
+                    addMarkerByProfile(true, indexs);
+                }else {
+                    Toast.makeText(getContext(), "No data found for this image :(", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:

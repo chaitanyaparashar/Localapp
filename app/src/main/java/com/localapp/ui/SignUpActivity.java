@@ -9,11 +9,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -29,7 +27,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,11 +47,13 @@ import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
+import com.localapp.camera.CropImage;
 import com.localapp.data.SignUpData;
 import com.localapp.login_session.SessionManager;
 import com.localapp.request.CommonRequest;
 import com.localapp.request.SignUpRequest;
 import com.localapp.request.helper.VolleySingleton;
+
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -72,9 +71,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import static com.localapp.camera.CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE;
+
 public class SignUpActivity extends AppCompatActivity implements SignUpRequest.SignUpResponseCallback{
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 111;
-    public static int PICK_IMAGE_REQUEST = 100;
+    public static final int PICK_IMAGE_REQUEST = 100;
 
     SessionManager session;
 
@@ -110,6 +111,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         setContentView(R.layout.activity_sign_up);
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
         actionBar.hide();
+
 
         setupView();
     }
@@ -154,6 +156,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         fb_FillBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 fb_LoginButton.performClick();
             }
         });
@@ -381,25 +384,51 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
 
-            Uri uri = data.getData();
-            String path = getRealPathFromURI(this,uri);//getRealPathFromURI_API19(this,uri);
+        switch (requestCode){
+            case PICK_IMAGE_REQUEST:
+                if (resultCode == RESULT_OK && data != null && data.getData() != null) {
 
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                // Log.d(TAG, String.valueOf(bitmap));
-                imgFile = new File(path);
+                    Uri uri = data.getData();
 
 
-                profilePic.setImageBitmap(bitmap);
-            } catch (IOException e) {
-                e.printStackTrace();
-                Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
-            }
+                    startCropImageActivity(uri);
+
+
+                }
+                break;
+            case CROP_IMAGE_ACTIVITY_REQUEST_CODE:
+                if (resultCode == RESULT_OK && data != null ) {
+
+                    CropImage.ActivityResult result = CropImage.getActivityResult(data);
+                    Uri uri = result.getUri();
+//                    String path = getRealPathFromURI(this,uri);//getRealPathFromURI_API19(this,uri);
+                    try {
+                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+                        // Log.d(TAG, String.valueOf(bitmap));
+                        imgFile = new File(uri.getPath());
+
+
+                        profilePic.setImageBitmap(bitmap);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
         }
 
+
+
         fbCallbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    /**
+     * Start crop image activity for the given image.
+     */
+    private void startCropImageActivity(Uri imageUri) {
+        CropImage.activity(imageUri)
+                .start(this);
     }
 
     /*public static String getRealPathFromURI_API19(Context context, Uri uri){
@@ -716,6 +745,12 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
 
                         com.facebook.Profile fbProfile = Profile.getCurrentProfile();
+                        if (fbProfile == null){
+                            Toast.makeText(SignUpActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+
                         Uri picUrl = fbProfile.getProfilePictureUri(200,150);
                         URL url = null;
                         try {
@@ -741,6 +776,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
                         mEmailView.setText(fbEmail);
 //                        mDetailView.setText(fbAbout);
                         profilePic.setImageUrl(picUrl.toString(), VolleySingleton.getInstance(AppController.getAppContext()).getImageLoader());
+
 
                         new DownloadFileFromURL().execute(picUrl.toString());
 
@@ -798,6 +834,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
             mProgressDialog = new ProgressDialog(SignUpActivity.this);
             mProgressDialog.setMessage("Getting data...");
             mProgressDialog.show();
+            LoginManager.getInstance().logOut();
         }
 
         /**
@@ -868,6 +905,8 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
             // Reading image path from sdcard
             String imagePath = Environment.getExternalStorageDirectory().toString() + "/downloadedfile.jpg";
             imgFile = new File(imagePath);
+
+
 //            Toast.makeText(getContext(), ""+imagePath, Toast.LENGTH_SHORT).show();
             // setting downloaded into image view
 //            my_image.setImageDrawable(Drawable.createFromPath(imagePath));

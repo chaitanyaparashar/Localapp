@@ -56,6 +56,7 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import static com.localapp.camera.CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE;
 import static com.localapp.ui.FeedFragment.VIDEO_REQUEST;
 
 public class Camera2Activity extends AppCompatActivity implements View.OnClickListener , GalleryRecyclerViewAdapter.OnItemClickListener{
@@ -190,16 +191,34 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
     final int REQUEST_VIDEO_CAPTURE = 1;
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-        if (requestCode == REQUEST_VIDEO_CAPTURE && resultCode == RESULT_OK) {
-            Uri videoUri = intent.getData();
-            String path = getRealPathFromUriForImagesAndVideo(videoUri);
-            Intent returnIntent = new Intent();
+        switch (requestCode){
+            case REQUEST_VIDEO_CAPTURE:
+                if (resultCode == RESULT_OK) {
+                    Uri videoUri = intent.getData();
+                    String path = getRealPathFromUriForImagesAndVideo(videoUri);
+                    Intent returnIntent = new Intent();
 //            returnIntent.putExtra("result",Uri.fromFile(new File(path)).toString());
-            returnIntent.putExtra("result",Uri.fromFile(new File(path)).toString());
-            setResult(VIDEO_REQUEST,returnIntent);
-            finish();
+                    returnIntent.putExtra("result",Uri.fromFile(new File(path)).toString());
+                    setResult(VIDEO_REQUEST,returnIntent);
+                    finish();
+
+                }
+                break;
+            case CROP_IMAGE_ACTIVITY_REQUEST_CODE:
+                if (resultCode == RESULT_OK && intent != null ) {
+
+                    CropImage.ActivityResult result = CropImage.getActivityResult(intent);
+                    Uri uri = result.getUri();
+                    Intent returnIntent = new Intent();
+                    returnIntent.putExtra("result",uri.toString());
+                    setResult(WHICH_REQUEST,returnIntent);
+                    finish();
+//
+                }
+                break;
 
         }
+
     }
 
     private String getRealPathFromUriForImagesAndVideo(Uri contentUri) {
@@ -239,10 +258,16 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onItemClick(GalleryRecyclerViewAdapter.ItemHolder item, int position) {
 //        Toast.makeText(this, ""+item.getItemUri(), Toast.LENGTH_SHORT).show();
-        Intent returnIntent = new Intent();
+        /*Intent returnIntent = new Intent();
         returnIntent.putExtra("result",item.getItemUri().toString());
         setResult(WHICH_REQUEST,returnIntent);
-        finish();
+        finish();*/
+        startCropImageActivity(item.getItemUri());
+    }
+
+    private void startCropImageActivity(Uri imageUri) {
+        CropImage.activity(imageUri)
+                .start(this);
     }
 
 
@@ -449,10 +474,12 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
                     Toast.makeText(Camera2Activity.this, "Saved:" + imageFile, Toast.LENGTH_SHORT).show();
                     createCameraPreview();
 
-                    Intent returnIntent = new Intent();
+                    startCropImageActivity(Uri.fromFile(imageFile));
+
+                    /*Intent returnIntent = new Intent();
                     returnIntent.putExtra("result",Uri.fromFile(imageFile).toString());
                     setResult(WHICH_REQUEST,returnIntent);
-                    finish();
+                    finish();*/
                 }
             };
 

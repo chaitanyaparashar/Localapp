@@ -51,7 +51,6 @@ import com.localapp.camera.Camera2Activity;
 import com.localapp.data.GetFeedRequestData;
 import com.localapp.data.Message;
 import com.localapp.data.NotificationData;
-import com.localapp.data.Profile;
 import com.localapp.fcm.FcmNotificationRequest;
 import com.localapp.login_session.SessionManager;
 import com.localapp.request.BroadcastRequest;
@@ -121,7 +120,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     private SessionManager sessionManager;
     final static String[] CAMERA_PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA,Manifest.permission.RECORD_AUDIO};
     final static String[] AUDIO_PERMISSIONS = {Manifest.permission.RECORD_AUDIO,Manifest.permission.WRITE_EXTERNAL_STORAGE};
-    private static final int REQUEST_AUIDO_CODE = 300;
+    private static final int REQUEST_AUDIO_CODE = 300;
     private static final int REQUEST_CAMERA_CODE = 201;
 
     private MQTT mqtt = null;
@@ -141,7 +140,6 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     private List<Message> emergencyMessageList;
 
     private View typeMessageAreaPreventClickView;
-    private Snackbar closeAppSnackbar;
 
 
     EmojiconEditText chatText;
@@ -362,29 +360,17 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         }
 
 
-
         connection = mqtt.futureConnection();
-        /*progressDialog = ProgressDialog.show(getContext(), "",
-                "Connecting...", true);
-        progressDialog.setCancelable(true);*/
         connection.connect().then(onui(new Callback<Void>() {
             @Override
             public void onSuccess(Void value) {
-//                progressDialog.dismiss();
-//                connectButton.setEnabled(false);
-//                sendButton.setEnabled(true);
                 Log.v(TAG,"Mqtt Connected");
-//                toast("Connected");
                 subscribe();//subscribed
             }
 
             @Override
             public void onFailure(Throwable value) {
-//                toast("Problem connecting to host");
                 Log.e(TAG, "Exception connecting to " + sAddress + " - " + value);
-//                progressDialog.dismiss();
-//                connectButton.setEnabled(true);
-//                sendButton.setEnabled(false);
             }
         }));
 
@@ -397,7 +383,6 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     public void onDestroy() {
         super.onDestroy();
         connection.disconnect();
-//        toast("Disconnecting...");
     }
 
     @Override
@@ -1100,14 +1085,12 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         if (resultCode == CAMERA_REQUEST) {
             Uri resultData = Uri.parse(data.getStringExtra("result"));
             sendMedia(MEDIA_IMAGE,resultData.toString(),0);
-//            toast(resultData.toString());
 
             PicUrlRequest picUrlRequest = new PicUrlRequest(getContext(),new File(resultData.getPath()),MEDIA_IMAGE,this);
             picUrlRequest.executeRequest();
         }else if (resultCode == VIDEO_REQUEST) {
             Uri resultData = Uri.parse(data.getStringExtra("result"));
             sendMedia(MEDIA_VIDEO,resultData.toString(),0);
-//            toast(resultData.toString());
 
             PicUrlRequest picUrlRequest = new PicUrlRequest(getContext(),new File(resultData.getPath()),MEDIA_VIDEO,this);
             picUrlRequest.executeRequest();
@@ -1127,7 +1110,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
             }
 
             break;
-            case REQUEST_AUIDO_CODE:
+            case REQUEST_AUDIO_CODE:
                 if (!(grantResults.length > 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED)){
                     Toast.makeText(getContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
             }
@@ -1251,7 +1234,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                     isStartRecording = true;
                     isCanceled = false;
                 }else {
-                    requestPermissions(AUDIO_PERMISSIONS,REQUEST_AUIDO_CODE);
+                    requestPermissions(AUDIO_PERMISSIONS, REQUEST_AUDIO_CODE);
                 }
 
 

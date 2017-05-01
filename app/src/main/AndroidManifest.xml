@@ -84,6 +84,8 @@
 
 
         <activity android:name=".ui.LoginActivity"></activity>
+        <activity android:name=".camera.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"/>
     </application>
 
 </manifest>

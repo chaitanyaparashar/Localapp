@@ -64,7 +64,6 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
     private FloatingActionButton noticeCreateFab;
 
     private SwipeRefreshLayout swipeRefreshLayout;
-    private Snackbar closeAppSnackbar;
 
     public NoticeBoardFragment() {
         // Required empty public constructor
@@ -117,9 +116,6 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
         recyclerView.setAdapter(noticeAdapter);
         recyclerViewNearYou.setAdapter(noticeAdapterNearYou);
 
-
-        /*recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getContext(), recyclerView, recyclerItemClickListener));
-        recyclerViewNearYou.addOnItemTouchListener(new RecyclerTouchListener(getContext(),recyclerViewNearYou,recyclerItemClickListener));*/
 
         noticeCreateFab = (FloatingActionButton) fView.findViewById(R.id.fab);
         noticeCreateFab.setOnClickListener(new View.OnClickListener() {

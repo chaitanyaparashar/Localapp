@@ -45,7 +45,8 @@ public class EmergencyMsgAcceptRequest {
     }
 
     public void executeRequest () {
-        String url = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/message/update";
+
+        String url = "http://13.56.50.98:8080/message/update";
 
         JSONObject js = new JSONObject();
         try {

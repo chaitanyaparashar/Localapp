@@ -74,7 +74,8 @@ public class SignUpRequest {
 
 
     public void executeRequest() {
-        String url = "http://ec2-52-53-110-212.us-west-1.compute.amazonaws.com:8080/registerPic";//url for registration with pic
+        final String HOST_ADDRESS = "http://13.56.50.98:8080";
+        final String url = HOST_ADDRESS + "/registerPic";//url for registration with pic
 
         Response.Listener<NetworkResponse> listener = new Response.Listener<NetworkResponse>() {
             @Override

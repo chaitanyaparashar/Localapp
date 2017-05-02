@@ -359,7 +359,7 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
             case COMMON_RES_INTERNAL_ERROR:
                 break;
             case COMMON_RES_SERVER_ERROR_WITH_MESSAGE:
-                toast(mProfile.getErrorMsg());
+                onLogout();
                 break;
         }
     }

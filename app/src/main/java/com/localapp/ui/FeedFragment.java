@@ -614,6 +614,8 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                     connection.publish(mTopic, jsonObject.toString().getBytes(), QoS.AT_LEAST_ONCE, false);
                 }
 
+                initMsgTypeEmoji(); //set default message type straight
+
             }
 
         }
@@ -689,6 +691,12 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
             emojiGridView.setVisibility(View.GONE);
         }
     };
+
+    void initMsgTypeEmoji() {
+        selectedMessageTypeInt = 0;
+        selectedEmojiResourceID = emojiResourceID[0];
+        camShoutImgBtn.setImageResource(selectedEmojiResourceID);
+    }
 
 
 

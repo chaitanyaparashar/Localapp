@@ -53,6 +53,7 @@ import com.localapp.login_session.SessionManager;
 import com.localapp.request.CommonRequest;
 import com.localapp.request.SignUpRequest;
 import com.localapp.request.helper.VolleySingleton;
+import com.squareup.picasso.Picasso;
 
 
 import org.json.JSONException;
@@ -775,7 +776,9 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
                         mNameView.setText(fbName);
                         mEmailView.setText(fbEmail);
 //                        mDetailView.setText(fbAbout);
-                        profilePic.setImageUrl(picUrl.toString(), VolleySingleton.getInstance(AppController.getAppContext()).getImageLoader());
+                        profilePic.setImageResource(0);
+                        Picasso.with(SignUpActivity.this).load(picUrl).placeholder(R.drawable.ic_user).error(R.drawable.ic_user).into(profilePic);
+//                        profilePic.setImageUrl(picUrl.toString(), VolleySingleton.getInstance(AppController.getAppContext()).getImageLoader());
 
 
                         new DownloadFileFromURL().execute(picUrl.toString());
@@ -823,7 +826,8 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
      * Background Async Task to download file
      * */
     class DownloadFileFromURL extends AsyncTask<String, String, String> {
-
+        String rootDir = getFilesDir().getAbsolutePath();
+        String fileName;
         /**
          * Before starting background thread
          * Show Progress Bar Dialog
@@ -843,6 +847,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         @Override
         protected String doInBackground(String... f_url) {
             int count;
+            fileName = System.currentTimeMillis()+"_fb.jpg";
             try {
                 URL url = new URL(f_url[0]);
                 URLConnection conection = url.openConnection();
@@ -854,7 +859,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
                 InputStream input = new BufferedInputStream(url.openStream(), 8192);
 
                 // Output stream to write file
-                OutputStream output = new FileOutputStream("/sdcard/downloadedfile.jpg");
+                OutputStream output = openFileOutput(fileName,Context.MODE_PRIVATE);
 
                 byte data[] = new byte[1024];
 
@@ -903,7 +908,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
             // Displaying downloaded image into image view
             // Reading image path from sdcard
-            String imagePath = Environment.getExternalStorageDirectory().toString() + "/downloadedfile.jpg";
+            String imagePath = rootDir+fileName;
             imgFile = new File(imagePath);
 
 

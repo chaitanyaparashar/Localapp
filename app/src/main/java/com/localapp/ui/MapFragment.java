@@ -35,6 +35,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -258,6 +259,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         mMap.setOnCameraIdleListener(mClusterManager);
         mMap.setOnMarkerClickListener(mClusterManager);
         mMap.setOnInfoWindowClickListener(mClusterManager);
+        mMap.setOnMapClickListener(onMapClickListener);
 
         mClusterManager.setOnClusterClickListener(this);
         mClusterManager.setOnClusterInfoWindowClickListener(this);
@@ -1471,7 +1473,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 searchBoxView.clearFocus();
                 return true;
             }else {
-                if (onlyOneTime == 0 && event.getAction()!= KeyEvent.ACTION_DOWN) {
+                if (onlyOneTime == 0 && keyCode == KeyEvent.KEYCODE_BACK && event.getAction()!= KeyEvent.ACTION_DOWN) {
                     closeAppSnackbar = Snackbar.make(getView(), R.string.close_app_msg, Snackbar.LENGTH_LONG);
                     closeAppSnackbar.show();
                     closeAppSnackbar.addCallback(snackbarBaseCallback);
@@ -1483,6 +1485,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             return false;
         }
     };
+
+    GoogleMap.OnMapClickListener onMapClickListener = new GoogleMap.OnMapClickListener() {
+        @Override
+        public void onMapClick(LatLng latLng) {
+            uDetailLayout.setVisibility(View.GONE);
+            initFilterButtonSelection();
+            addMarkerByProfile(false, null);
+            searchBoxView.clearFocus();
+
+            try {
+                InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+            }catch (NullPointerException e){
+                e.printStackTrace();
+            }
+
+        }
+    };
+
+
 
     BaseTransientBottomBar.BaseCallback<Snackbar> snackbarBaseCallback = new BaseTransientBottomBar.BaseCallback<Snackbar>() {
         @Override

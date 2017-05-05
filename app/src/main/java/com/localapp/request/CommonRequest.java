@@ -22,6 +22,7 @@ import java.util.Map;
 public abstract class CommonRequest {
 
     private static final String HOST_ADDRESS = "http://13.56.50.98:8080";
+//    private static final String HOST_ADDRESS = "http://192.172.2.178:8080";//localhost
     private static final String SIGN_UP_REQUEST_URL = "";
     private static final String LOGIN_REQUEST_URL = HOST_ADDRESS + "/login";
 //    private static final String LOGIN_REQUEST_URL = "http://192.172.3.78:8080/login";//local
@@ -42,6 +43,7 @@ public abstract class CommonRequest {
     private static final String GET_PROFILE_REQUEST_URL = HOST_ADDRESS + "/getUserById";
     private static final String GET_PROFILE_BY_ID_REQUEST_URL = HOST_ADDRESS + "/getProfileById?";
     private static final String UPDATE_PROFILE_REQUEST_URL = HOST_ADDRESS + "/update";
+    private static final String FB_LOGIN_REQUEST_URL = HOST_ADDRESS + "/facebookLogin";
     private static final String FCM_PUSH_NOTIFICATION_URL = "https://fcm.googleapis.com/fcm/send";
 
     public enum RequestType {
@@ -64,7 +66,8 @@ public abstract class CommonRequest {
         COMMON_REQUEST_GET_PROFILE,
         COMMON_REQUEST_UPDATE_PROFILE,
         COMMON_REQUEST_FCM_PUSH_NOTIFICATION,
-        COMMON_REQUEST_GET_PROFILE_BY_ID
+        COMMON_REQUEST_GET_PROFILE_BY_ID,
+        COMMON_REQUEST_FB_LOGIN
 
     }
 
@@ -211,6 +214,10 @@ public abstract class CommonRequest {
             case COMMON_REQUEST_GET_PROFILE_BY_ID:
                 url = GET_PROFILE_BY_ID_REQUEST_URL;
                 break;
+
+            case COMMON_REQUEST_FB_LOGIN:
+                 url = FB_LOGIN_REQUEST_URL;
+                 break;
 
 
         }

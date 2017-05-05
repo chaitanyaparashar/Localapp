@@ -17,9 +17,11 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.github.siyamed.shapeimageview.CircularImageView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.localapp.R;
@@ -45,7 +47,8 @@ import static com.localapp.ui.UpdateActivity.REQUEST_PERSONAL;
 
 public class ProfileFragment extends Fragment implements LoginRequest.LoginResponseCallback,GetProfileRequest.GetProfileRequestCallback,UpdateProfileRequest.UpdateProfileResponseCallback,
         ForgetPasswordRequest.ForgetPasswordRequestCallback{
-    private LinearLayout profileLayout,loginLayout;
+    private LinearLayout profileLayout;
+    private RelativeLayout loginLayout;
     private CircularImageView userPic;
     private ImageButton camButton;
     private ImageView editPersonal,editAbout;
@@ -112,7 +115,7 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
     public void setupView(View view) {
         //layouts
         profileLayout = (LinearLayout) view.findViewById(R.id.profile_layout);
-        loginLayout = (LinearLayout) view.findViewById(R.id.login_layout);
+        loginLayout = (RelativeLayout) view.findViewById(R.id.login_layout);
 
 
 
@@ -174,11 +177,40 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
     public void setProfileData(Profile profile) {
         Picasso.with(AppController.getAppContext()).load(profile.getuPictureURL()).placeholder(R.drawable.ic_user).into(userPic);
         uNmaeTextView.setText(profile.getuName());
-        uNumberTextView.setText(profile.getuMobile());
         uEmailTextView.setText(profile.getuEmail());
-        uProdessionTextView.setText(profile.getProfession());
-        uBreifInfo.setText(profile.getuSpeciality());
-        uDetailTextView.setText(profile.getuNotes());
+
+
+        if (profile.getuMobile() !=null && !profile.getuMobile().equals("null") && !profile.getuMobile().trim().isEmpty()) {
+            uNumberTextView.setText(profile.getuMobile());
+            uNumberTextView.setVisibility(View.VISIBLE);
+        }else {
+            uNumberTextView.setVisibility(View.GONE);
+        }
+
+
+
+        if (profile.getProfession() !=null && !profile.getProfession().equals("null") && !profile.getProfession().trim().isEmpty()) {
+            uProdessionTextView.setText(profile.getProfession());
+            uProdessionTextView.setVisibility(View.VISIBLE);
+        }else {
+            uProdessionTextView.setVisibility(View.GONE);
+        }
+
+
+        if (profile.getuSpeciality() !=null && !profile.getuSpeciality().equals("null") && !profile.getuSpeciality().trim().isEmpty()) {
+            uBreifInfo.setText(profile.getuSpeciality());
+            uBreifInfo.setVisibility(View.VISIBLE);
+        }else {
+            uBreifInfo.setVisibility(View.GONE);
+        }
+
+
+        if (profile.getuNotes() !=null && !profile.getuNotes().equals("null") && !profile.getuNotes().trim().isEmpty()) {
+            uDetailTextView.setText(profile.getuNotes());
+            uDetailTextView.setVisibility(View.VISIBLE);
+        }else {
+            uDetailTextView.setVisibility(View.GONE);
+        }
 
         fcmTokenUpdateRequest();
 
@@ -189,11 +221,39 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
     public void setProfileData(LoginData profileData) {
         Picasso.with(AppController.getAppContext()).load(profileData.getPicUrl()).placeholder(R.drawable.ic_user).into(userPic);
         uNmaeTextView.setText(profileData.getmName());
-        uNumberTextView.setText(profileData.getmMobile());
         uEmailTextView.setText(profileData.getEmail());
-        uProdessionTextView.setText(profileData.getmProfession());
-        uBreifInfo.setText(profileData.getmSpeciality());
-        uDetailTextView.setText(profileData.getmNotes());
+
+        if (profileData.getmMobile() !=null && !profileData.getmMobile().equals("null") && !profileData.getmMobile().trim().isEmpty()) {
+            uNumberTextView.setText(profileData.getmMobile());
+            uNumberTextView.setVisibility(View.VISIBLE);
+        }else {
+            uNumberTextView.setVisibility(View.GONE);
+        }
+
+
+
+        if (profileData.getmProfession() !=null && !profileData.getmProfession().equals("null") && !profileData.getmProfession().trim().isEmpty()) {
+            uProdessionTextView.setText(profileData.getmProfession());
+            uProdessionTextView.setVisibility(View.VISIBLE);
+        }else {
+            uProdessionTextView.setVisibility(View.GONE);
+        }
+
+
+        if (profileData.getmSpeciality() !=null && !profileData.getmSpeciality().equals("null") && !profileData.getmSpeciality().trim().isEmpty()) {
+            uBreifInfo.setText(profileData.getmSpeciality());
+            uBreifInfo.setVisibility(View.VISIBLE);
+        }else {
+            uBreifInfo.setVisibility(View.GONE);
+        }
+
+
+        if (profileData.getmNotes() !=null && !profileData.getmNotes().equals("null") && !profileData.getmNotes().trim().isEmpty()) {
+            uDetailTextView.setText(profileData.getmNotes());
+            uDetailTextView.setVisibility(View.VISIBLE);
+        }else {
+            uDetailTextView.setVisibility(View.GONE);
+        }
 
         myProfile = new Profile(profileData.getUserId());
         myProfile.setuEmail(profileData.getEmail());
@@ -223,6 +283,7 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
 
     private void onLogout() {
         session.logoutUser();
+        LoginManager.getInstance().logOut();
         loginLayout.setVisibility(View.VISIBLE);
         profileLayout.setVisibility(View.GONE);
         userPic.setImageResource(R.drawable.ic_user);
@@ -235,6 +296,9 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
         HomeActivity.mUserId = "";
         HomeActivity.mLoginToken = "";
         HomeActivity.mPicUrl = null;
+
+        startActivity(new Intent(getContext(),LoginActivity.class));
+        getActivity().finish();
     }
 
     private void onForgetPassword() {

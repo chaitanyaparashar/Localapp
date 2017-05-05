@@ -11,7 +11,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -46,13 +45,11 @@ import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import com.localapp.R;
-import com.localapp.appcontroller.AppController;
 import com.localapp.camera.CropImage;
 import com.localapp.data.SignUpData;
 import com.localapp.login_session.SessionManager;
 import com.localapp.request.CommonRequest;
 import com.localapp.request.SignUpRequest;
-import com.localapp.request.helper.VolleySingleton;
 import com.squareup.picasso.Picasso;
 
 
@@ -61,7 +58,6 @@ import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -121,7 +117,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         signUpBtn = (Button) findViewById(R.id._signUp);
 
         session = new SessionManager(this);
-        /***************** fb login *****************/
+        /*************** fb login *****************/
         List<String> fbPermissions = new ArrayList<>();
         fbPermissions.add("public_profile");
         fbPermissions.add("email");
@@ -209,11 +205,13 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
                     if(event.getRawX() >= (mNumberView.getRight() - mNumberView.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
                         // your action here
                         if (numberVisibility) {
-                            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_hidden, 0);
+//                            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_hidden, 0);
+                            mNumberView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_phone,0,R.drawable.ic_password_hidden,0);
                             numberVisibility = false;
                             mNumberView.setTag("1");
                         }else {
-                            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_visible, 0);
+//                            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_visible, 0);
+                            mNumberView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_visible, 0);
                             numberVisibility = true;
                             mNumberView.setTag("0");
                         }
@@ -259,7 +257,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
             @Override
             public void onClick(View v) {
                 if (isStoragePermissionGranted()){
-                    getPicFromGallry();
+                    getPicFromGallery();
                 }else {
                     permissionsRequestReadExternalStorage();
                 }
@@ -271,7 +269,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
     }
 
 
-    void getPicFromGallry(){
+    void getPicFromGallery(){
         Intent intent = new Intent();
         // Show only images, no videos or anything else
         intent.setType("image/*");
@@ -497,7 +495,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-                    getPicFromGallry();
+                    getPicFromGallery();
 
                 } else {
 
@@ -726,6 +724,10 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
     FacebookCallback<LoginResult> fbCallback = new FacebookCallback<LoginResult>() {
         @Override
         public void onSuccess(LoginResult loginResult) {
+
+            Log.d("facebook","userId: "+loginResult.getAccessToken().getUserId());
+            Log.d("facebook","token: "+loginResult.getAccessToken().getToken());
+
 
             if (!fbTokenTracker.isTracking()) {
                 fbTokenTracker.startTracking();

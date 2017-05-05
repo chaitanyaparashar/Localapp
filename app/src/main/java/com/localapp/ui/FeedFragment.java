@@ -12,6 +12,7 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 import android.os.SystemClock;
 import android.os.Vibrator;
@@ -455,6 +456,10 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                                     emergencyListAdapter.notifyDataSetChanged();
                                     emergencyMessageListView.scrollTo(emergencyListAdapter.getCount()-2,emergencyListAdapter.getCount() -1);
                                 }
+
+                                if (messageData.getMessageType() == MessageType.WHISPER){
+                                    whisperMsg(messageData);
+                                }
                             }
                         }else {
                             for (Message message1:emergencyMessageList){
@@ -580,6 +585,10 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                 adapter.notifyDataSetChanged();
                 chatText.setText("");
                 scrollToBottom();
+
+                if (messageData.getMessageType() == MessageType.WHISPER){//remove after 2 min if WHISPER Message
+                    whisperMsg(messageData);
+                }
                 /*BroadcastRequest broadcastRequest = new BroadcastRequest(getContext(), messageData, FeedFragment.this);
                 broadcastRequest.executeRequest();*/
 
@@ -679,6 +688,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
             messages.add(messageData);
             adapter.notifyDataSetChanged();
             scrollToBottom();
+
         }
     }
 
@@ -978,6 +988,12 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         }
 
         return mumbledStr.trim();
+    }
+
+
+    public void whisperMsg(Message message){
+        new CountDownWhisper(message,60000*2,1000).start();
+
     }
 
     /**
@@ -1464,4 +1480,32 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
             return false;
         }
     };
+
+    public class CountDownWhisper extends CountDownTimer{
+        private Message message;
+        /**
+         * @param millisInFuture    The number of millis in the future from the call
+         *                          to {@link #start()} until the countdown is done and {@link #onFinish()}
+         *                          is called.
+         * @param countDownInterval The interval along the way to receive
+         *                          {@link #onTick(long)} callbacks.
+         */
+        public CountDownWhisper(Message message,long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+            this.message = message;
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            Log.d("CountDownWhisper",message.getmText()+": "+millisUntilFinished / 1000);
+        }
+
+        @Override
+        public void onFinish() {
+            if (messages.contains(message)){
+                messages.remove(message);
+                adapter.notifyDataSetChanged();
+            }
+        }
+    }
 }

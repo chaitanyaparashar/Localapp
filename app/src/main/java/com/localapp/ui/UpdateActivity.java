@@ -281,15 +281,38 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
 
     }
 
-    private void setProfileData(Profile mProfileData) {
-        mNameView.setText(mProfileData.getuName());
-        mNumberView.setText(mProfileData.getuMobile());
-        mEmailView.setText(mProfileData.getuEmail());
-        mProfessionView.setText(mProfileData.getProfession());
-        mInfoView.setText(mProfileData.getuSpeciality());
-        mDetailView.setText(mProfileData.getuNotes());
+    private void setProfileData(Profile profile) {
 
-        if (mProfileData.getuPrivacy().equals("0")) {
+
+        mNameView.setText(profile.getuName());
+        mEmailView.setText(profile.getuEmail());
+
+
+        if (profile.getuMobile() !=null && !profile.getuMobile().equals("null") && !profile.getuMobile().trim().isEmpty()) {
+            mNumberView.setText(profile.getuMobile());
+            mNumberView.setVisibility(View.VISIBLE);
+        }
+
+
+
+        if (profile.getProfession() !=null && !profile.getProfession().equals("null") && !profile.getProfession().trim().isEmpty()) {
+            mProfessionView.setText(profile.getProfession());
+        }
+
+
+        if (profile.getuSpeciality() !=null && !profile.getuSpeciality().equals("null") && !profile.getuSpeciality().trim().isEmpty()) {
+            mInfoView.setText(profile.getuSpeciality());
+        }
+
+
+        if (profile.getuNotes() !=null && !profile.getuNotes().equals("null") && !profile.getuNotes().trim().isEmpty()) {
+            mDetailView.setText(profile.getuNotes());
+        }
+
+
+
+
+        if (profile.getuPrivacy().equals("0")) {
             mNumberView.setTag("0");
             mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_visible, 0);
             numberVisibility = true;

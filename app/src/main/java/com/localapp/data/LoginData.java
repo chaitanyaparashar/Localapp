@@ -1,5 +1,7 @@
 package com.localapp.data;
 
+import com.facebook.login.LoginResult;
+
 /**
  * Created by 4 way on 03-03-2017.
  */
@@ -21,12 +23,16 @@ public class LoginData {
 
     private String mNotes;
     private String mProfession;
+    private FbLoginError fbLoginError;
+    private LoginResult fbLoginResult;
 
     public LoginData(String mEmail, String mPassword) {
         this.mEmail = mEmail;
         this.mPassword = mPassword;
     }
 
+    public LoginData() {
+    }
 
     public String getmNotes() {
         return mNotes;
@@ -105,5 +111,22 @@ public class LoginData {
 
     public void setAccessToken(String mAccessToken) {
         this.mAccessToken = mAccessToken;
+    }
+
+
+    public FbLoginError getFbLoginError() {
+        return fbLoginError;
+    }
+
+    public void setFbLoginError(FbLoginError fbLoginError) {
+        this.fbLoginError = fbLoginError;
+    }
+
+    public void setFbLoginResult(LoginResult fbLoginResult) {
+        this.fbLoginResult = fbLoginResult;
+    }
+
+    public LoginResult getFbLoginResult() {
+        return fbLoginResult;
     }
 }

@@ -19,7 +19,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.design.widget.BaseTransientBottomBar;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -1476,7 +1475,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 if (onlyOneTime == 0 && keyCode == KeyEvent.KEYCODE_BACK && event.getAction()!= KeyEvent.ACTION_DOWN) {
                     closeAppSnackbar = Snackbar.make(getView(), R.string.close_app_msg, Snackbar.LENGTH_LONG);
                     closeAppSnackbar.show();
-                    closeAppSnackbar.addCallback(snackbarBaseCallback);
+                    closeAppSnackbar.setCallback(snackbarCallback);
                     searchBoxView.clearFocus();
                     onlyOneTime++;
                     return true;
@@ -1505,14 +1504,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     };
 
 
-
-    BaseTransientBottomBar.BaseCallback<Snackbar> snackbarBaseCallback = new BaseTransientBottomBar.BaseCallback<Snackbar>() {
+    Snackbar.Callback snackbarCallback = new Snackbar.Callback() {
         @Override
-        public void onDismissed(Snackbar transientBottomBar, int event) {
-            super.onDismissed(transientBottomBar, event);
+        public void onDismissed(Snackbar snackbar, int event) {
+            super.onDismissed(snackbar, event);
             onlyOneTime = 0;
         }
     };
+
 
 
 

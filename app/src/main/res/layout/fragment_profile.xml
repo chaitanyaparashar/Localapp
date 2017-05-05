@@ -9,40 +9,41 @@
         android:id="@+id/profile_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:visibility="gone">
 
 
         <RelativeLayout
-            android:elevation="2dp"
-            android:background="#2196f3"
             android:layout_width="match_parent"
-            android:layout_height="200dp">
+            android:layout_height="200dp"
+            android:background="#2196f3"
+            android:elevation="2dp">
 
 
             <com.github.siyamed.shapeimageview.CircularImageView
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
+                android:id="@+id/image_pic"
                 android:layout_width="180dp"
                 android:layout_height="180dp"
-                android:src="@drawable/ic_user"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
                 android:layout_gravity="center"
-                android:id="@+id/image_pic" />
+                android:src="@drawable/ic_user" />
 
             <ImageButton
-                android:visibility="gone"
-                android:elevation="3dp"
+                android:id="@+id/cam_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:contentDescription="image"
-                android:clickable="true"
-                android:padding="12dp"
-                android:scaleType="fitXY"
-                android:background="@drawable/camera_btn_select_state"
-                android:tint="#FFF"
-                android:src="@drawable/ic_camera"
                 android:layout_alignBottom="@+id/image_pic"
                 android:layout_alignEnd="@+id/image_pic"
-                android:id="@+id/cam_btn" />
+                android:background="@drawable/camera_btn_select_state"
+                android:clickable="true"
+                android:contentDescription="image"
+                android:elevation="3dp"
+                android:padding="12dp"
+                android:scaleType="fitXY"
+                android:src="@drawable/ic_camera"
+                android:tint="#FFF"
+                android:visibility="gone" />
 
         </RelativeLayout>
 
@@ -53,291 +54,283 @@
 
 
             <LinearLayout
-                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#fff">
-
+                android:background="#fff"
+                android:orientation="vertical">
 
 
                 <LinearLayout
-                    android:elevation="2dp"
-                    android:background="@color/com_facebook_button_border_color_focused"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/com_facebook_button_border_color_focused"
+                    android:elevation="2dp"
                     android:orientation="horizontal"
                     android:weightSum="2">
 
                     <TextView
-                        android:layout_weight="1.9"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="PERSONAL INFORMATION"
-                        android:paddingLeft="2dp"
                         android:layout_gravity="center"
+                        android:layout_weight="1.9"
+                        android:gravity="center_vertical"
                         android:maxLines="1"
+                        android:paddingLeft="2dp"
                         android:paddingStart="5dp"
-                        android:textSize="14sp"
-                        android:gravity="center_vertical"/>
+                        android:text="PERSONAL INFORMATION"
+                        android:textSize="14sp" />
 
                     <ImageView
                         android:id="@+id/edit_personal_info"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:contentDescription="Edit image icon"
+                        android:background="@drawable/editor_states"
                         android:clickable="true"
+                        android:contentDescription="Edit image icon"
                         android:padding="8dp"
                         android:scaleType="fitXY"
-                        android:background="@drawable/editor_states"
                         android:src="@drawable/ic_pencil_edit" />
 
 
                 </LinearLayout>
 
 
-
                 <LinearLayout
-                    android:background="#FFFFFF"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
+                    android:background="#FFFFFF"
                     android:orientation="horizontal"
                     android:weightSum="2">
 
                     <TextView
                         android:id="@+id/_name"
-                        android:layout_margin="5dp"
                         android:layout_width="0dp"
-                        android:layout_weight="1.9"
                         android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/ic_name"
-                        android:drawablePadding="10dp"
-                        android:textColor="#000"
-                        android:padding="5dp"
                         android:layout_gravity="center"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1.9"
+                        android:drawablePadding="10dp"
+                        android:drawableStart="@drawable/ic_name"
+                        android:gravity="center_vertical"
                         android:maxLines="1"
-                        android:textSize="18sp"
-                        android:gravity="center_vertical"/>
+                        android:padding="5dp"
+                        android:textColor="#000"
+                        android:textSize="18sp" />
 
                 </LinearLayout>
 
                 <View
-                    android:background="@color/com_facebook_button_border_color_focused"
                     android:layout_width="match_parent"
-                    android:layout_marginStart="10dp"
+                    android:layout_height="1dp"
                     android:layout_marginEnd="10dp"
-                    android:layout_height="1dp"/>
+                    android:layout_marginStart="10dp"
+                    android:background="@color/com_facebook_button_border_color_focused" />
 
 
                 <LinearLayout
-                    android:background="#FFFFFF"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
+                    android:background="#FFFFFF"
                     android:orientation="horizontal"
                     android:weightSum="2">
 
                     <TextView
                         android:id="@+id/_phone"
-                        android:layout_margin="5dp"
                         android:layout_width="0dp"
-                        android:layout_weight="1.9"
                         android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/ic_phone"
-                        android:drawablePadding="10dp"
-                        android:textColor="#000"
-                        android:padding="5dp"
                         android:layout_gravity="center"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1.9"
+                        android:drawablePadding="10dp"
+                        android:drawableStart="@drawable/ic_phone"
+                        android:gravity="center_vertical"
                         android:maxLines="1"
-                        android:textSize="18sp"
-                        android:gravity="center_vertical"/>
+                        android:padding="5dp"
+                        android:textColor="#000"
+                        android:textSize="18sp" />
 
                 </LinearLayout>
 
 
                 <View
-                    android:background="@color/com_facebook_button_border_color_focused"
                     android:layout_width="match_parent"
-                    android:layout_marginStart="10dp"
+                    android:layout_height="1dp"
                     android:layout_marginEnd="10dp"
-                    android:layout_height="1dp"/>
+                    android:layout_marginStart="10dp"
+                    android:background="@color/com_facebook_button_border_color_focused" />
 
                 <LinearLayout
-                    android:background="#FFFFFF"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
+                    android:background="#FFFFFF"
                     android:orientation="horizontal"
                     android:weightSum="2">
 
                     <TextView
                         android:id="@+id/_email"
-                        android:layout_margin="5dp"
                         android:layout_width="0dp"
-                        android:layout_weight="1.9"
                         android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/ic_email"
-                        android:drawablePadding="10dp"
-                        android:textColor="#000"
-                        android:padding="5dp"
                         android:layout_gravity="center"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1.9"
+                        android:drawablePadding="10dp"
+                        android:drawableStart="@drawable/ic_email"
+                        android:gravity="center_vertical"
                         android:maxLines="1"
-                        android:textSize="18sp"
-                        android:gravity="center_vertical"/>
+                        android:padding="5dp"
+                        android:textColor="#000"
+                        android:textSize="18sp" />
 
                 </LinearLayout>
 
 
-
-
                 <LinearLayout
-                    android:elevation="2dp"
-                    android:background="@color/com_facebook_button_border_color_focused"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/com_facebook_button_border_color_focused"
+                    android:elevation="2dp"
                     android:orientation="horizontal"
                     android:weightSum="2">
 
                     <TextView
-                        android:layout_weight="1.9"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="ABOUT"
-                        android:paddingLeft="2dp"
                         android:layout_gravity="center"
+                        android:layout_weight="1.9"
+                        android:gravity="center_vertical"
                         android:maxLines="1"
+                        android:paddingLeft="2dp"
                         android:paddingStart="5dp"
-                        android:textSize="14sp"
-                        android:gravity="center_vertical"/>
+                        android:text="ABOUT"
+                        android:textSize="14sp" />
 
                     <ImageView
                         android:id="@+id/edit_about"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:contentDescription="Edit image icon"
+                        android:background="@drawable/editor_states"
                         android:clickable="true"
+                        android:contentDescription="Edit image icon"
                         android:padding="8dp"
                         android:scaleType="fitXY"
-                        android:background="@drawable/editor_states"
                         android:src="@drawable/ic_pencil_edit" />
 
 
                 </LinearLayout>
 
                 <LinearLayout
-                    android:background="#FFFFFF"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
+                    android:background="#FFFFFF"
                     android:orientation="horizontal"
                     android:weightSum="2">
 
                     <TextView
                         android:id="@+id/_profession"
-                        android:layout_margin="5dp"
                         android:layout_width="0dp"
-                        android:layout_weight="1.9"
                         android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/ic_profession"
-                        android:drawablePadding="10dp"
-                        android:textColor="#000"
-                        android:padding="5dp"
                         android:layout_gravity="center"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1.9"
+                        android:drawablePadding="10dp"
+                        android:drawableStart="@drawable/ic_profession"
+                        android:gravity="center_vertical"
                         android:maxLines="1"
-                        android:textSize="18sp"
-                        android:gravity="center_vertical"/>
+                        android:padding="5dp"
+                        android:textColor="#000"
+                        android:textSize="18sp" />
 
                 </LinearLayout>
 
                 <View
-                    android:background="@color/com_facebook_button_border_color_focused"
                     android:layout_width="match_parent"
-                    android:layout_marginStart="10dp"
+                    android:layout_height="1dp"
                     android:layout_marginEnd="10dp"
-                    android:layout_height="1dp"/>
+                    android:layout_marginStart="10dp"
+                    android:background="@color/com_facebook_button_border_color_focused" />
 
                 <LinearLayout
-                    android:background="#FFFFFF"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
+                    android:background="#FFFFFF"
                     android:orientation="horizontal"
                     android:weightSum="2">
 
                     <TextView
                         android:id="@+id/_brief_intro"
-                        android:layout_margin="5dp"
                         android:layout_width="0dp"
-                        android:layout_weight="1.9"
                         android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/ic_brief_intro"
-                        android:drawablePadding="10dp"
-                        android:textColor="#000"
-                        android:padding="5dp"
                         android:layout_gravity="center"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1.9"
+                        android:drawablePadding="10dp"
+                        android:drawableStart="@drawable/ic_brief_intro"
+                        android:gravity="center_vertical"
                         android:maxLines="1"
-                        android:textSize="18sp"
-                        android:gravity="center_vertical"/>
+                        android:padding="5dp"
+                        android:textColor="#000"
+                        android:textSize="18sp" />
 
                 </LinearLayout>
 
                 <View
-                    android:background="@color/com_facebook_button_border_color_focused"
                     android:layout_width="match_parent"
-                    android:layout_marginStart="10dp"
+                    android:layout_height="1dp"
                     android:layout_marginEnd="10dp"
-                    android:layout_height="1dp"/>
+                    android:layout_marginStart="10dp"
+                    android:background="@color/com_facebook_button_border_color_focused" />
 
                 <LinearLayout
-                    android:background="#FFFFFF"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
+                    android:background="#FFFFFF"
                     android:orientation="horizontal"
                     android:weightSum="2">
 
                     <TextView
                         android:id="@+id/_details"
-                        android:layout_margin="5dp"
                         android:layout_width="0dp"
-                        android:layout_weight="1.9"
                         android:layout_height="wrap_content"
-                        android:drawableStart="@drawable/ic_detail_description"
-                        android:drawablePadding="10dp"
-                        android:textColor="#000"
-                        android:padding="5dp"
                         android:layout_gravity="center"
+                        android:layout_margin="5dp"
+                        android:layout_weight="1.9"
+                        android:drawablePadding="10dp"
+                        android:drawableStart="@drawable/ic_detail_description"
+                        android:gravity="center_vertical"
                         android:maxLines="1"
-                        android:textSize="18sp"
-                        android:gravity="center_vertical"/>
+                        android:padding="5dp"
+                        android:textColor="#000"
+                        android:textSize="18sp" />
 
                 </LinearLayout>
 
 
-
                 <Button
 
-                    android:layout_marginTop="10dp"
                     android:id="@+id/_share_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-                    android:text="Share App"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/editor_states"
                     android:drawableTint="#2196f3"
                     android:drawableTop="@android:drawable/ic_menu_share"
-                    android:background="@drawable/editor_states"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:text="Share App" />
 
                 <Button
-                    android:layout_marginTop="10dp"
                     android:id="@+id/_logout_btn"
-                    android:layout_gravity="bottom"
-                    android:text="Logout"
-                    android:textColor="#FFFFFF"
-                    android:background="@drawable/submit_button_state"
                     android:layout_width="fill_parent"
-                    android:layout_height="wrap_content" />
-
-
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/submit_button_state"
+                    android:text="Logout"
+                    android:textColor="#FFFFFF" />
 
 
             </LinearLayout>
-
 
 
         </ScrollView>
@@ -345,20 +338,20 @@
 
     </LinearLayout>
 
-    <ScrollView
+
+    <RelativeLayout
+        android:id="@+id/login_layout"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
+
 
         <LinearLayout
-            android:id="@+id/login_layout"
             android:orientation="vertical"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:paddingLeft="24dp"
             android:paddingRight="24dp">
-
-
-
 
             <ImageView
                 android:src="@mipmap/ic_localapp"
@@ -380,7 +373,7 @@
                     android:layout_height="wrap_content"
                     android:drawablePadding="10dp"
                     android:inputType="textEmailAddress"
-                    android:drawableLeft="@drawable/ic_email"
+                    android:drawableStart="@drawable/ic_email"
                     android:hint="Email"/>
             </android.support.design.widget.TextInputLayout>
 
@@ -396,7 +389,7 @@
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
                     android:drawablePadding="10dp"
-                    android:drawableLeft="@drawable/ic_lock"
+                    android:drawableStart="@drawable/ic_lock"
                     android:hint="Password" />
             </android.support.design.widget.TextInputLayout>
 
@@ -425,38 +418,85 @@
                 android:gravity="center"
                 android:textSize="14sp"/>
 
-
-            <Button
-                android:id="@+id/link_signup"
+            <LinearLayout
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="4dp"
                 android:layout_width="fill_parent"
-                android:layout_height="40dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginTop="30dp"
-                android:background="@drawable/submit_button_state"
-                android:layout_marginBottom="8dp"
-                android:textColor="#fff"
-                android:padding="10dp"
-                android:gravity="center"
-                android:text="Don't have an account yet? Sign Up"
-                android:textSize="14sp" />
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="4">
+                <View
+                    android:layout_gravity="center"
+                    android:layout_width="0dp"
+                    android:layout_weight="1.75"
+                    android:layout_height="0.5dp"
+                    android:background="@android:color/darker_gray"/>
+                <TextView
+                    android:layout_gravity="center"
+                    android:layout_width="0dp"
+                    android:layout_weight="0.5"
+                    android:gravity="center"
+                    android:layout_height="wrap_content"
+                    android:text="OR"/>
+                <View
+                    android:layout_gravity="center"
+                    android:layout_width="0dp"
+                    android:layout_weight="1.75"
+                    android:layout_height="0.5dp"
+                    android:background="@android:color/darker_gray"/>
+            </LinearLayout>
 
-            <!--<Button
+            <com.facebook.login.widget.LoginButton
+                xmlns:facebook="http://schemas.android.com/apk/res-auto"
+                facebook:com_facebook_login_text="Log in with Facebook"
+                android:id="@+id/fb_login_button"
+                android:layout_marginBottom="20dp"
+                android:layout_marginTop="8dp"
+                android:layout_gravity="center"
+                android:background="@android:color/background_light"
+                android:textColor="@color/com_facebook_messenger_blue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-                android:layout_width="fill_parent"
-                android:layout_height="40dp"
-                android:background="@drawable/submit_button_state"
-                android:textColor="#fff"
-                android:layout_marginLeft="15dp"
-                android:padding="10dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginTop="25dp"
-                android:text="Don't have an account yet? Sign Up"
-                android:gravity="center"
-                android:textSize="12sp"/>-->
         </LinearLayout>
 
-    </ScrollView>
+
+
+        <View
+            android:layout_above="@+id/link_signup"
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@android:color/darker_gray"/>
+
+        <Button
+            android:layout_alignParentBottom="true"
+            android:id="@+id/link_signup"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="#ffffff"
+            android:textAllCaps="false"
+            android:textColor="@android:color/darker_gray"
+            android:padding="10dp"
+            android:gravity="center"
+            android:text="Sign up with email"
+            android:textSize="14sp" />
+
+        <!--<Button
+
+            android:layout_width="fill_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/submit_button_state"
+            android:textColor="#fff"
+            android:layout_marginLeft="15dp"
+            android:padding="10dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginTop="25dp"
+            android:text="Don't have an account yet? Sign Up"
+            android:gravity="center"
+            android:textSize="12sp"/>-->
+    </RelativeLayout>
+
 
 
 

@@ -54,6 +54,9 @@ public class CommonFileUpload {
     private File mFile;
     private Context mContext;
     private Uri mFileUri;
+    private int socketTimeOut;
+    private int maxNumRetry;
+
     Response.Listener<NetworkResponse> mResponseListner;
     Response.ErrorListener mErrorListner;
 
@@ -68,11 +71,22 @@ public class CommonFileUpload {
         mFile = file; mAppKey = key;
 
         mParams = null; mHeader = null; mFileRequestTag = null; mFileUri = null;
+
+        socketTimeOut = 20000;
+        maxNumRetry = DefaultRetryPolicy.DEFAULT_MAX_RETRIES;
+
     }
 
     public void setParam (Map <String,String> p) {mParams = p;}
     public void setHeader (Map <String,String> h) {mHeader = h;}
     public void setFileTag (String t){mFileRequestTag = t;}
+
+    public void setRetryPolicy(int initialTimeoutMs, int maxNumRetries) {
+        if (initialTimeoutMs >20000){
+            socketTimeOut = initialTimeoutMs;
+        }
+        maxNumRetry = maxNumRetries;
+    }
 
 
     public void uploadFile(){
@@ -99,8 +113,8 @@ public class CommonFileUpload {
                     }
                 };
         multipartRequest.setRetryPolicy(new DefaultRetryPolicy(
-                20000,//MY_SOCKET_TIMEOUT_MS,
-                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                socketTimeOut,//MY_SOCKET_TIMEOUT_MS,
+                maxNumRetry,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
         VolleySingleton.getInstance(mContext).addToRequestQueue(multipartRequest);

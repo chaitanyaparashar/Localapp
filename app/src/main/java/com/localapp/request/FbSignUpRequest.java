@@ -6,6 +6,7 @@ import android.util.Log;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.localapp.data.FbLoginError;
 import com.localapp.data.SignUpData;
 import com.localapp.request.helper.CommonFileUpload;
 import com.localapp.request.helper.VolleyErrorHelper;
@@ -20,26 +21,17 @@ import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_CONNECT
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_FAILED_TO_CONNECT;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_INTERNAL_ERROR;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_SERVER_ERROR_WITH_MESSAGE;
+import static com.localapp.request.SignUpRequest.JSON_FIELD_EMAIL_ID;
+import static com.localapp.request.SignUpRequest.JSON_FIELD_NAME;
 
 /**
- * Created by 4 way on 27-02-2017.
+ * Created by 4 way on 04-05-2017.
  */
 
-public class SignUpRequest {
+public class FbSignUpRequest {
 
-    public static final String JSON_FIELD_NAME = "name";
-    public static final String JSON_FIELD_PASSWORD = "password";
-    public static final String JSON_FIELD_EMAIL_ID = "email";
-    public static final String JSON_FIELD_PROFESSION = "profession";
-    public static final String JSON_FIELD_MOBILE_NUMBER = "mobile";
-    public static final String JSON_FIELD_MOBILE_PRIVACY = "mobilePrivacy";
-    public static final String JSON_FIELD_SPECIALITY = "speciality";
-    public static final String JSON_FIELD_NOTES = "notes";
-    public static final String JSON_FIELD_FILE = "file";
-    public static final String JSON_FIELD_M_PLACE = "place";
-    public static final String JSON_FIELD_M_LOCATION = "location";
-    public static final String JSON_FIELD_TYPE = "type";
-
+    private static final String JSON_FIELD_FB_ID = "fbId";
+    private static final String JSON_FIELD_FB_TOKEN = "fbToken";
 
     private Context mContext;
 
@@ -48,12 +40,13 @@ public class SignUpRequest {
 
     private CommonFileUpload mFileUpload;
 
-    public interface SignUpResponseCallback {
-        void onSignUpResponse(CommonRequest.ResponseCode res, SignUpData data);
+    public interface FbSignUpResponseCallback {
+        void onFbSignUpResponse(CommonRequest.ResponseCode res, SignUpData data);
     }
-    private SignUpResponseCallback mSignUpResponseCallback;
+    private FbSignUpResponseCallback mSignUpResponseCallback;
 
-    public SignUpRequest(Context context, SignUpData data, SignUpResponseCallback cb) {
+
+    public FbSignUpRequest(Context context, SignUpData data, FbSignUpResponseCallback cb) {
 
         mContext = context;
         mSignUpData = data;
@@ -61,12 +54,9 @@ public class SignUpRequest {
         /*mParams.put("Content-Type", "multipart/form-data");*/
         mParams.put(JSON_FIELD_NAME, data.getmName());
         mParams.put(JSON_FIELD_EMAIL_ID, data.getmEmail());
-        mParams.put(JSON_FIELD_MOBILE_NUMBER, data.getmMobile());
-        mParams.put(JSON_FIELD_PASSWORD, data.getmPassword());
-        mParams.put(JSON_FIELD_SPECIALITY, data.getmSpeciality());
-        mParams.put(JSON_FIELD_NOTES, data.getmDetails());
-        mParams.put(JSON_FIELD_PROFESSION, data.getProfession());
-        mParams.put(JSON_FIELD_MOBILE_PRIVACY, data.getmPrivacy());
+        mParams.put(JSON_FIELD_FB_ID, data.getFbId());
+        mParams.put(JSON_FIELD_FB_TOKEN, data.getFbToken());
+
 //        mParams.put(JSON_FIELD_TYPE, data.getmType());
 
         mSignUpResponseCallback = cb;
@@ -76,7 +66,9 @@ public class SignUpRequest {
     public void executeRequest() {
         final String HOST_ADDRESS = "http://13.56.50.98:8080";
 //        final String HOST_ADDRESS = "http://192.172.2.178:8080";//localhost
-        final String url = HOST_ADDRESS + "/registerPic";//url for registration with pic
+        final String url = HOST_ADDRESS + "/registerWithFacebook";//url for registration with pic
+
+        Log.d("registerWithFacebook", "registerWithFacebook is called");
 
         Response.Listener<NetworkResponse> listener = new Response.Listener<NetworkResponse>() {
             @Override
@@ -96,7 +88,7 @@ public class SignUpRequest {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                mSignUpResponseCallback.onSignUpResponse(CommonRequest.ResponseCode.COMMON_RES_SUCCESS, mSignUpData);
+                mSignUpResponseCallback.onFbSignUpResponse(CommonRequest.ResponseCode.COMMON_RES_SUCCESS, mSignUpData);
             }
         };
 
@@ -108,9 +100,25 @@ public class SignUpRequest {
                 CommonRequest.ResponseCode resCode = COMMON_RES_INTERNAL_ERROR;
                 if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
                     resCode = COMMON_RES_CONNECTION_TIMEOUT;
-                    mSignUpResponseCallback.onSignUpResponse(resCode,mSignUpData);
+                    mSignUpResponseCallback.onFbSignUpResponse(resCode,mSignUpData);
+                    return;
+                }else if (error.networkResponse != null && error.networkResponse.statusCode == 422) {
+
+                    NetworkResponse response = error.networkResponse;
+                    String errorResponse = new String(response.data);
+
+                    try {
+                        JSONObject obj = new JSONObject(errorResponse);
+                        JSONObject errorObject = obj.getJSONObject("error");
+                        mSignUpData.setFbLoginError(new FbLoginError(errorObject.getInt("code"), errorObject.getString("message")));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    resCode = COMMON_RES_SERVER_ERROR_WITH_MESSAGE;
+                    mSignUpResponseCallback.onFbSignUpResponse(resCode, mSignUpData);
                     return;
                 }
+
                 if (errorMsg == VolleyErrorHelper.COMMON_NETWORK_ERROR_TIMEOUT)
                 {
                     resCode = COMMON_RES_CONNECTION_TIMEOUT;
@@ -126,12 +134,14 @@ public class SignUpRequest {
                     mSignUpData.setmErrorMessage(errorMsg);
                 }
 
-                mSignUpResponseCallback.onSignUpResponse (resCode, mSignUpData);
+                mSignUpResponseCallback.onFbSignUpResponse(resCode, mSignUpData);
             }
         };
 
         mFileUpload = new CommonFileUpload(mContext, mSignUpData.getPicFile(), CommonFileUpload.FileType.COMMON_UPLOAD_FILE_TYPE_IMAGE,
                 mSignUpData.getmEmail(),url,null,listener,errorListener);
+
+        mFileUpload.setRetryPolicy(60000,0);
 
         mFileUpload.setParam(mParams);
         mFileUpload.uploadFile();

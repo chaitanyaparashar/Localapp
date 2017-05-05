@@ -9,6 +9,16 @@ import java.io.File;
  */
 
 public class SignUpData {
+    private FbLoginError fbLoginError;
+
+    public void setmName(String mName) {
+        this.mName = mName;
+    }
+
+    public void setmEmail(String mEmail) {
+        this.mEmail = mEmail;
+    }
+
     private String mName;
     private String mEmail;
     private String mPassword;
@@ -18,24 +28,21 @@ public class SignUpData {
     private LatLng mLocation;
     private Byte mType;
     private String mErrorMessage;
-
     private String mPrivacy;
-
-
-
     private String mUserId;
-
     private String mToken;
     private String profession;
-
     private String mDetails;
 
+    public void setPicFile(File picFile) {
+        this.picFile = picFile;
+    }
+
     private File picFile;
-
-
-
     private String picUrl;
     private String mResponseMessage;
+    private String fbId;
+    private String fbToken;
 
 
     public SignUpData(String mName, String mEmail, String profession, String mPassword,
@@ -53,6 +60,9 @@ public class SignUpData {
         this.mType = mType;
         this.picFile = picFile;
         this.mDetails = mDetails;
+    }
+
+    public SignUpData() {
     }
 
     public String getmPrivacy() {
@@ -144,5 +154,29 @@ public class SignUpData {
 
     public void setmResponseMessage(String mResponseMessage) {
         this.mResponseMessage = mResponseMessage;
+    }
+
+    public String getFbId() {
+        return fbId;
+    }
+
+    public void setFbId(String fbId) {
+        this.fbId = fbId;
+    }
+
+    public String getFbToken() {
+        return fbToken;
+    }
+
+    public void setFbToken(String fbToken) {
+        this.fbToken = fbToken;
+    }
+
+    public void setFbLoginError(FbLoginError fbLoginError) {
+        this.fbLoginError = fbLoginError;
+    }
+
+    public FbLoginError getFbLoginError() {
+        return fbLoginError;
     }
 }

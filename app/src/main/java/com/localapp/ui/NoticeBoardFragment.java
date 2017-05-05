@@ -174,9 +174,10 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
 
 
 
+    AlertDialog dialog;
     public void showNoticeBoardDialog(final NoticeBoard noticeBoard, final boolean hasSubscribed) {
 
-        final AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
+        final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         View view = LayoutInflater.from(getContext()).inflate(R.layout.notice_board_dialog,null);
         LinearLayout linearLayout = (LinearLayout) view.findViewById(R.id.ll_notice_dialog);
@@ -228,6 +229,8 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
                     Toast.makeText(getContext(), "Please login first...", Toast.LENGTH_SHORT).show();
                 }
 
+                if (dialog!=null)
+                    dialog.dismiss();
             }
         });
 
@@ -240,6 +243,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
                 if (!msg.isEmpty()) {
                     NoticeBoardMessage message = new NoticeBoardMessage(msg);
                     message.setAdminId(noticeBoard.getId());
+                    message.setTimestamp(""+System.currentTimeMillis());
 
                     PostNoticeBoardMessageRequest postNoticeBoardMessageRequest = new PostNoticeBoardMessageRequest(getContext(),message,NoticeBoardFragment.this);
                     postNoticeBoardMessageRequest.executeRequest();
@@ -260,7 +264,8 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
 
 
 //        dialog.setCancelable(false);
-        dialog.setView(view);
+        builder.setView(view);
+        dialog = builder.create();
 
         dialog.show();
     }

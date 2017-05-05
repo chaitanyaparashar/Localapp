@@ -60,7 +60,8 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <activity android:name=".ui.CreateNoticeActivity" />
+        <activity android:name=".ui.CreateNoticeActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".camera.CameraActivity" />
         <activity
             android:name=".camera.Camera2Activity"
@@ -81,8 +82,10 @@
         </service>
 
 
-        <activity android:name=".ui.LoginActivity"></activity>
+        <activity android:name=".ui.LoginActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name=".camera.CropImageActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/Base.Theme.AppCompat"/>
     </application>
 

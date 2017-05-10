@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.localapp.R;
 import com.squareup.picasso.Picasso;
 
@@ -48,6 +49,7 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
         return new ItemHolder(itemCardView, this);
     }
 
+
     @Override
     public void onBindViewHolder(ItemHolder holder, int position) {
         Uri targetUri = itemsUri.get(position);
@@ -56,71 +58,20 @@ public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecy
 
         if (targetUri != null){
 
-//            try {
-                //! CAUTION
-                //I'm not sure is it properly to load bitmap here!
-//                holder.setImageView(loadScaledBitmap(targetUri));
-//                holder.imageView.setImageBitmap(loadScaledBitmap(targetUri));
-
-                Picasso.with(context).load(targetUri).into(holder.imageView);
-//
-                /*if (!new File(targetUri.getPath()).getName().contains(".jpg")) {
-
-//                Picasso.with(context).load(targetUri).error(new BitmapDrawable(context.getResources(),loadScaledBitmap(targetUri))).resize(200, 200).centerCrop().into(holder.imageView);
-                    Picasso.with(context).load(targetUri).resize(200, 200).centerCrop().into(holder.imageView);
-                }else {
-                    Picasso.with(context).load(getImageUri(context, loadScaledBitmap(targetUri))).resize(200, 200).centerCrop().into(holder.imageView);
-                }*/
-
-//            holder.setImageUri(targetUri);
-            /*} catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }*/
+            Glide.with(context)
+                    .load(targetUri)
+                    .centerCrop()
+                    .into(holder.imageView);
+        }else {
+            // make sure Glide doesn't load anything into this view until told otherwise
+            Glide.clear(holder.imageView);
+            // remove the placeholder (optional); read comments below
+            holder.imageView.setImageDrawable(null);
         }
     }
 
-    /*
-    reference:
-    Load scaled bitmap
-    http://android-er.blogspot.com/2013/08/load-scaled-bitmap.html
-     */
-    private Bitmap loadScaledBitmap(Uri src) throws FileNotFoundException {
-
-        //display the file to be loadScaledBitmap(),
-        //such that you can know how much work on it.
-//        mainActivity.textInfo.append(src.getLastPathSegment() + "\n");
-
-        // required max width/height
-        final int REQ_WIDTH = 150;
-        final int REQ_HEIGHT = 150;
-
-       /* Bitmap bm = null;
-
-        // First decode with inJustDecodeBounds=true to check dimensions
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeStream(context.getContentResolver().openInputStream(src),
-                null, options);
-
-//        Bitmap  mBitmap = MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
-
-        // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options, REQ_WIDTH,
-                REQ_HEIGHT);
-
-        // Decode bitmap with inSampleSize set
-        options.inJustDecodeBounds = false;
-        bm = BitmapFactory.decodeStream(
-                context.getContentResolver().openInputStream(src), null, options);*/
-
-        final int THUMBSIZE = 200;
-
-        Bitmap ThumbImage = ThumbnailUtils.extractThumbnail(BitmapFactory.decodeFile(src.getPath()),
-                THUMBSIZE, THUMBSIZE);
 
 
-        return ThumbImage;
-    }
 
     public Uri getImageUri(Context inContext, Bitmap inImage) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();

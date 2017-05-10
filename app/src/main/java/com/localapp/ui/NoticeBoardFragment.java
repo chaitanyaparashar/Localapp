@@ -1,19 +1,21 @@
 package com.localapp.ui;
 
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
@@ -28,12 +30,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.firebase.iid.FirebaseInstanceId;
 import com.localapp.R;
+import com.localapp.appcontroller.AppController;
 import com.localapp.data.NoticeBoard;
 import com.localapp.data.NoticeBoardMessage;
-import com.localapp.data.NotificationData;
-import com.localapp.fcm.FcmNotificationRequest;
 import com.localapp.request.CommonRequest;
 import com.localapp.request.DeleteNoticeBoardMessageRequest;
 import com.localapp.request.DeleteNoticeBoardRequest;
@@ -55,6 +55,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
         PostNoticeBoardMessageRequest.PostNoticeBoardMessageResponseCallback,SubscribeUnsubscribeNoticeBoardRequest.SubscribeUnsubscribeNoticeBoardCallback,
         DeleteNoticeBoardRequest.DeleteNoticeBoardResponseCallback, DeleteNoticeBoardMessageRequest.DeleteNoticeBoardMessageResponseCallback{
 
+    private static final int CREATE_NOTICE_BOARD_REQUEST_CODE = 101;
     private RecyclerView recyclerView, recyclerViewNearYou;
     private List<NoticeBoard> noticeBoardList;
     private List<NoticeBoard> nearestNoticeBoardList;
@@ -123,7 +124,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
             public void onClick(View v) {
 
                 if (HomeActivity.mUserId !=null && !HomeActivity.mUserId.equals("")) {
-                    startActivity(new Intent(getContext(), CreateNoticeActivity.class));
+                    startActivityForResult(new Intent(getContext(), CreateNoticeActivity.class),CREATE_NOTICE_BOARD_REQUEST_CODE);
                 }else {
                     Toast.makeText(getContext(), "Please login first...", Toast.LENGTH_SHORT).show();
                 }
@@ -214,14 +215,9 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
                     CommonRequest.RequestType type;
                     if (hasSubscribed) {
                         type = CommonRequest.RequestType.COMMON_REQUEST_UNSUBSCRIBE_NOTICE_BOARD;
-                        noticeBoardList.remove(noticeBoardList.indexOf(noticeBoard));
-                        noticeAdapter.notifyDataSetChanged();
                     } else {
                         type = CommonRequest.RequestType.COMMON_REQUEST_SUBSCRIBE_NOTICE_BOARD;
-                        if (!noticeBoardList.contains(noticeBoard)) {
-                            noticeBoardList.add(noticeBoard);
-                            noticeAdapter.notifyDataSetChanged();
-                        }
+
                     }
 
                     requestSubscribeAndUnsub(noticeBoard, type);
@@ -294,6 +290,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
         if (HomeActivity.mUserId != null && !HomeActivity.mUserId.equals("")) {
             MyNoticeBoardRequest noticeBoardRequest = new MyNoticeBoardRequest(getContext(), HomeActivity.mUserId, this);
             noticeBoardRequest.executeRequest();
+            swipeRefreshLayout.setRefreshing(true);
         }else {
             requestForNearbyNoticeBoard();
         }
@@ -305,6 +302,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
             nearestNoticeBoardRequest.executeRequest();
         }else {
             swipeRefreshLayout.setRefreshing(false);
+            new CountDownTimerTask(5000,5000).start();
         }
     }
 
@@ -386,6 +384,8 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
     public void SubscribeUnsubscribeNoticeBoardResponse(CommonRequest.ResponseCode responseCode, String errorMsg) {
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
             Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
+            swipeRefreshLayout.setRefreshing(true);
+            requestForMyNoticeBoard();
         }else if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SERVER_ERROR_WITH_MESSAGE) {
             Toast.makeText(getContext(), errorMsg, Toast.LENGTH_SHORT).show();
         }else {
@@ -396,7 +396,9 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
     @Override
     public void deleteNoticeBoardResponse(CommonRequest.ResponseCode responseCode) {
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
-            tost("Notice Board delete");
+            toast("Notice Board delete");
+            swipeRefreshLayout.setRefreshing(true);
+            requestForMyNoticeBoard();
         }
 
     }
@@ -404,16 +406,24 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
     @Override
     public void deleteNoticeBoardMessageResponse(CommonRequest.ResponseCode responseCode) {
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
-            tost("Message delete");
+            toast("Message delete");
         }
     }
 
 
-    void tost (String msg){
+    void toast(String msg){
         Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (requestCode == CREATE_NOTICE_BOARD_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            swipeRefreshLayout.setRefreshing(true);
+            requestForMyNoticeBoard();
+        }
+    }
 
     /**
      * Adapters
@@ -522,13 +532,9 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
 
                     case R.id.action_delete:
                         requestDeleteNoticeBoard(noticeBoardList.get(adapterPosition));
-                        noticeBoardList.remove(adapterPosition);
-                        noticeAdapter.notifyDataSetChanged();
                         return true;
                     case R.id.action_unsubscribe:
                         requestSubscribeAndUnsub(noticeBoardList.get(adapterPosition), CommonRequest.RequestType.COMMON_REQUEST_UNSUBSCRIBE_NOTICE_BOARD);
-                        noticeBoardList.remove(adapterPosition);
-                        noticeAdapter.notifyDataSetChanged();
                         return true;
                     default:
                 }
@@ -637,6 +643,33 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
                 timestamp = (TextView) itemView.findViewById(R.id.notice_Msg_time_TextView);
                 deleteImageView = (ImageView) itemView.findViewById(R.id.msg_delete);
                 deleteImageView.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private class CountDownTimerTask extends CountDownTimer {
+
+
+        /**
+         * @param millisInFuture    The number of millis in the future from the call
+         *                          to {@link #start()} until the countdown is done and {@link #onFinish()}
+         *                          is called.
+         * @param countDownInterval The interval along the way to receive
+         *                          {@link #onTick(long)} callbacks.
+         */
+        public CountDownTimerTask(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            Log.d("CountDownTimerTask",": "+millisUntilFinished / 1000);
+        }
+
+        @Override
+        public void onFinish() {
+            if(AppController.isActivityVisible()) {
+                requestForMyNoticeBoard();
             }
         }
     }

@@ -47,6 +47,7 @@ import android.widget.Toast;
 import com.github.siyamed.shapeimageview.CircularImageView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.localapp.VideoPlay;
+import com.localapp.appcontroller.AppController;
 import com.localapp.audio.ViewProxy;
 import com.localapp.camera.Camera2Activity;
 import com.localapp.data.GetFeedRequestData;
@@ -505,8 +506,8 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
             feedRequest.executeRequest();
             swipeRefreshLayout.setRefreshing(true);
         }else {
-            toast("Please wait getting your location...");
             swipeRefreshLayout.setRefreshing(false);
+            new CountDownTimerTask(5000,5000).start();
         }
 
         if (HomeActivity.mUserId != null && !HomeActivity.mUserId.equals("")){
@@ -656,7 +657,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
             messageData.setMsgIdOnlyForFrontEnd("");
         }
 
-        messageData.setTimeStamp(String.valueOf(System.currentTimeMillis()/1000));
+        messageData.setTimeStamp(String.valueOf(System.currentTimeMillis()));
         messageData.setMediaType(mediaType);
         messageData.setmLatLng(HomeActivity.mLastKnownLocation);
 
@@ -705,7 +706,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
     void initMsgTypeEmoji() {
         selectedMessageTypeInt = 0;
         selectedEmojiResourceID = emojiResourceID[0];
-        camShoutImgBtn.setImageResource(selectedEmojiResourceID);
+        camShoutImgBtn.setImageResource(R.drawable.ic_camera);
     }
 
 
@@ -934,7 +935,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                     return true;
                 break;
             case WHISPER:
-                //TODO: will remove in 1 min
+                //TODO: will remove in 2 min
                 if (distance <= 2)
                     return true;
                 break;
@@ -1150,7 +1151,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
             switch (mediaType) {
                 case MEDIA_IMAGE:sendMedia(MEDIA_IMAGE,picUrl,1);return;
                 case MEDIA_VIDEO:sendMedia(MediaType.MEDIA_VIDEO,picUrl,1);return;
-                case MEDIA_AUDIO:sendMedia(MediaType.MEDIA_AUDIO,picUrl,1);return;
+                case MEDIA_AUDIO:sendMedia(MediaType.MEDIA_AUDIO,picUrl,1);
             }
 
         }
@@ -1420,7 +1421,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         }
     }
 
-    class MyTimerTask extends TimerTask {
+    private class MyTimerTask extends TimerTask {
 
         @Override
         public void run() {
@@ -1497,7 +1498,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
 
         @Override
         public void onTick(long millisUntilFinished) {
-            Log.d("CountDownWhisper",message.getmText()+": "+millisUntilFinished / 1000);
+            Log.d("CountDownTimerTask",message.getmText()+": "+millisUntilFinished / 1000);
         }
 
         @Override
@@ -1506,6 +1507,35 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                 messages.remove(message);
                 adapter.notifyDataSetChanged();
             }
+        }
+    }
+
+
+    private class CountDownTimerTask extends CountDownTimer {
+
+
+        /**
+         * @param millisInFuture    The number of millis in the future from the call
+         *                          to {@link #start()} until the countdown is done and {@link #onFinish()}
+         *                          is called.
+         * @param countDownInterval The interval along the way to receive
+         *                          {@link #onTick(long)} callbacks.
+         */
+        public CountDownTimerTask(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            Log.d("CountDownTimerTask",": "+millisUntilFinished / 1000);
+        }
+
+        @Override
+        public void onFinish() {
+            if (AppController.isActivityVisible()) {
+                request();
+            }
+
         }
     }
 }

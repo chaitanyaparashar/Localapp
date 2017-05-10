@@ -275,6 +275,9 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
             mProgressDialog.setCancelable(false);
             mProgressDialog.setMessage("Please wait...");
             mProgressDialog.show();
+        }else {
+            startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+            finish();
         }
 
     }

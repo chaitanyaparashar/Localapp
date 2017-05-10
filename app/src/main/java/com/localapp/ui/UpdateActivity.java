@@ -45,6 +45,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
     Point p;
     public static final int REQUEST_PERSONAL = 0;
     public static final int REQUEST_ABOUT = 1;
+    public static final int REQUEST_ALL = 2;
 
     boolean numberVisibility = true;
     ExpandableListAdapter listAdapter;
@@ -103,11 +104,13 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
                     if(event.getRawX() >= (mNumberView.getRight() - mNumberView.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
                         // your action here
                         if (numberVisibility) {
-                            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_hidden, 0);
+//                            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_hidden, 0);
+                            mNumberView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_phone,0,R.drawable.ic_password_hidden,0);
                             numberVisibility = false;
                             mNumberView.setTag("1");
                         }else {
-                            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_visible, 0);
+//                            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_visible, 0);
+                            mNumberView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_visible, 0);
                             numberVisibility = true;
                             mNumberView.setTag("0");
                         }
@@ -123,9 +126,13 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
         if (whichUpdate == REQUEST_PERSONAL) {
             personalLayout.setVisibility(View.VISIBLE);
             aboutLayout.setVisibility(View.GONE);
-        }else {
+        }else if (whichUpdate == REQUEST_ABOUT){
             personalLayout.setVisibility(View.GONE);
             aboutLayout.setVisibility(View.VISIBLE);
+        }else {
+            personalLayout.setVisibility(View.VISIBLE);
+            aboutLayout.setVisibility(View.VISIBLE);
+            mNumberView.requestFocus();
         }
 
         profileRequest();
@@ -314,11 +321,14 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
 
         if (profile.getuPrivacy().equals("0")) {
             mNumberView.setTag("0");
-            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_visible, 0);
+//            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_visible, 0);
+            mNumberView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_visible, 0);
+
             numberVisibility = true;
         }else {
             mNumberView.setTag("1");
-            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_hidden, 0);
+//            mNumberView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_phone, 0, R.drawable.ic_password_hidden, 0);
+            mNumberView.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_phone,0,R.drawable.ic_password_hidden,0);
             numberVisibility = false;
         }
     }
@@ -382,7 +392,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
 
         number = "+91"+number;
 
-        if (whichUpdate == REQUEST_PERSONAL) {
+        if (whichUpdate == REQUEST_PERSONAL || whichUpdate == REQUEST_ALL) {
             if (name.isEmpty() || name.length() < 3) {
                 mNameView.setError("enter a valid name");
                 valid = false;
@@ -430,6 +440,24 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
                 return valid;
             } else {
                 mEmailView.setError(null);
+            }
+
+            if (whichUpdate == REQUEST_ALL) {
+                if (profession.isEmpty()) {
+                    mProfessionView.setError("Please select your profession");
+                    valid =  false;
+                    return valid;
+                }else {
+                    mProfessionView.setError(null);
+                }
+
+                if (brifIntro.isEmpty() || brifIntro.length() < 1) {
+                    mInfoView.setError("Field Required");
+                    valid = false;
+                    return valid;
+                } else {
+                    mInfoView.setError(null);
+                }
             }
         }else {
 

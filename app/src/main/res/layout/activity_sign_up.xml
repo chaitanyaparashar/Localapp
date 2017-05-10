@@ -256,7 +256,7 @@
                     android:background="@drawable/fb_btn_shap"
                     android:drawableLeft="@drawable/com_facebook_button_icon_white"
                     android:layout_gravity="center_horizontal"
-                    android:text="Fill With Facebook"
+                    android:text="Use Facebook Info"
                     android:textColor="#ffffff"
                     android:textStyle="bold" />
 

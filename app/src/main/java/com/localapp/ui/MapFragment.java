@@ -17,8 +17,10 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -94,7 +96,8 @@ import static com.localapp.util.utility.getProfessionList;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GetUsersRequest.GetUsersResponseCallback,
         ClusterManager.OnClusterClickListener<Profile>, ClusterManager.OnClusterInfoWindowClickListener<Profile>, ClusterManager.OnClusterItemClickListener<Profile>, ClusterManager.OnClusterItemInfoWindowClickListener<Profile>,
-        ImageSearchRequest.ImageSearchResponseCallback, GetNearestNoticeBoardRequest.GetNearestNoticeBoardRequestCallback,GetNoticeBoardMessageRequest.GetNoticeBoardMessageRequestCallback,SubscribeUnsubscribeNoticeBoardRequest.SubscribeUnsubscribeNoticeBoardCallback,GetProfileByIdRequest.GetProfileByIdRequestCallback {
+        ImageSearchRequest.ImageSearchResponseCallback, GetNearestNoticeBoardRequest.GetNearestNoticeBoardRequestCallback,GetNoticeBoardMessageRequest.GetNoticeBoardMessageRequestCallback,SubscribeUnsubscribeNoticeBoardRequest.SubscribeUnsubscribeNoticeBoardCallback,
+        GetProfileByIdRequest.GetProfileByIdRequestCallback,LocationListener {
 
 
 
@@ -134,6 +137,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
 
 
+
+
     public MapFragment() {
         // Required empty public constructor
     }
@@ -162,7 +167,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         }catch (Exception e){
             e.printStackTrace();
         }
-
 
 
         session = new SessionManager(getActivity());
@@ -270,6 +274,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         if (HomeActivity.mLastKnownLocation != null) {
             request(HomeActivity.mLastKnownLocation);
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(HomeActivity.mLastKnownLocation, 16.2f));
+        }else {
+            new CountDownTimerTask(5000,5000).start();
         }
 //        addItems();
 //        mClusterManager.cluster();
@@ -384,6 +390,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
     @Override
     public void onStop() {
+        mLocationManager.removeUpdates(this);
         super.onStop();
     }
 
@@ -471,7 +478,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     /**
      * locationListener
      */
-    LocationListener locationListener = new LocationListener() {
+    /*LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
             Log.v(TAG, "onLocationChanged");
@@ -501,7 +508,37 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         public void onProviderDisabled(String provider) {
             Log.v(TAG, "onProviderDisabled");
         }
-    };
+    };*/
+
+
+    @Override
+    public void onLocationChanged(Location location) {
+        Log.v(TAG, "onLocationChanged");
+
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+//            addMarkerAtLocation(latLng);
+        HomeActivity.mLastKnownLocation = latLng;
+//            Toast.makeText(getApplicationContext(), "" + latLng, Toast.LENGTH_SHORT).show();
+//            if (isActivityVisible()) {
+        session.saveLastLocation(latLng);
+        request(latLng);
+//            }
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+        Log.v(TAG, "onStatusChanged");
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
 
     /**
      * request for update location based on distance and time
@@ -521,7 +558,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        mLocationManager.requestLocationUpdates(provider, 1000*5, 100, locationListener);
+        mLocationManager.requestLocationUpdates(provider, 1000*5, 100, this);
         Log.v(TAG, "requestLocation");
     }
 
@@ -1058,7 +1095,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             if (TextUtils.isEmpty(searchBoxView.getText()) && profileList != null) {
                 addMarkerByProfile(false, null);
                 searchCameraBtn.setVisibility(View.VISIBLE);
-                searchBoxView.clearFocus();
 
             }else {
                 searchCameraBtn.setVisibility(View.GONE);
@@ -1225,15 +1261,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     }
 
 
+
     private class ProfileRenderer extends DefaultClusterRenderer<Profile> {
 
+
         private IconGenerator mIconGenerator = new IconGenerator(getActivity().getApplication());
+
         private IconGenerator mClusterIconGenerator = new IconGenerator(getActivity().getApplication());
         private ImageView mImageView;
         private ImageView mImageViewC;
         private ImageView mClusterImageView;
         private int mDimension;
-
         public ProfileRenderer() {
             super(getApplicationContext(), getMap(), mClusterManager);
 
@@ -1259,7 +1297,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 //            mImageView.setImageResource(R.mipmap.ic_launcher);
 //            mImageView.setImageUrl(profile.getuPictureURL(), mImageLoader);
             Picasso.with(AppController.getAppContext()).load(profile.getuPictureURL()).into(mImageView);
-            mImageView.setTag(profile.getuEmail());
+
 
             if (profile.getuSpeciality().equals("nnnnnnnnnn")) {
                 mImageView.setImageResource(R.drawable.ic_notice);
@@ -1288,12 +1326,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                     Drawable drawable = null;
                     try {
                         mImageViewC = (ImageView) getView().findViewById(R.id.temp);
-                        Picasso.with(getAppContext()).load(p.getuPictureURL()).placeholder(R.mipmap.ic_launcher).into(mImageViewC);
-                        drawable = getResources().getDrawable(R.mipmap.ic_launcher);
+                        Picasso.with(getAppContext()).load(p.getuPictureURL()).placeholder(R.drawable.ic_user).into(mImageViewC);
+                        drawable = getResources().getDrawable(R.drawable.ic_user);
                         drawable = mImageViewC.getDrawable();
                     } catch (NullPointerException e) {
                         e.printStackTrace();
-                        drawable = getResources().getDrawable(R.mipmap.ic_launcher);
+                        drawable = getResources().getDrawable(R.drawable.ic_user);
                     }
 
                     if (p.getuSpeciality().equals("nnnnnnnnnn")) {
@@ -1333,6 +1371,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             // Always render clusters.
             return cluster.getSize() > 1;
         }
+
 
 
     }
@@ -1407,6 +1446,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             searchRequest.executeRequest();
             mProgressDialog = new ProgressDialog(getContext());
             mProgressDialog.setMessage(getString(R.string.please_wait_msg));
+            mProgressDialog.setCancelable(false);
             mProgressDialog.show();
         }
     }
@@ -1434,6 +1474,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 }
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:
+                Toast.makeText(getContext(), "Something went wrong please try again", Toast.LENGTH_SHORT).show();
                 break;
             case COMMON_RES_FAILED_TO_CONNECT:
                 Toast.makeText(getContext(),R.string.no_internet_msg, Toast.LENGTH_SHORT).show();
@@ -1570,6 +1611,40 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             }
         }
     }
+
+
+    private class CountDownTimerTask extends CountDownTimer {
+
+
+        /**
+         * @param millisInFuture    The number of millis in the future from the call
+         *                          to {@link #start()} until the countdown is done and {@link #onFinish()}
+         *                          is called.
+         * @param countDownInterval The interval along the way to receive
+         *                          {@link #onTick(long)} callbacks.
+         */
+        public CountDownTimerTask(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            Log.d("CountDownTimerTask",": "+millisUntilFinished / 1000);
+        }
+
+        @Override
+        public void onFinish() {
+            if (AppController.isActivityVisible()) {
+                if (HomeActivity.mLastKnownLocation != null) {
+                    request(HomeActivity.mLastKnownLocation);
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(HomeActivity.mLastKnownLocation, 16.3f));
+                } else {
+                    new CountDownTimerTask(5000, 5000).start();
+                }
+            }
+        }
+    }
+
 
 
 }

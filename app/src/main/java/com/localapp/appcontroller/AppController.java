@@ -1,5 +1,6 @@
 package com.localapp.appcontroller;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 
@@ -9,6 +10,7 @@ import android.content.Context;
 
 public class AppController extends Application {
 
+    @SuppressLint("StaticFieldLeak")
     private static AppController mInstance;
     private static Context mAppContext;
 
@@ -18,6 +20,9 @@ public class AppController extends Application {
         mInstance = this;
 
         this.setAppContext(getApplicationContext());
+    }
+    public static synchronized AppController getInstance(){
+        return mInstance;
     }
 
     @Override
@@ -42,11 +47,9 @@ public class AppController extends Application {
         activityVisible = false;
     }
 
-    public static AppController getInstance(){
-        return mInstance;
-    }
 
-    public static Context getAppContext() {
+
+    public static  Context getAppContext() {
         return mAppContext;
     }
     public void setAppContext(Context mAppContext) {

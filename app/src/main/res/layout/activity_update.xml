@@ -18,8 +18,8 @@
             android:id="@+id/cancel_button"
             android:layout_marginStart="10dp"
             android:layout_centerVertical="true"
-            android:layout_width="15dp"
-            android:layout_height="15dp"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
             android:onClick="onBack"
             android:background="@drawable/ic_cross"/>
 
@@ -67,7 +67,7 @@
                 android:layout_height="wrap_content"
                 android:drawablePadding="10dp"
                 android:inputType="textPersonName"
-                android:drawableLeft="@drawable/ic_name"
+                android:drawableStart="@drawable/ic_name"
                 android:hint="Name" />
         </android.support.design.widget.TextInputLayout>
 
@@ -83,8 +83,8 @@
                 android:layout_height="wrap_content"
                 android:inputType="phone"
                 android:drawablePadding="10dp"
-                android:drawableLeft="@drawable/ic_phone"
-                android:drawableRight="@drawable/ic_password_visible"
+                android:drawableStart="@drawable/ic_phone"
+                android:drawableEnd="@drawable/ic_password_visible"
                 android:hint="Phone Number" />
         </android.support.design.widget.TextInputLayout>
 
@@ -100,7 +100,7 @@
                 android:layout_height="wrap_content"
                 android:drawablePadding="10dp"
                 android:inputType="textEmailAddress"
-                android:drawableLeft="@drawable/ic_email"
+                android:drawableStart="@drawable/ic_email"
                 android:hint="Email" />
         </android.support.design.widget.TextInputLayout>
         </LinearLayout>
@@ -145,7 +145,7 @@
                 android:inputType="textMultiLine"
                 android:maxLines="2"
                 android:drawablePadding="10dp"
-                android:drawableLeft="@drawable/ic_brief_intro"
+                android:drawableStart="@drawable/ic_brief_intro"
                 android:hint="Brief Intro" />
         </android.support.design.widget.TextInputLayout>
         <TextView
@@ -168,7 +168,7 @@
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine"
                 android:drawablePadding="10dp"
-                android:drawableLeft="@drawable/ic_detail_description"
+                android:drawableStart="@drawable/ic_detail_description"
                 android:hint="Detail Description" />
         </android.support.design.widget.TextInputLayout>
 

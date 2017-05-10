@@ -1,24 +1,32 @@
 package com.localapp.ui;
 
 
-import android.app.NotificationManager;
-import android.content.BroadcastReceiver;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.view.WindowManager;
-import android.widget.Toast;
+import android.widget.RatingBar;
 
 import com.localapp.R;
+import com.localapp.feedback.AppPreferences;
 import com.localapp.login_session.SessionManager;
 import com.google.android.gms.maps.model.LatLng;
 import java.util.HashMap;
@@ -54,6 +62,9 @@ public class HomeActivity extends AppCompatActivity{
         setSupportActionBar(toolbar);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
+
+        AppPreferences.getInstance(this).incrementLaunchCount();
+        showRateAppDialogIfNeeded();
 
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
@@ -95,6 +106,7 @@ public class HomeActivity extends AppCompatActivity{
 
             }
         });
+
 
     }
 
@@ -192,4 +204,130 @@ public class HomeActivity extends AppCompatActivity{
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
     }
+
+
+
+    //============================================== feedback ===================================//
+
+    private void showRateAppDialogIfNeeded() {
+        boolean bool = AppPreferences.getInstance(getApplicationContext()).getAppRate();
+        int i = AppPreferences.getInstance(getApplicationContext()).getLaunchCount();
+        if ((bool) && (i == 3)) {
+            new CountDownTimerTask(10000,10000).start();
+
+        }
+
+        if ((bool) && (i%50 == 0)) {
+            new CountDownTimerTask(10000,10000).start();
+        }
+    }
+
+    private AlertDialog createAppRatingDialog(String rateAppTitle, String rateAppMessage) {
+
+       final View view = LayoutInflater.from(this).inflate(R.layout.app_rating,null);
+        RatingBar ratingBar = (RatingBar) view.findViewById(R.id.ratingBar);
+
+
+
+
+
+
+        final AlertDialog dialog  = new AlertDialog.Builder(this).setPositiveButton(getString(R.string.dialog_app_rate), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface paramAnonymousDialogInterface, int paramAnonymousInt) {
+                openAppInPlayStore(HomeActivity.this);
+                AppPreferences.getInstance(HomeActivity.this.getApplicationContext()).setAppRate(false);
+            }
+        }).setNegativeButton(getString(R.string.dialog_your_feedback), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface paramAnonymousDialogInterface, int paramAnonymousInt) {
+                openFeedback(HomeActivity.this);
+                AppPreferences.getInstance(HomeActivity.this.getApplicationContext()).setAppRate(false);
+            }
+        }).setNeutralButton(getString(R.string.dialog_ask_later), new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface paramAnonymousDialogInterface, int paramAnonymousInt) {
+                paramAnonymousDialogInterface.dismiss();
+                if (AppPreferences.getInstance(HomeActivity.this).getLaunchCount() < 4) {
+                    AppPreferences.getInstance(HomeActivity.this.getApplicationContext()).resetLaunchCount();
+                }
+            }
+        }).setMessage(rateAppMessage).setTitle(rateAppTitle).setView(view).setCancelable(false).create();
+
+
+        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                rating = Math.round(rating);
+                ratingBar.setRating(rating);
+                if (rating > 2) {
+                    openAppInPlayStore(HomeActivity.this);
+                }else {
+                    openFeedback(HomeActivity.this);
+                }
+
+                dialog.dismiss();
+            }
+        });
+
+        return dialog;
+    }
+
+    public static void openAppInPlayStore(Context paramContext) {
+        try {
+            paramContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.localapp")));
+        }catch (ActivityNotFoundException e){
+            paramContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.localapp")));
+        }
+    }
+
+    public static void openFeedback(Context paramContext) {
+        Intent localIntent = new Intent(Intent.ACTION_SEND);
+        localIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"connect@localapp.org"});
+        localIntent.putExtra(Intent.EXTRA_CC, "");
+        String str = null;
+        try {
+            str = paramContext.getPackageManager().getPackageInfo(paramContext.getPackageName(), 0).versionName;
+            localIntent.putExtra(Intent.EXTRA_SUBJECT, "Feedback for Your Android App");
+            localIntent.putExtra(Intent.EXTRA_TEXT, "\n\n----------------------------------\n Device OS: Android \n Device OS version: " +
+                    Build.VERSION.RELEASE + "\n App Version: " + str + "\n Device Brand: " + Build.BRAND +
+                    "\n Device Model: " + Build.MODEL + "\n Device Manufacturer: " + Build.MANUFACTURER);
+            localIntent.setType("message/rfc822");
+            paramContext.startActivity(Intent.createChooser(localIntent, "Choose an Email for feedback :"));
+        } catch (Exception e) {
+            Log.d("OpenFeedback", e.getMessage());
+        }
+    }
+
+
+    private class CountDownTimerTask extends CountDownTimer {
+
+
+        /**
+         * @param millisInFuture    The number of millis in the future from the call
+         *                          to {@link #start()} until the countdown is done and {@link #onFinish()}
+         *                          is called.
+         * @param countDownInterval The interval along the way to receive
+         *                          {@link #onTick(long)} callbacks.
+         */
+        public CountDownTimerTask(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            Log.d("CountDownTimerTask",": "+millisUntilFinished / 1000);
+        }
+
+
+        @Override
+        public void onFinish() {
+            try {
+                createAppRatingDialog(getString(R.string.rate_app_title), getString(R.string.rate_app_message)).show();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+
+
 }

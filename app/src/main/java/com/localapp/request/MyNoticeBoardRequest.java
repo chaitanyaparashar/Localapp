@@ -187,7 +187,7 @@ public class MyNoticeBoardRequest extends CommonRequest{
 
         if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
             resCode = COMMON_RES_CONNECTION_TIMEOUT;
-//            mGetFeedRequestCallback.GetFeedResponse (resCode, mRequestData, mRequestDataEmergency);
+            myNoticeBoardRequestCallback.MyNoticeBoardResponse (resCode, myNoticeBoardList, subscribedNoticeBoardList);
         }
         if (errorMsg == VolleyErrorHelper.COMMON_NETWORK_ERROR_TIMEOUT)
         {

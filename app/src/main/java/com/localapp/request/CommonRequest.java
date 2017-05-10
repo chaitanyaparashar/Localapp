@@ -19,9 +19,10 @@ import java.util.Map;
  * Created by 4 way on 17-02-2017.
  */
 
-public abstract class CommonRequest {
+public abstract class
+CommonRequest {
 
-    private static final String HOST_ADDRESS = "http://13.56.50.98:8080";
+    static final String HOST_ADDRESS = "http://13.56.50.98:8080";
 //    private static final String HOST_ADDRESS = "http://192.172.2.178:8080";//localhost
     private static final String SIGN_UP_REQUEST_URL = "";
     private static final String LOGIN_REQUEST_URL = HOST_ADDRESS + "/login";

@@ -28,6 +28,7 @@ import com.localapp.R;
 import com.localapp.appcontroller.AppController;
 import com.localapp.data.LoginData;
 import com.localapp.data.Profile;
+import com.localapp.feedback.AppPreferences;
 import com.localapp.login_session.SessionManager;
 import com.localapp.request.CommonRequest;
 import com.localapp.request.ForgetPasswordRequest;
@@ -38,6 +39,7 @@ import com.localapp.request.helper.VolleySingleton;
 import com.squareup.picasso.Picasso;
 
 import static com.localapp.ui.UpdateActivity.REQUEST_ABOUT;
+import static com.localapp.ui.UpdateActivity.REQUEST_ALL;
 import static com.localapp.ui.UpdateActivity.REQUEST_PERSONAL;
 
 
@@ -185,6 +187,10 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
             uNumberTextView.setVisibility(View.VISIBLE);
         }else {
             uNumberTextView.setVisibility(View.GONE);
+            if (AppPreferences.getInstance(getActivity()).getLaunchCount() < 2) {
+                HomeActivity.mViewPager.setCurrentItem(3);
+                startActivityForResult(new Intent(getContext(), UpdateActivity.class).putExtra("request", REQUEST_ALL), UPDATE_REQUEST_CODE);
+            }
         }
 
 

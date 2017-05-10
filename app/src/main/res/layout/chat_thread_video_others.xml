@@ -45,7 +45,7 @@
             android:layout_height="60dp"
             android:layout_marginTop="10dp"
             android:scaleType="centerCrop"
-            android:src="@mipmap/ic_launcher" />
+            android:src="@drawable/ic_user" />
 
         <ImageView
             android:layout_alignRight="@+id/msg_pic"

@@ -1,6 +1,8 @@
 package com.localapp.ui;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -36,6 +38,7 @@ public class CreateNoticeActivity extends AppCompatActivity implements CreateNot
 
 
     public void onBack(View view) {
+        setResult(Activity.RESULT_CANCELED);
         onBackPressed();
     }
 
@@ -91,6 +94,7 @@ public class CreateNoticeActivity extends AppCompatActivity implements CreateNot
         mProgressDialog.dismiss();
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
             Toast.makeText(this, "Notice Board Created Successfully", Toast.LENGTH_SHORT).show();
+            setResult(Activity.RESULT_OK);
             finish();
         }
     }

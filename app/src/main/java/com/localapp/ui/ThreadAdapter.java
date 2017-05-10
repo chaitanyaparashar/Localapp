@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 
 import com.localapp.R;
+import com.localapp.appcontroller.AppController;
 import com.localapp.data.Message;
 import com.github.siyamed.shapeimageview.CircularImageView;
 import com.squareup.picasso.Picasso;
@@ -194,7 +195,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
             holder.messageTypeImageView.setImageResource(getEmojiResourceIdByMsgType(message.getMessageType()));
         }
         if (userPicUrl!=null) {
-            Picasso.with(context).load(userPicUrl).placeholder(R.drawable.ic_user).into(holder.proPic);
+            Picasso.with(AppController.getAppContext()).load(userPicUrl).placeholder(R.drawable.ic_user).into(holder.proPic);
 //            holder.proPic.setImageUrl(userPicUrl, VolleySingleton.getInstance(context).getImageLoader());
 //            holder.proPic.setImageBitmap(message.getImgBitmap());
         }
@@ -217,7 +218,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
                 break;
             case MEDIA_IMAGE:
                 //holder.imageMedia.setImageDrawable(new BitmapDrawable(context.getResources(),BitmapFactory.decodeFile(message.getMediaURL())));
-                Picasso.with(context).load(message.getMediaURL()).placeholder(R.drawable.ic_picture).into(holder.imageMedia);
+                Picasso.with(AppController.getAppContext()).load(message.getMediaURL()).placeholder(R.drawable.ic_picture).into(holder.imageMedia);
                 break;
             case MEDIA_VIDEO:
 

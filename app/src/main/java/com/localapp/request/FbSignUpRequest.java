@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.localapp.request.CommonRequest.HOST_ADDRESS;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_CONNECTION_TIMEOUT;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_FAILED_TO_CONNECT;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_INTERNAL_ERROR;
@@ -64,8 +65,7 @@ public class FbSignUpRequest {
 
 
     public void executeRequest() {
-        final String HOST_ADDRESS = "http://13.56.50.98:8080";
-//        final String HOST_ADDRESS = "http://192.172.2.178:8080";//localhost
+
         final String url = HOST_ADDRESS + "/registerWithFacebook";//url for registration with pic
 
         Log.d("registerWithFacebook", "registerWithFacebook is called");

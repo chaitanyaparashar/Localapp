@@ -1534,6 +1534,8 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
         public void onFinish() {
             if (AppController.isActivityVisible()) {
                 request();
+            }else {
+                new CountDownTimerTask(5000,5000).start();
             }
 
         }

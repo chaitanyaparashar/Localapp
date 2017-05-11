@@ -670,6 +670,8 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
         public void onFinish() {
             if(AppController.isActivityVisible()) {
                 requestForMyNoticeBoard();
+            }else {
+                new CountDownTimerTask(5000, 5000).start();
             }
         }
     }

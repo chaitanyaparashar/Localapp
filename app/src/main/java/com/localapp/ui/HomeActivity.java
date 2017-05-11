@@ -1,6 +1,7 @@
 package com.localapp.ui;
 
 
+import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -31,8 +32,11 @@ import com.localapp.login_session.SessionManager;
 import com.google.android.gms.maps.model.LatLng;
 import java.util.HashMap;
 
+import static com.localapp.ui.MapFragment.REQUEST_CHECK_SETTINGS;
+
 public class HomeActivity extends AppCompatActivity{
 
+    private static final String TAG = "HomeActivity";
     SessionManager session;
     public static String mLoginToken = "";
     public static LatLng mLastKnownLocation = null;
@@ -199,10 +203,31 @@ public class HomeActivity extends AppCompatActivity{
 
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case REQUEST_CHECK_SETTINGS:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        Log.i(TAG, "User agreed to make required location settings changes.");
+                        // Nothing to do. startLocationupdates() gets called in onResume again.
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        Log.i(TAG, "User chose not to make required location settings changes.");
+                        finish();
+                        /*mRequestingLocationUpdates = false;
+                        updateUI();*/
+                        break;
+                }
+                break;
+        }
     }
 
 

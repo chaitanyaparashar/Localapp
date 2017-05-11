@@ -1,15 +1,20 @@
 package com.localapp.ui;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -69,6 +74,8 @@ import static com.localapp.ui.SignUpActivity.PICK_IMAGE_REQUEST;
 
 public class LoginActivity extends AppCompatActivity implements LoginRequest.LoginResponseCallback,ForgetPasswordRequest.ForgetPasswordRequestCallback,UpdateProfileRequest.UpdateProfileResponseCallback,
         com.facebook.GraphRequest.GraphJSONObjectCallback,FbLoginRequest.FbLoginResponseCallback,FbSignUpRequest.FbSignUpResponseCallback {
+    private static final int REQUEST_STORAGE_CODE = 111;
+    private final static String[] STORAGE_PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private static final String TAG = "LoginActivity";
     private EditText _email, _password;
     private Button _loginBtn, _signupBtn;
@@ -76,6 +83,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
     private LoginButton _fbLoginButton;
     private File imgFile;
     private SignUpData tempSignUpData;
+    private String tempPicUrl;
 
     CallbackManager fbCallbackManager;
     AccessTokenTracker fbTokenTracker;
@@ -102,6 +110,10 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         session = new SessionManager(this);
 
         setupView();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(STORAGE_PERMISSIONS, 11111);
+        }
     }
 
     public void setupView() {
@@ -122,11 +134,11 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         List<String> fbPermissions = new ArrayList<>();
         fbPermissions.add("public_profile");
         fbPermissions.add("email");
-        fbPermissions.add("user_about_me");
+//        fbPermissions.add("user_about_me");
         fbPermissions.add("user_birthday");
-        fbPermissions.add("user_location");
-        fbPermissions.add("user_relationships");
-        fbPermissions.add("user_work_history");
+//        fbPermissions.add("user_location");
+//        fbPermissions.add("user_relationships");
+//        fbPermissions.add("user_work_history");
         _fbLoginButton.setReadPermissions(fbPermissions);
 
         fbCallbackManager = CallbackManager.Factory.create();
@@ -448,13 +460,24 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
 
 
             Uri picUrl = fbProfile.getProfilePictureUri(400,400);
+            tempPicUrl = picUrl.toString();
             SignUpData signUpData = new SignUpData();
             signUpData.setFbId(fbId);
             signUpData.setFbToken(fbToken);
             signUpData.setmName(fbName);
             signUpData.setmEmail(fbEmail);
 
+            tempSignUpData = signUpData;
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    requestPermissions(STORAGE_PERMISSIONS, REQUEST_STORAGE_CODE);
+                }
+                return;
+            }
+
             new DownloadFileFromURL(signUpData).execute(picUrl.toString());
+            tempPicUrl = null;
+
 
 
         }catch (JSONException e){
@@ -509,6 +532,8 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
                 if (FbLoginError.ERROR_FB_FACE_NOT_FOUND == data.getFbLoginError().getStatusCode()){
                     tempSignUpData = data;
                     fbSignUpErrorDialog();
+                }else if (FbLoginError.ERROR_FB_FACE_SERVER_PROBLEM == data.getFbLoginError().getStatusCode()){
+                    toast("something went wrong");
                 }
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:
@@ -525,7 +550,35 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
     }
 
 
+    private boolean isPermissionGrated() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    == PackageManager.PERMISSION_GRANTED) {
+                Log.v("", "Permission is grated");
+                return true;
+            } else {
+                Log.v("", "Permission not grated");
+                return false;
+            }
+        }
+        return false;
+    }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case REQUEST_STORAGE_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    new DownloadFileFromURL(tempSignUpData).execute(tempPicUrl);
+                    tempPicUrl = null;
+                }else {
+                    toast("Permission denied");
+                    LoginManager.getInstance().logOut();
+                }
+        }
+    }
 
     /**
      * Background Async Task to download file

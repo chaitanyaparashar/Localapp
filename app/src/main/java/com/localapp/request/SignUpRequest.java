@@ -133,6 +133,8 @@ public class SignUpRequest {
         mFileUpload = new CommonFileUpload(mContext, mSignUpData.getPicFile(), CommonFileUpload.FileType.COMMON_UPLOAD_FILE_TYPE_IMAGE,
                 mSignUpData.getmEmail(),url,null,listener,errorListener);
 
+        mFileUpload.setRetryPolicy(60000,0);
+
         mFileUpload.setParam(mParams);
         mFileUpload.uploadFile();
     }

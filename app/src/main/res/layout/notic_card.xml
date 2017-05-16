@@ -31,7 +31,6 @@
             <TextView
                 android:layout_below="@+id/notice_name_TextView"
                 android:id="@+id/notice_lastMsg_TextView"
-                android:text="Whats's On (Board Name)"
                 android:textSize="13dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -46,7 +45,6 @@
                 android:layout_below="@+id/notice_lastMsg_TextView"
                 android:layout_toLeftOf="@+id/notice_menu"
                 android:id="@+id/notice_Msg_time_TextView"
-                android:text="12th feb 2017 Sunday, 12:30 pm"
                 android:layout_width="151dp"
                 android:layout_height="wrap_content" />
 

@@ -308,14 +308,17 @@ public class HomeActivity extends AppCompatActivity{
         localIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"connect@localapp.org"});
         localIntent.putExtra(Intent.EXTRA_CC, "");
         String str = null;
+        int versionCode;
         try {
             str = paramContext.getPackageManager().getPackageInfo(paramContext.getPackageName(), 0).versionName;
-            localIntent.putExtra(Intent.EXTRA_SUBJECT, "Feedback for Your Android App");
+            versionCode = paramContext.getPackageManager().getPackageInfo(paramContext.getPackageName(), 0).versionCode;
+            localIntent.setPackage("com.google.android.gm");
+            localIntent.putExtra(Intent.EXTRA_SUBJECT, "Feedback for Localapp");
             localIntent.putExtra(Intent.EXTRA_TEXT, "\n\n----------------------------------\n Device OS: Android \n Device OS version: " +
-                    Build.VERSION.RELEASE + "\n App Version: " + str + "\n Device Brand: " + Build.BRAND +
+                    Build.VERSION.RELEASE + "\n App Version: " + str + "\n App Version Code: " + versionCode + "\n Device Brand: " + Build.BRAND +
                     "\n Device Model: " + Build.MODEL + "\n Device Manufacturer: " + Build.MANUFACTURER);
             localIntent.setType("message/rfc822");
-            paramContext.startActivity(Intent.createChooser(localIntent, "Choose an Email for feedback :"));
+            paramContext.startActivity(localIntent);
         } catch (Exception e) {
             Log.d("OpenFeedback", e.getMessage());
         }

@@ -25,6 +25,7 @@
             android:layout_height="wrap_content" />
 
             <LinearLayout
+                android:id="@+id/bottom_filter_lt"
                 android:layout_centerHorizontal="true"
                 android:layout_centerVertical="true"
                 android:layout_width="wrap_content"
@@ -74,6 +75,17 @@
 
 
             </LinearLayout>
+
+        <Button
+            android:id="@+id/invite_btn"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:textColor="#fff"
+            android:background="@drawable/submit_button_state"
+            android:text="Invite Neighbors &amp; Have more fun"/>
+
+
 
 
 
@@ -142,9 +154,7 @@
                         android:layout_height="45dp"
                         android:layout_marginRight="5dp"
                         android:src="@drawable/ic_phone"
-                        android:layout_marginTop="5dp"
-                         />
-
+                        android:layout_marginTop="5dp" />
 
 
                 </LinearLayout>
@@ -153,11 +163,9 @@
             </RelativeLayout>
 
 
-
-
-
-
         </RelativeLayout>
+
+
 
     <LinearLayout
         android:layout_margin="20dp"

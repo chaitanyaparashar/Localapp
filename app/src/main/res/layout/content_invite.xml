@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.localapp.ui.InviteActivity"
+    tools:showIn="@layout/activity_invite"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_weight="1"
+            android:padding="4dp"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:background="@drawable/layout_click_state"
+            android:layout_height="wrap_content"
+            android:clickable="true">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/ic_email"
+                android:layout_gravity="center"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorAccent"
+                android:text="@string/text_email"
+                android:layout_gravity="center"/>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/darker_gray"/>
+
+        <LinearLayout
+            android:id="@+id/invite_text_l"
+            android:layout_weight="1"
+            android:padding="4dp"
+            android:onClick="onClicked"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:background="@drawable/layout_click_state"
+            android:layout_height="wrap_content"
+            android:clickable="true">
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/ic_message"
+                android:layout_gravity="center"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/text"
+                android:layout_gravity="center"/>
+
+        </LinearLayout>
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/darker_gray"/>
+
+        <LinearLayout
+            android:id="@+id/invite_whtasapp_l"
+            android:layout_weight="1"
+            android:padding="4dp"
+            android:onClick="onClicked"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:background="@drawable/layout_click_state"
+            android:layout_height="wrap_content"
+            android:clickable="true">
+            <ImageView
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:background="@drawable/ic_whatsapp"
+
+                android:layout_gravity="center"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/text_whtasapp"
+                android:layout_gravity="center"/>
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@android:color/darker_gray"/>
+
+    <LinearLayout
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <AutoCompleteTextView
+            android:id="@+id/_input_email"
+            android:inputType="textEmailAddress|textMultiLine"
+            android:lines="8"
+            android:minLines="2"
+            android:layout_width="0dp"
+
+            android:hint="Enter email address"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+        <Button
+            android:text="Send"
+            android:background="@drawable/submit_button_state"
+            android:textAllCaps="false"
+            android:textColor="#FFF"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp" />
+
+        </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"/>
+
+
+</LinearLayout>

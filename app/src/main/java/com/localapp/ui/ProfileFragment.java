@@ -339,11 +339,10 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
 
 
     private void onAppShare() {
-        String shareBody = "https://play.google.com/store/apps/details?id=com.localapp";
         Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
         sharingIntent.setType("text/plain");
         sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, "Check out \"Localapp\"");
-        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, shareBody);
+        sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, getString(R.string.invite_text));
         startActivity(Intent.createChooser(sharingIntent, "Share \"Localapp\" via"));
     }
 

@@ -450,8 +450,10 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
             int size = noticeBoard.getMessagesList().size();
             if (size>0) {
                 NoticeBoardMessage message = noticeBoard.getMessagesList().get(size-1);
-                holder.noticeLastMsg.setText(message.getMsg());
-                holder.noticeTime.setText(utility.getTimeAndDate(message.getTimestamp()));
+                if (message.getId() != null) {
+                    holder.noticeLastMsg.setText(message.getMsg());
+                    holder.noticeTime.setText(utility.getTimeAndDate(message.getTimestamp()));
+                }
             }
 
 

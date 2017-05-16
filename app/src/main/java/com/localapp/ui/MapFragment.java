@@ -2,7 +2,6 @@ package com.localapp.ui;
 
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -12,17 +11,14 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -43,7 +39,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -61,7 +56,21 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterItem;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
+import com.google.maps.android.ui.IconGenerator;
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
 import com.localapp.camera.Camera2Activity;
@@ -73,28 +82,12 @@ import com.localapp.login_session.SessionManager;
 import com.localapp.request.CommonRequest;
 import com.localapp.request.GetNearestNoticeBoardRequest;
 import com.localapp.request.GetNoticeBoardMessageRequest;
-import com.localapp.request.GetProfileRequest;
 import com.localapp.request.GetUsersRequest;
 import com.localapp.request.ImageSearchRequest;
 import com.localapp.request.SubscribeUnsubscribeNoticeBoardRequest;
-
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.maps.android.clustering.Cluster;
-import com.google.maps.android.clustering.ClusterItem;
-import com.google.maps.android.clustering.ClusterManager;
-import com.google.maps.android.clustering.view.DefaultClusterRenderer;
-import com.google.maps.android.ui.IconGenerator;
 import com.localapp.request.helper.GetProfileByIdRequest;
-import com.squareup.picasso.Picasso;
 import com.localapp.util.utility;
+import com.squareup.picasso.Picasso;
 
 import java.io.File;
 import java.text.DateFormat;
@@ -150,7 +143,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
     private GoogleMap mMap;
     private MapView mMapView;
-    private LocationManager mLocationManager;
+//    private LocationManager mLocationManager;
     public ArrayList<Profile> profileList;
     public ArrayList<Profile> noticeBoardProfileList;
 
@@ -161,10 +154,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     private ImageView searchBtn, searchCameraBtn;
     private RelativeLayout uDetailLayout;
     private AutoCompleteTextView searchBoxView;
-    private Snackbar closeAppSnackbar;
 
     private ArrayAdapter<String> autoCompleteAdapter;
     private List<String> searchContaintList;
+
+    private LinearLayout botomFilter;
+    private Button inviteButton;
 
 
     DialogNoticeBoardMessageAdapter messageAdapter;
@@ -220,7 +215,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(this);
 
-        mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+//        mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !isPermissionGrated()) {
             requestPermissions(PERMISSIONS, REQUEST_LOCATION_CODE);
         } else {
@@ -255,6 +250,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         searchCameraBtn = (ImageView) view.findViewById(R.id.search_camera_btn);
         searchBoxView = (AutoCompleteTextView) view.findViewById(R.id.autoCompleteTextView);
         uDetailLayout = (RelativeLayout) view.findViewById(R.id.user_detail_rl);
+        botomFilter = (LinearLayout) view.findViewById(R.id.bottom_filter_lt);
+        inviteButton = (Button) view.findViewById(R.id.invite_btn);
+
+        inviteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getContext(),InviteActivity.class));
+            }
+        });
 
 
         searchBoxView.addTextChangedListener(textWatcherForSearchBox);
@@ -594,7 +598,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     /**
      * request for update location based on distance and time
      */
-    private void requestLocation() {
+    /*private void requestLocation() {
         Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
         String provider = mLocationManager.getBestProvider(criteria, true);
@@ -613,14 +617,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         Log.v(TAG, "requestLocation");
     }
 
-    /**
+    *//**
      * check location provider enabled or not
      * @return
-     */
+     *//*
     private boolean isLocationEnabled() {
         return mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                 mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-    }
+    }*/
 
     /**
      * check all required permission is granted or not
@@ -828,6 +832,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 }
 
                 setSearchHintData(profileList);
+
+                if (profileList.size() > 10) {
+                    botomFilter.setVisibility(View.VISIBLE);
+                    inviteButton.setVisibility(View.GONE);
+                }else {
+                    botomFilter.setVisibility(View.GONE);
+                    inviteButton.setVisibility(View.VISIBLE);
+                }
+
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:
                 break;
@@ -1559,7 +1572,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 return true;
             } else {
                 if (onlyOneTime == 0 && keyCode == KeyEvent.KEYCODE_BACK && event.getAction() != KeyEvent.ACTION_DOWN) {
-                    closeAppSnackbar = Snackbar.make(getView(), R.string.close_app_msg, Snackbar.LENGTH_LONG);
+                    Snackbar closeAppSnackbar = Snackbar.make(getView(), R.string.close_app_msg, Snackbar.LENGTH_LONG);
                     closeAppSnackbar.show();
                     closeAppSnackbar.setCallback(snackbarCallback);
                     searchBoxView.clearFocus();
@@ -1750,7 +1763,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         // application will never receive updates faster than this value.
         mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
 
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
     }
 
     protected void buildLocationSettingsRequest() {
@@ -1819,7 +1832,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         ).setResultCallback(new ResultCallback<Status>() {
             @Override
             public void onResult(Status status) {
-                mRequestingLocationUpdates = false;
+//                mRequestingLocationUpdates = false;
 //                setButtonsEnabledState();
             }
         });

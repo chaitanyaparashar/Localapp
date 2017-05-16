@@ -35,7 +35,6 @@
     <string name="FCM_AUTHORIZATION_KEY" templateMergeStrategy="preserve" translatable="false">key=AAAAh1gj7-8:APA91bFJLVxy4cWJ1Q9T8L3UlkpzZk5wRBoHzFjpEMbO1grFkPdzoJ39jaeF2rQUcXEqSvUsKSCoehZbOq_XmuWNZ-rW_UUZlFvurMG-_kEpOZvkgCwdfCANDpC2bKb63bVbNUH7wEde</string>
 
 
-
     <!--  feedback -->
     <string name="rate_app_title">Rate our App</string>
     <string name="rate_app_message">If you like our app, please take a moment to rate it in play store!</string>
@@ -43,7 +42,12 @@
     <string name="dialog_ask_later">Later</string>
     <string name="dialog_your_feedback">Your Feedback</string>
     <string name="app_message">Launch count is %d</string>
+    <string name="title_activity_invite">Invite</string>
+    <string name="text_email">Email</string>
+    <string name="text">Text</string>
+    <string name="text_whtasapp">WhtasApp</string>
 
+    <string name="invite_text">"Join locaapp, the neighbors Community app to know, search and interact with neighborhoods.\nhttps://play.google.com/store/apps/details?id=com.localapp"</string>
 
 
 </resources>

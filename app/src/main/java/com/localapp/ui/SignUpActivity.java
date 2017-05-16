@@ -336,6 +336,9 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(layout);
+        builder.setTitle("Select Profession");
+        builder.setIcon(R.drawable.ic_profession);
+        builder.setPositiveButton("DONE", null);
 
         builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override

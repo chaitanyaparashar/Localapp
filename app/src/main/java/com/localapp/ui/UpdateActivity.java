@@ -219,6 +219,9 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(layout);
+        builder.setTitle("Select Profession");
+        builder.setIcon(R.drawable.ic_profession);
+        builder.setPositiveButton("DONE", null);
 
         builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override

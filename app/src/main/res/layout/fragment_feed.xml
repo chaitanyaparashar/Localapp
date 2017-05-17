@@ -14,7 +14,7 @@
             android:visibility="gone"
             android:layout_alignParentTop="true"
             android:id="@+id/emergency_ListView"
-            android:background="#ffffff"
+            android:background="#FFF"
             android:layout_width="match_parent"
             android:layout_height="150dp">
 

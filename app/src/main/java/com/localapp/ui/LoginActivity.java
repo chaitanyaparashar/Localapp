@@ -3,16 +3,13 @@ package com.localapp.ui;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
@@ -20,7 +17,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -39,6 +35,7 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.localapp.compressor.Compressor;
 import com.localapp.R;
 import com.localapp.camera.CropImage;
 import com.localapp.data.FbLoginError;
@@ -59,10 +56,8 @@ import org.json.JSONObject;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -359,6 +354,13 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
                     Uri uri = result.getUri();
 //                    String path = getRealPathFromURI(this,uri);//getRealPathFromURI_API19(this,uri);
                         imgFile = new File(uri.getPath());
+
+                    int file_size = Integer.parseInt(String.valueOf(imgFile.length()/1024));
+
+                    if (file_size > 80) {//compress if file size more than 80kb
+                        imgFile = Compressor.getDefault(this).compressToFile(imgFile);
+                    }
+
                     tempSignUpData.setPicFile(imgFile);
                     fbSignUpRequest(tempSignUpData);
                 }

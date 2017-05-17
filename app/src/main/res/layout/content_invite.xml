@@ -87,7 +87,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/text_whtasapp"
+                android:text="@string/text_whatspp"
                 android:layout_gravity="center"/>
 
         </LinearLayout>
@@ -101,32 +101,33 @@
         android:background="@android:color/darker_gray"/>
 
     <LinearLayout
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
-        android:orientation="horizontal"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingEnd="4dp"
+        android:paddingStart="4dp">
 
         <AutoCompleteTextView
             android:id="@+id/_input_email"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Enter email address"
+
             android:inputType="textEmailAddress|textMultiLine"
             android:lines="8"
-            android:minLines="2"
-            android:layout_width="0dp"
-
-            android:hint="Enter email address"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:minLines="2" />
 
         <Button
-            android:text="Send"
-            android:background="@drawable/submit_button_state"
-            android:textAllCaps="false"
-            android:textColor="#FFF"
             android:layout_width="wrap_content"
-            android:layout_height="40dp" />
+            android:layout_height="40dp"
+            android:background="@drawable/submit_button_state"
+            android:text="Send"
+            android:onClick="sendMail"
+            android:textAllCaps="false"
+            android:textColor="#FFF" />
 
-        </LinearLayout>
+    </LinearLayout>
 
     <View
         android:layout_width="match_parent"

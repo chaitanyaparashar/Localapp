@@ -29,6 +29,12 @@ public class NoticeBoard {
         this.name = name;
     }
 
+    public NoticeBoard(String id) {
+        this.id = id;
+    }
+
+
+
     public List<NoticeBoardMessage> getMessagesList() {
         return messagesList;
     }

@@ -44,6 +44,7 @@ import com.facebook.login.widget.LoginButton;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
+import com.localapp.compressor.Compressor;
 import com.localapp.R;
 import com.localapp.camera.CropImage;
 import com.localapp.data.SignUpData;
@@ -409,6 +410,12 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
                         Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                         // Log.d(TAG, String.valueOf(bitmap));
                         imgFile = new File(uri.getPath());
+
+                        int file_size = Integer.parseInt(String.valueOf(imgFile.length()/1024));
+
+                        if (file_size > 80) {//compress if file size more than 80kb
+                            imgFile = Compressor.getDefault(this).compressToFile(imgFile);
+                        }
 
 
                         profilePic.setImageBitmap(bitmap);

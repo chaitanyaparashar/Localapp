@@ -9,6 +9,7 @@ import com.localapp.request.helper.VolleyErrorHelper;
 
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_CONNECTION_TIMEOUT;
@@ -26,16 +27,18 @@ public class DeleteNoticeBoardMessageRequest extends CommonRequest{
     private Map<String,String> mParams;
     private DeleteNoticeBoardMessageResponseCallback deleteNoticeBoardMessageResponseCallback;
 
-    public DeleteNoticeBoardMessageRequest(Context mContext, NoticeBoardMessage mNoticeBoardMessage,DeleteNoticeBoardMessageResponseCallback cb) {
-        super(mContext, RequestType.COMMON_REQUEST_DELETE_NOTICE_BOARD_MSG, CommonRequestMethod.COMMON_REQUEST_METHOD_GET, null);
+    public DeleteNoticeBoardMessageRequest(Context mContext, NoticeBoardMessage mNoticeBoardMessage,String uToken, DeleteNoticeBoardMessageResponseCallback cb) {
+        super(mContext, RequestType.COMMON_REQUEST_DELETE_NOTICE_BOARD_MSG, CommonRequestMethod.COMMON_REQUEST_METHOD_POST, null);
 
         this.mContext = mContext;
         this.mNoticeBoardMessage = mNoticeBoardMessage;
         this.deleteNoticeBoardMessageResponseCallback = cb;
 
-        String url = getRequestTypeURL(RequestType.COMMON_REQUEST_DELETE_NOTICE_BOARD_MSG);
-        url += "/"+mNoticeBoardMessage.getId();
-        super.setURL(url);
+        mParams = new HashMap<>();
+        mParams.put("messageId",mNoticeBoardMessage.getId());
+        mParams.put("token",uToken);
+
+        super.setParams(mParams);
 
 
     }

@@ -19,6 +19,8 @@ import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -39,6 +41,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
 
     LinearLayout personalLayout, aboutLayout;
 
+    private ProgressBar mProgressBar;
     EditText mNameView, mNumberView,mProfessionView, mEmailView, mInfoView, mDetailView;
     private int whichUpdate;
     //The "x" and "y" position of the "Show Button" on screen.
@@ -73,6 +76,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
         mProfessionView = (EditText) findViewById(R.id.input_profession);
         mInfoView = (EditText) findViewById(R.id.input_brief_intro);
         mDetailView = (EditText) findViewById(R.id.input_details_des);
+        mProgressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
         /*mProfessionView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -244,8 +248,8 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
     @Override
     protected void onPause() {
         super.onPause();
-        LinearLayout mainLayout;
-        mainLayout = (LinearLayout)findViewById(R.id.activity_update);
+        RelativeLayout mainLayout;
+        mainLayout = (RelativeLayout)findViewById(R.id.activity_update);
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(mainLayout.getWindowToken(), 0);
     }
@@ -269,6 +273,8 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
 
         GetProfileRequest request = new GetProfileRequest(this,mProfile,this);
         request.executeRequest();
+
+        mProgressBar.setVisibility(View.VISIBLE);
     }
 
     private void profileUpdateRequest() {
@@ -288,6 +294,8 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
 
         UpdateProfileRequest request = new UpdateProfileRequest(this,mProfile,this);
         request.executeRequest();
+
+        mProgressBar.setVisibility(View.VISIBLE);
 
     }
 
@@ -338,6 +346,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
 
     @Override
     public void onProfileResponse(CommonRequest.ResponseCode responseCode, Profile mProfile) {
+        mProgressBar.setVisibility(View.GONE);
         switch (responseCode) {
             case COMMON_RES_SUCCESS:
                 setProfileData(mProfile);
@@ -347,6 +356,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
 
     @Override
     public void onUpdateProfileResponse(CommonRequest.ResponseCode responseCode) {
+        mProgressBar.setVisibility(View.GONE);
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
             Toast.makeText(this, "update success", Toast.LENGTH_SHORT).show();
             Intent returnIntent = new Intent();

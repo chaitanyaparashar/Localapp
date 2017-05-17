@@ -10,6 +10,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.localapp.appcontroller.AppController;
 import com.localapp.request.helper.VolleyErrorHelper;
 
 import org.json.JSONException;
@@ -71,7 +72,7 @@ public class EmergencyMsgAcceptRequest {
             }
         };
 
-        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
+        RequestQueue requestQueue = Volley.newRequestQueue(AppController.getAppContext());
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.PUT, url, js, listener, errorListener) {
 

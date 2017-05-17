@@ -26,15 +26,20 @@ public class utility {
     public static String getTimeAndDate(String milliseconds) {
 //        DateFormat sdf = new SimpleDateFormat("dd-M-yyyy hh:mm:ss");
 
-        DateFormat sdfDay = new SimpleDateFormat("d");
-        DateFormat sdf = new SimpleDateFormat("MMM yyyy EEEE,  hh:mm a");
+        try {
+            DateFormat sdfDay = new SimpleDateFormat("d");
+            DateFormat sdf = new SimpleDateFormat("MMM yyyy EEEE,  hh:mm a");
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(Long.parseLong(milliseconds));
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(Long.parseLong(milliseconds));
 
-        Log.v("date time: ",sdf.format(calendar.getTime()));
+            Log.v("date time: ",sdf.format(calendar.getTime()));
 
-        return getDayOfMonthSuffix(Integer.parseInt(sdfDay.format(calendar.getTime())))+" "+sdf.format(calendar.getTime()).replace("AM", "am").replace("PM","pm");
+            return getDayOfMonthSuffix(Integer.parseInt(sdfDay.format(calendar.getTime())))+" "+sdf.format(calendar.getTime()).replace("AM", "am").replace("PM","pm");
+        }catch (Exception e) {
+            return "";
+        }
+
     }
 
     static  String getDayOfMonthSuffix(final int n) {

@@ -123,8 +123,7 @@
                     android:layout_toRightOf="@+id/user_pic"
                     android:layout_below="@+id/user_name"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="M.B.B.S"/>
+                    android:layout_height="wrap_content" />
                 <RatingBar
                     android:visibility="gone"
                     android:layout_toRightOf="@+id/user_pic"

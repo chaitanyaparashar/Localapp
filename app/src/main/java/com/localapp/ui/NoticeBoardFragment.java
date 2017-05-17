@@ -63,6 +63,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
     private NoticeAdapterNearYou noticeAdapterNearYou;
     DialogNoticeBoardMessageAdapter messageAdapter;
     private FloatingActionButton noticeCreateFab;
+    RecyclerView noticeMessageRecyclerView;
 
     private SwipeRefreshLayout swipeRefreshLayout;
 
@@ -194,7 +195,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
 
 
         TextView noticeName = (TextView)view.findViewById(R.id.notice_board_name_textView);
-        RecyclerView messageRecyclerView = (RecyclerView)view.findViewById(R.id.recyclerViewDialog);
+        noticeMessageRecyclerView = (RecyclerView)view.findViewById(R.id.recyclerViewDialog);
 
         final EditText messageEditText = (EditText) view.findViewById(R.id._input_notice_message);
         final ImageButton postBtn = (ImageButton)  view.findViewById(R.id._notice_post_btn);
@@ -243,8 +244,6 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
 
                     PostNoticeBoardMessageRequest postNoticeBoardMessageRequest = new PostNoticeBoardMessageRequest(getContext(),message,NoticeBoardFragment.this);
                     postNoticeBoardMessageRequest.executeRequest();
-                    noticeBoard.getMessagesList().add(message);
-                    messageAdapter.notifyDataSetChanged();
                     messageEditText.setText("");
                 }
             }
@@ -254,9 +253,10 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
 
         messageAdapter = new DialogNoticeBoardMessageAdapter(getContext(),noticeBoard);
 
-        messageRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        messageRecyclerView.setItemAnimator(new DefaultItemAnimator());
-        messageRecyclerView.setAdapter(messageAdapter);
+        noticeMessageRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        noticeMessageRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        noticeMessageRecyclerView.setAdapter(messageAdapter);
+
 
 
 //        dialog.setCancelable(false);
@@ -321,8 +321,8 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
         request.executeRequest();
     }
 
-    private void requestDeleteNoticeBoardMessage(NoticeBoardMessage mNoticeBoardMessage) {
-        DeleteNoticeBoardMessageRequest request = new DeleteNoticeBoardMessageRequest(getContext(),mNoticeBoardMessage,this);
+    private void requestDeleteNoticeBoardMessage(NoticeBoardMessage mNoticeBoardMessage, String uToken) {
+        DeleteNoticeBoardMessageRequest request = new DeleteNoticeBoardMessageRequest(getContext(),mNoticeBoardMessage, uToken,this);
         request.executeRequest();
     }
 
@@ -334,6 +334,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
             if (noticeBoardList.size()>0) {
                 noticeBoardList.clear();
+                noticeAdapter.notifyDataSetChanged();
             }
 
             if (myNoticeBoards.size() != 0){
@@ -362,13 +363,22 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
                 nearestNoticeBoardList.addAll(mNoticeBoards);
                 noticeAdapterNearYou.notifyDataSetChanged();
             }
+
+            noticeAdapterNearYou.notifyDataSetChanged();
         }
     }
 
     @Override
     public void GetNoticeBoardMessageResponse(CommonRequest.ResponseCode responseCode, NoticeBoard mNoticeBoard,boolean hasSubscribed) {
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
-            showNoticeBoardDialog(mNoticeBoard, hasSubscribed);
+
+            if (dialog != null && dialog.isShowing()) {
+                messageAdapter.setNoticeBoard(mNoticeBoard);
+                messageAdapter.notifyDataSetChanged();
+                noticeMessageRecyclerView.scrollToPosition(mNoticeBoard.getMessagesList().size() -1);
+            }else {
+                showNoticeBoardDialog(mNoticeBoard, hasSubscribed);
+            }
         }
     }
 
@@ -376,6 +386,11 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
     public void PostNoticeBoardResponse(CommonRequest.ResponseCode res, NoticeBoardMessage mNoticeBoardMessage) {
         if (res == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
             Toast.makeText(getContext(), "msg post", Toast.LENGTH_SHORT).show();
+            requestForMyNoticeBoard();
+            NoticeBoard tempNoticeBoard = new NoticeBoard(mNoticeBoardMessage.getAdminId());
+            tempNoticeBoard.setAdminId(HomeActivity.mUserId);
+            requestForNoticeBoardMsg(tempNoticeBoard,false);
+
         }
 
     }
@@ -407,6 +422,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
     public void deleteNoticeBoardMessageResponse(CommonRequest.ResponseCode responseCode) {
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
             toast("Message delete");
+            requestForMyNoticeBoard();
         }
     }
 
@@ -453,7 +469,13 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
                 if (message.getId() != null) {
                     holder.noticeLastMsg.setText(message.getMsg());
                     holder.noticeTime.setText(utility.getTimeAndDate(message.getTimestamp()));
+                }else {
+                    holder.noticeLastMsg.setText("");
+                    holder.noticeTime.setText("");
                 }
+            }else {
+                holder.noticeLastMsg.setText("");
+                holder.noticeTime.setText("");
             }
 
 
@@ -588,8 +610,13 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
 
             @Override
             public void onClick(View v) {
-                NoticeBoard noticeBoard = noticeBoardList.get(getAdapterPosition());
-                requestForNoticeBoardMsg(noticeBoard, false);
+                try {
+                    NoticeBoard noticeBoard = noticeBoardList.get(getAdapterPosition());
+                    requestForNoticeBoardMsg(noticeBoard, false);
+                }catch (IndexOutOfBoundsException e) {
+                    e.printStackTrace();
+                }
+
             }
         }
     }
@@ -600,6 +627,10 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
 
         public DialogNoticeBoardMessageAdapter(Context mContext, NoticeBoard mNoticeBoard) {
             this.mContext = mContext;
+            this.mNoticeBoard = mNoticeBoard;
+        }
+
+        public void setNoticeBoard(NoticeBoard mNoticeBoard){
             this.mNoticeBoard = mNoticeBoard;
         }
 
@@ -623,9 +654,11 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
             holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    requestDeleteNoticeBoardMessage(noticeBoardMessage);
-                    mNoticeBoard.getMessagesList().remove(position);
-                    messageAdapter.notifyDataSetChanged();
+                    if (HomeActivity.mLoginToken != null && !HomeActivity.mLoginToken.equals("")) {
+                        requestDeleteNoticeBoardMessage(noticeBoardMessage, HomeActivity.mLoginToken);
+                        mNoticeBoard.getMessagesList().remove(position);
+                        messageAdapter.notifyDataSetChanged();
+                    }
                 }
             });
         }

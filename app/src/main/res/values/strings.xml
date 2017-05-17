@@ -45,7 +45,7 @@
     <string name="title_activity_invite">Invite</string>
     <string name="text_email">Email</string>
     <string name="text">Text</string>
-    <string name="text_whtasapp">WhtasApp</string>
+    <string name="text_whatspp">WhatsApp</string>
 
     <string name="invite_text">"Join locaapp, the neighbors Community app to know, search and interact with neighborhoods.\nhttps://play.google.com/store/apps/details?id=com.localapp"</string>
 

@@ -24,9 +24,8 @@
                     android:layout_width="wrap_content"
                     emojicon:emojiconSize="25sp"
                     android:layout_height="wrap_content"
-
                     android:padding="16dp"
-                    android:text="Android charting application xml ui design tutorial with example. Android charting application xml ui design tutorial with example. Android charting application xml ui design tutorial with example. Android chartmple."
+                    android:text="Android chating application xml ui design tutorial with example. Android charting application xml ui design tutorial with example. Android charting application xml ui design tutorial with example. Android chartmple."
                     android:textColor="#000" />
 
         </android.support.v7.widget.CardView>
@@ -45,7 +44,7 @@
                     android:layout_height="60dp"
                     android:layout_marginTop="10dp"
                     android:scaleType="centerCrop"
-                    android:src="@mipmap/ic_launcher" />
+                    android:src="@drawable/ic_user" />
 
                 <ImageView
                     android:layout_alignRight="@+id/msg_pic"

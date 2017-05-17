@@ -14,6 +14,7 @@ import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.localapp.appcontroller.AppController;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -117,7 +118,7 @@ public class CommonFileUpload {
                 maxNumRetry,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
 
-        VolleySingleton.getInstance(mContext).addToRequestQueue(multipartRequest);
+        VolleySingleton.getInstance(AppController.getAppContext()).addToRequestQueue(multipartRequest);
     }
 
     private byte[] getFileDataFromDrawable(Context context, int id) {

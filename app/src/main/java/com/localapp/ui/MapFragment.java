@@ -1260,7 +1260,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         if (pName != null) {
             textView.setText(pName);
         }
-        if (pTitle != null) {
+        if (pTitle != null && !pTitle.equals("null")) {
             titleView.setText(pTitle);
         }
         if (pPrivacy != null && !pPrivacy.equals("null") && pPrivacy.equals("1")) {
@@ -1376,7 +1376,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                     Drawable drawable = null;
                     try {
                         mImageViewC = (ImageView) getView().findViewById(R.id.temp);
-                        Picasso.with(getAppContext()).load(p.getuPictureURL()).placeholder(R.drawable.ic_user).into(mImageViewC);
+                        Picasso.with(AppController.getAppContext()).load(p.getuPictureURL()).placeholder(R.drawable.ic_user).into(mImageViewC);
                         drawable = getResources().getDrawable(R.drawable.ic_user);
                         drawable = mImageViewC.getDrawable();
                     } catch (NullPointerException e) {

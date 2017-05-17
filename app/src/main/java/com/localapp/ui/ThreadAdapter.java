@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 
+import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
 import com.localapp.data.Message;
@@ -264,7 +265,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         public CircularImageView proPic;
         public ImageView messageTypeImageView;
 
-        public ImageView imageMedia;
+        public RoundedImageView imageMedia;
 
         public ImageView mVideoThumbnail;
 //        public TextView textViewTimeime;
@@ -285,7 +286,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
             messageTypeImageView = (ImageView) itemView.findViewById(R.id.msg_emoji);
 //            textViewTime = (TextView) itemView.findViewById(R.id.textViewTime);
             if (itemView.getTag()!= null && itemView.getTag().equals("img")) {
-                imageMedia = (ImageView) itemView.findViewById(R.id.msg_img);
+                imageMedia = (RoundedImageView) itemView.findViewById(R.id.msg_img);
 
             }
 

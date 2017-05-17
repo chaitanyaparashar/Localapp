@@ -74,7 +74,7 @@ public class GetUsersRequest extends CommonRequest {
             int size = profileList.length();
             for (int i = 0; i < size; i++) {
                 JSONObject profile = profileList.getJSONObject(i);
-                Picasso.with(getAppContext()).load(profile.getString("picUrl")).resize(100,100);
+                Picasso.with(getAppContext()).load(profile.getString("picUrl"));
                 String uId = profile.getString("id");
                 String uName =  profile.getString("name");
                 String uEmail =  profile.getString("email");

@@ -1,6 +1,7 @@
 package com.localapp.ui;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,6 +15,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,14 +25,17 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
 import com.localapp.R;
+import com.localapp.request.CommonRequest;
+import com.localapp.request.LocalappInviteRequest;
 
 import java.util.ArrayList;
 
-public class InviteActivity extends AppCompatActivity {
+public class InviteActivity extends AppCompatActivity implements LocalappInviteRequest.LocalappInviteRequestCallback{
     private static final int REQUEST_PICK_CONTACT = 222;
 
     public static ArrayList<String> emailValueArr = new ArrayList<String>();
     private ArrayAdapter<String> adapter;
+    private ProgressDialog mProgressDialog;
     AutoCompleteTextView textView = null;
 
     @Override
@@ -60,7 +65,7 @@ public class InviteActivity extends AppCompatActivity {
         //Set adapter to AutoCompleteTextView
         textView.setAdapter(adapter);
 
-        getPermissionToReadUserContacts();
+//        getPermissionToReadUserContacts();
 
     }
 
@@ -136,70 +141,12 @@ public class InviteActivity extends AppCompatActivity {
 
 
 
-    private void readContactData() {
 
-        try {
-
-            /*********** Reading Contacts Name And Number **********/
-
-            String phoneNumber = "";
-            ContentResolver cr = getBaseContext()
-                    .getContentResolver();
-
-            //Query to get contact name
-
-            Cursor cur = cr
-                    .query(ContactsContract.Contacts.CONTENT_URI,
-                            null,
-                            null,
-                            null,
-                            null);
-
-            // If data data found in contacts
-            if (cur.getCount() > 0) {
-
-                Log.i("AutocompleteContacts", "Reading   contacts........");
-
-
-                int k = 0;
-                String contactEmail = "";
-
-                while (cur.moveToNext()) {
-                    int emailIdx = cur.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA);
-                    if (cur.moveToFirst()) {
-
-                        // DISPLAY_NAME = The display name for the contact.
-                        // HAS_PHONE_NUMBER =   An indicator of whether this contact has at least one phone number.
-
-                        //contactName = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                        contactEmail = cur.getString(emailIdx);
-                        if (contactEmail != null) {
-                            emailValueArr.add(contactEmail);
-
-                        }
-                    }
-
-
-                }  // End while loop
-
-            } // End Cursor value check
-            cur.close();
-
-            adapter.notifyDataSetChanged();
-
-
-        } catch (Exception e) {
-            Log.i("AutocompleteContacts", "Exception : " + e);
-        }
-
-
-    }
 
     public void getPermissionToReadUserContacts() {
         if (ContextCompat.checkSelfPermission(getApplicationContext(),
                 android.Manifest.permission.READ_CONTACTS)
                 == PackageManager.PERMISSION_GRANTED) {
-            readContactData();
             ShowContact();
         }else {
                 ActivityCompat.requestPermissions(this,
@@ -227,7 +174,7 @@ public class InviteActivity extends AppCompatActivity {
             localIntent.setType("text/plain");
             startActivity(localIntent);
         }catch (Exception e) {
-            Toast.makeText(this, "Please install whtasapp", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Please install WhatsApp", Toast.LENGTH_SHORT).show();
             try {
                 startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.whatsapp")));
             }catch (Exception e1){
@@ -245,11 +192,49 @@ public class InviteActivity extends AppCompatActivity {
         switch (requestCode) {
             case REQUEST_PICK_CONTACT:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                   readContactData();
                     ShowContact();
                 }
         }
 
 
+    }
+
+    @Override
+    public void InviteResponse(CommonRequest.ResponseCode responseCode, String errorMsg) {
+        mProgressDialog.dismiss();
+        if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
+            Toast.makeText(this, "Email send", Toast.LENGTH_SHORT).show();
+            textView.setText("");
+        }else {
+            Toast.makeText(this, "something went wrong", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private boolean validate() {
+        boolean valid = true;
+        String email = textView.getText().toString();
+        if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            textView.setError("enter a valid email address");
+            valid = false;
+            return valid;
+        } else {
+            textView.setError(null);
+        }
+
+        return valid;
+    }
+
+    public void sendMail(View view) {
+        mProgressDialog = new ProgressDialog(this);
+        mProgressDialog.setCancelable(false);
+        mProgressDialog.setMessage("Please wait");
+
+        String email = textView.getText().toString();
+
+        if (validate()) {
+            LocalappInviteRequest inviteRequest = new LocalappInviteRequest(this, email,this);
+            inviteRequest.executeRequest();
+            mProgressDialog.show();
+        }
     }
 }

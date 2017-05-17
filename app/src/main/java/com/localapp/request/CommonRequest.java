@@ -22,9 +22,8 @@ import java.util.Map;
 public abstract class
 CommonRequest {
 
-    static final String HOST_ADDRESS = "http://13.56.50.98:8080";
-//    private static final String HOST_ADDRESS = "http://192.172.2.178:8080";//localhost
-    private static final String SIGN_UP_REQUEST_URL = "";
+//    static final String HOST_ADDRESS = "http://13.56.50.98:8080";
+    static final String HOST_ADDRESS = "http://192.172.2.178:8080";//localhost
     private static final String LOGIN_REQUEST_URL = HOST_ADDRESS + "/login";
 //    private static final String LOGIN_REQUEST_URL = "http://192.172.3.78:8080/login";//local
     private static final String MAP_REQUEST_URL = HOST_ADDRESS + "/pinOnMap";
@@ -46,10 +45,10 @@ CommonRequest {
     private static final String UPDATE_PROFILE_REQUEST_URL = HOST_ADDRESS + "/update";
     private static final String FB_LOGIN_REQUEST_URL = HOST_ADDRESS + "/facebookLogin";
     private static final String FCM_PUSH_NOTIFICATION_URL = "https://fcm.googleapis.com/fcm/send";
+    private static final String LOCALAPP_INVITE_URL = HOST_ADDRESS + "/email/doMail?";
 
     public enum RequestType {
         COMMON_REQUEST_LOGIN,
-        COMMON_REQUEST_SIGNUP,
         COMMON_REQUEST_MAP,
         COMMON_REQUEST_BROADCAST,
         COMMON_REQUEST_FEED,
@@ -68,7 +67,8 @@ CommonRequest {
         COMMON_REQUEST_UPDATE_PROFILE,
         COMMON_REQUEST_FCM_PUSH_NOTIFICATION,
         COMMON_REQUEST_GET_PROFILE_BY_ID,
-        COMMON_REQUEST_FB_LOGIN
+        COMMON_REQUEST_FB_LOGIN,
+        COMMON_REQUEST_LOCALAPP_INVITE;
 
     }
 
@@ -99,6 +99,8 @@ CommonRequest {
     private JSONObject mJSONParams;
     private RequestType mRequestType;
     private Context mContext;
+    private int socketTimeOut;
+    private int maxNumRetry;
 
 
     public CommonRequest (Context context,RequestType type,
@@ -139,6 +141,13 @@ CommonRequest {
         this.mRequestType = mRequestType;
     }
 
+    public void setRetryPolicy(int initialTimeoutMs, int maxNumRetries) {
+        if (initialTimeoutMs >20000){
+            socketTimeOut = initialTimeoutMs;
+        }
+        maxNumRetry = maxNumRetries;
+    }
+
 
     public abstract void onResponseHandler (JSONObject response) ;
     public abstract void onErrorHandler (VolleyError error);
@@ -151,9 +160,6 @@ CommonRequest {
                 url = LOGIN_REQUEST_URL;
                 break;
 
-            case COMMON_REQUEST_SIGNUP:
-                url = SIGN_UP_REQUEST_URL;
-                break;
 
             case COMMON_REQUEST_MAP:
                 url = MAP_REQUEST_URL;
@@ -219,12 +225,18 @@ CommonRequest {
             case COMMON_REQUEST_FB_LOGIN:
                  url = FB_LOGIN_REQUEST_URL;
                  break;
+            case COMMON_REQUEST_LOCALAPP_INVITE:
+                 url = LOCALAPP_INVITE_URL;
+                 break;
 
 
         }
 
         return url;
     }
+
+
+
 
     public void executeRequest() {
         Response.Listener<JSONObject> listener = new Response.Listener<JSONObject>() {
@@ -269,20 +281,7 @@ CommonRequest {
             requestQueue.add(jsonObjRequest);
         }
 
-        /*if (mMethod == CommonRequestMethod.COMMON_REQUEST_METHOD_PUT) {
-            jsonObjRequest = new CustomRequest(Request.Method.PUT, mURL, mParams, listener, errorListener) {
-                public String getBodyContentType() {
-                    return "application/json";
-                }
 
-                @Override
-                public Map<String, String> getHeaders() throws AuthFailureError {
-                    return ((mPostHeader != null)? mPostHeader : super.getHeaders());
-                }
-            };
-
-            requestQueue.add(jsonObjRequest);
-        }*/
 
     }
 

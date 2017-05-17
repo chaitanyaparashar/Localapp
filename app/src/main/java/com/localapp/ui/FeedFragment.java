@@ -17,7 +17,6 @@ import android.os.Environment;
 import android.os.SystemClock;
 import android.os.Vibrator;
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -46,6 +45,7 @@ import android.widget.Toast;
 
 import com.github.siyamed.shapeimageview.CircularImageView;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.localapp.compressor.Compressor;
 import com.localapp.VideoPlay;
 import com.localapp.appcontroller.AppController;
 import com.localapp.audio.ViewProxy;
@@ -55,7 +55,6 @@ import com.localapp.data.Message;
 import com.localapp.data.NotificationData;
 import com.localapp.fcm.FcmNotificationRequest;
 import com.localapp.login_session.SessionManager;
-import com.localapp.request.BroadcastRequest;
 import com.localapp.request.CommonRequest;
 import com.localapp.request.EmergencyMsgAcceptRequest;
 import com.localapp.request.GetFeedRequest;
@@ -109,11 +108,11 @@ import static com.localapp.util.utility.isLocationAvailable;
  * to handle interaction events.
  * create an instance of this fragment.
  */
-public class FeedFragment extends Fragment implements BroadcastRequest.BroadcastResponseCallback, GetFeedRequest.GetFeedRequestCallback,PicUrlRequest.PicUrlResponseCallback,EmergencyMsgAcceptRequest.EmergencyMsgAcceptResponseCallback {
+public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequestCallback,PicUrlRequest.PicUrlResponseCallback,EmergencyMsgAcceptRequest.EmergencyMsgAcceptResponseCallback {
 
     private final String TAG = "FeedFragment";
-    private static final String sAddress = "tcp://13.56.50.98:1883";
-//    private final String sAddress = "tcp://192.172.3.78:1883";
+//    private static final String sAddress = "tcp://13.56.50.98:1883";
+    private final String sAddress = "tcp://192.172.2.178:1883";//local
 //    private final String sAddress = "tcp://192.172.3.23:2883";
     private static final String mTopic = "localapp";
     private static final String mTopicAcceptMsg = "accept";
@@ -590,8 +589,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                 if (messageData.getMessageType() == MessageType.WHISPER){//remove after 2 min if WHISPER Message
                     whisperMsg(messageData);
                 }
-                /*BroadcastRequest broadcastRequest = new BroadcastRequest(getContext(), messageData, FeedFragment.this);
-                broadcastRequest.executeRequest();*/
+
 
                 /*****/
                 /*Drawable d = getResources().getDrawable(R.drawable.aaa); // the drawable (Captain Obvious, to the rescue!!!)
@@ -790,11 +788,31 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
             recyclerView.getLayoutManager().smoothScrollToPosition(recyclerView, null, adapter.getItemCount() - 1);
     }
 
+    private void setBroadcastHistory(GetFeedRequestData simpleMsgData, GetFeedRequestData emergencyMsgData) {
 
-    @Override
-    public void onBroadcastResponce(CommonRequest.ResponseCode res) {
+        for(Message msg : simpleMsgData.getMessageList()) {
+            if (isMessageForMe(msg.getMessageType(),msg.getmLatLng())) {
+                messages.add(msg);
+
+                if (msg.getMessageType() == MessageType.WHISPER){
+                    whisperMsg(msg);
+                }
+            }
+        }
+
+        for (Message msg : emergencyMsgData.getMessageList()) {
+            if (isMessageForMe(msg.getMessageType(), msg.getmLatLng())) {
+                emergencyMessageListView.setVisibility(View.VISIBLE);
+                emergencyMessageList.add(msg);
+            }
+        }
+
+        adapter.notifyDataSetChanged();
+        emergencyListAdapter.notifyDataSetChanged();
+
 
     }
+
 
     @Override
     public void GetFeedResponse(CommonRequest.ResponseCode responseCode, GetFeedRequestData data, GetFeedRequestData emergencyData) {
@@ -808,13 +826,16 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
                     emergencyMessageList.clear();
                 }
 
-                messages.addAll(data.getMessageList());
+
+                setBroadcastHistory(data, emergencyData);
+
+                /*messages.addAll(data.getMessageList());
                 emergencyMessageList.addAll(emergencyData.getMessageList());
                 adapter.notifyDataSetChanged();
                 emergencyListAdapter.notifyDataSetChanged();
                 if (emergencyMessageList.size() > 0) {
                     emergencyMessageListView.setVisibility(View.VISIBLE);
-                }
+                }*/
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:
                 break;
@@ -1111,7 +1132,15 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
             Uri resultData = Uri.parse(data.getStringExtra("result"));
             sendMedia(MEDIA_IMAGE,resultData.toString(),0);
 
-            PicUrlRequest picUrlRequest = new PicUrlRequest(getContext(),new File(resultData.getPath()),MEDIA_IMAGE,this);
+            File compressFile = new File(resultData.getPath());
+            int file_size = Integer.parseInt(String.valueOf(compressFile.length()/1024));
+
+            if (file_size > 80) {
+                compressFile = Compressor.getDefault(getActivity()).compressToFile(compressFile);
+            }
+
+
+            PicUrlRequest picUrlRequest = new PicUrlRequest(getContext(),compressFile,MEDIA_IMAGE,this);
             picUrlRequest.executeRequest();
         }else if (resultCode == VIDEO_REQUEST) {
             Uri resultData = Uri.parse(data.getStringExtra("result"));
@@ -1498,7 +1527,7 @@ public class FeedFragment extends Fragment implements BroadcastRequest.Broadcast
 
         @Override
         public void onTick(long millisUntilFinished) {
-            Log.d("CountDownTimerTask",message.getmText()+": "+millisUntilFinished / 1000);
+            Log.d("CountDownWhisper",message.getmText()+": "+millisUntilFinished / 1000);
         }
 
         @Override

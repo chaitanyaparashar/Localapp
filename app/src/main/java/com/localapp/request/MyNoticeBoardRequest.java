@@ -204,7 +204,7 @@ public class MyNoticeBoardRequest extends CommonRequest{
 //            mRequestData.setmErrorMessage(errorMsg);
         }
 
-       myNoticeBoardRequestCallback.MyNoticeBoardResponse(COMMON_RES_SUCCESS,myNoticeBoardList,subscribedNoticeBoardList);
+       myNoticeBoardRequestCallback.MyNoticeBoardResponse(resCode,myNoticeBoardList,subscribedNoticeBoardList);
     }
 
     public interface MyNoticeBoardRequestCallback {

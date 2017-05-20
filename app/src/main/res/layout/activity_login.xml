@@ -1,24 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/activity_login"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-
+    android:background="@drawable/login_background_1"
     tools:context="com.localapp.ui.LoginActivity">
-
 
     <LinearLayout
         android:id="@+id/login_layout"
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="1dp"
         android:paddingLeft="40dp"
         android:paddingRight="40dp"
-        android:paddingTop="40dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
+        android:paddingTop="32dp">
 
 
         <ImageView
@@ -38,15 +35,19 @@
             android:textColor="#2196f3"/>
 
         <!-- Email Label -->
-        <android.support.design.widget.TextInputLayout
+            <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
+            android:theme="@style/TextLabel"
             android:layout_marginBottom="8dp">
             <EditText android:id="@+id/input_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColorHighlight="#2196f3"
+                android:textColor="#fff"
                 android:drawablePadding="10dp"
+                android:textColorHint="#fff"
                 android:inputType="textEmailAddress"
                 android:drawableStart="@drawable/ic_email"
                 android:hint="Email"/>
@@ -57,11 +58,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:theme="@style/TextLabel"
             android:layout_marginBottom="8dp">
             <EditText
                 android:id="@+id/input_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:textColor="#fff"
                 android:inputType="textPassword"
                 android:drawablePadding="10dp"
                 android:drawableStart="@drawable/ic_lock"
@@ -73,13 +76,13 @@
             android:layout_width="fill_parent"
             android:layout_height="40dp"
             android:layout_marginTop="8dp"
+            android:textAllCaps="false"
             android:background="@drawable/submit_button_state"
             android:layout_marginBottom="8dp"
             android:textColor="#fff"
             android:padding="10dp"
-            android:gravity="center"
-            android:text="Log IN"
-            android:textSize="16sp" />
+            android:text="Login"
+            android:textSize="14sp" />
 
 
 
@@ -94,7 +97,7 @@
             android:textSize="12sp"/>
 
         <LinearLayout
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="8dp"
             android:layout_marginBottom="8dp"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -105,12 +108,13 @@
                 android:layout_width="0dp"
                 android:layout_weight="1.75"
                 android:layout_height="0.5dp"
-                android:background="@android:color/darker_gray"/>
+                android:background="#fff"/>
             <TextView
                 android:layout_gravity="center"
                 android:layout_width="0dp"
                 android:layout_weight="0.5"
                 android:gravity="center"
+                android:textColor="#fff"
                 android:layout_height="wrap_content"
                 android:text="OR"/>
             <View
@@ -118,45 +122,48 @@
                 android:layout_width="0dp"
                 android:layout_weight="1.75"
                 android:layout_height="0.5dp"
-                android:background="@android:color/darker_gray"/>
+                android:background="#fff"/>
         </LinearLayout>
 
 
-
         <com.facebook.login.widget.LoginButton
-            xmlns:facebook="http://schemas.android.com/apk/res-auto"
-            facebook:com_facebook_login_text="Log in with Facebook"
             android:id="@+id/fb_login_button"
-            android:layout_marginBottom="4dp"
+            android:layout_marginBottom="12dp"
             android:layout_marginTop="8dp"
-            android:layout_gravity="center"
-            android:background="#FAFAFA"
-            android:textColor="@color/com_facebook_messenger_blue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            android:paddingLeft="50dp"
+            android:paddingRight="50dp"
+            android:layout_width="match_parent"
+            android:layout_height="80dp" />
 
+        <!--android:background="#FAFAFA"
+        android:textColor="@color/com_facebook_messenger_blue"-->
+
+        <Button
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="12dp"
+            android:id="@+id/link_signup"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:textAllCaps="false"
+            android:padding="10dp"
+            android:textColor="#fff"
+            android:gravity="center"
+            android:background="@drawable/submit_button_state"
+            android:text="Sign up with Email"
+            android:textSize="14sp"
+            />
+
+
+
+        <!--facebook:com_facebook_login_text="Log in with Facebook"-->
 
 
     </LinearLayout>
 
-    <View
-        android:layout_above="@+id/link_signup"
-        android:layout_gravity="center"
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@android:color/darker_gray"/>
 
-    <Button
-        android:layout_alignParentBottom="true"
-        android:id="@+id/link_signup"
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="#ffffff"
-        android:textAllCaps="false"
-        android:textColor="@android:color/darker_gray"
-        android:padding="10dp"
-        android:gravity="center"
-        android:text="Sign up with email"
-        android:textSize="14sp" />
+
+
 
 </RelativeLayout>

@@ -396,9 +396,15 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
     }
 
     @Override
-    public void SubscribeUnsubscribeNoticeBoardResponse(CommonRequest.ResponseCode responseCode, String errorMsg) {
+    public void SubscribeUnsubscribeNoticeBoardResponse(CommonRequest.ResponseCode responseCode, CommonRequest.RequestType mRequestType, String errorMsg) {
+        String req = "subscribed";
+        if (mRequestType == CommonRequest.RequestType.COMMON_REQUEST_SUBSCRIBE_NOTICE_BOARD) {
+            req = "subscribed";
+        }else {
+            req = "unsubscribed";
+        }
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
-            Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Noticeboard " + req , Toast.LENGTH_SHORT).show();
             swipeRefreshLayout.setRefreshing(true);
             requestForMyNoticeBoard();
         }else if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SERVER_ERROR_WITH_MESSAGE) {
@@ -411,7 +417,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
     @Override
     public void deleteNoticeBoardResponse(CommonRequest.ResponseCode responseCode) {
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
-            toast("Notice Board delete");
+            toast("Notice Board deleted");
             swipeRefreshLayout.setRefreshing(true);
             requestForMyNoticeBoard();
         }
@@ -421,7 +427,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
     @Override
     public void deleteNoticeBoardMessageResponse(CommonRequest.ResponseCode responseCode) {
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
-            toast("Message delete");
+            toast("Message deleted");
             requestForMyNoticeBoard();
         }
     }

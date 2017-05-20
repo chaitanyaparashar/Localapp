@@ -111,8 +111,8 @@ import static com.localapp.util.utility.isLocationAvailable;
 public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequestCallback,PicUrlRequest.PicUrlResponseCallback,EmergencyMsgAcceptRequest.EmergencyMsgAcceptResponseCallback {
 
     private final String TAG = "FeedFragment";
-//    private static final String sAddress = "tcp://13.56.50.98:1883";
-    private final String sAddress = "tcp://192.172.2.178:1883";//local
+    private static final String sAddress = "tcp://13.56.50.98:1883";
+//    private final String sAddress = "tcp://192.172.2.178:1883";//local
 //    private final String sAddress = "tcp://192.172.3.23:2883";
     private static final String mTopic = "localapp";
     private static final String mTopicAcceptMsg = "accept";

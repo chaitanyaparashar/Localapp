@@ -7,9 +7,13 @@ import android.content.Intent;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -23,6 +27,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
@@ -30,6 +35,7 @@ import com.localapp.R;
 import com.localapp.data.Profile;
 import com.localapp.request.CommonRequest;
 import com.localapp.request.GetProfileRequest;
+import com.localapp.request.UpdateEmailRequest;
 import com.localapp.request.UpdateProfileRequest;
 
 import java.util.ArrayList;
@@ -37,7 +43,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Pattern;
 
-public class UpdateActivity extends AppCompatActivity implements GetProfileRequest.GetProfileRequestCallback,UpdateProfileRequest.UpdateProfileResponseCallback {
+public class UpdateActivity extends AppCompatActivity implements GetProfileRequest.GetProfileRequestCallback,UpdateProfileRequest.UpdateProfileResponseCallback,
+        UpdateEmailRequest.UpdateEmailRequestCallback {
 
     LinearLayout personalLayout, aboutLayout;
 
@@ -85,6 +92,16 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
             }
         });
 */
+        mEmailView.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    emailUpdateDialog("").show();
+                }
+                return false;
+            }
+
+        });
         mProfessionView.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -244,6 +261,46 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
 
     }
 
+    private AlertDialog emailUpdateDialog(@Nullable String email) {
+        final View view = LayoutInflater.from(this).inflate(R.layout.email_update_dialog,null);
+        final EditText updateEditText = (EditText) view.findViewById(R.id.input_update_email);
+
+        updateEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String txt = updateEditText.getText().toString();
+                if (txt.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(txt).matches()) {
+                    updateEditText.setError("enter a valid email address");
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+
+        return new AlertDialog.Builder(this).setTitle("Update Email").setView(view)
+                .setPositiveButton("Update", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String txt = updateEditText.getText().toString();
+                        if (txt.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(txt).matches()) {
+                            Toast.makeText(UpdateActivity.this, "enter a valid email address", Toast.LENGTH_SHORT).show();
+                        }else {
+                            emailUpdateRequest(txt);
+                        }
+
+                    }
+                })
+                .setNegativeButton("Cancel",null).setCancelable(false).create();
+    }
+
 
     @Override
     protected void onPause() {
@@ -297,6 +354,13 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
 
         mProgressBar.setVisibility(View.VISIBLE);
 
+
+    }
+
+    private void emailUpdateRequest(@NonNull String newEmail) {
+        UpdateEmailRequest updateEmailRequest = new UpdateEmailRequest(this,newEmail,HomeActivity.mLoginToken,this);
+        updateEmailRequest.executeRequest();
+        mProgressBar.setVisibility(View.VISIBLE);
     }
 
     private void setProfileData(Profile profile) {
@@ -358,7 +422,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
     public void onUpdateProfileResponse(CommonRequest.ResponseCode responseCode) {
         mProgressBar.setVisibility(View.GONE);
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
-            Toast.makeText(this, "update success", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
             Intent returnIntent = new Intent();
             returnIntent.putExtra("result",true);
             setResult(10,returnIntent);
@@ -519,4 +583,22 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
         return valid;
     }
 
+    @Override
+    public void UpdateEmailResponse(CommonRequest.ResponseCode responseCode, String statusCode) {
+        mProgressBar.setVisibility(View.GONE);
+        if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
+            Toast.makeText(this, "Email update success", Toast.LENGTH_SHORT).show();
+            profileRequest();
+        }else if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SERVER_ERROR_WITH_MESSAGE) {
+            if (statusCode != null && statusCode.equals("0")) {
+                Toast.makeText(this, "This email already exist", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
+            }
+        }else {
+            Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
+        }
+
+        profileRequest();
+    }
 }

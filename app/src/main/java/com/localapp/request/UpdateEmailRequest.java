@@ -3,6 +3,7 @@ package com.localapp.request;
 import android.content.Context;
 import android.util.Log;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.VolleyError;
 import com.localapp.request.helper.VolleyErrorHelper;
 
@@ -17,36 +18,40 @@ import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_INTERNA
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_SERVER_ERROR_WITH_MESSAGE;
 
 /**
- * Created by 4 way on 08-04-2017.
+ * Created by 4 way on 18-05-2017.
  */
 
-public class SubscribeUnsubscribeNoticeBoardRequest extends CommonRequest{
+public class UpdateEmailRequest extends CommonRequest{
     private Context mContext;
-    private String noticeBoardId;
-    private String userId;
-    private Map<String,String> mParams;
-    private RequestType mRequestType;
-    private SubscribeUnsubscribeNoticeBoardCallback mUnsubscribeNoticeBoardCallback;
+    private Map<String, String> mHeaders;
+    private UpdateEmailRequestCallback mUpdateEmailRequestCallback;
 
-
-    public SubscribeUnsubscribeNoticeBoardRequest(Context mContext,String noticeBoardId, String userId, RequestType type,SubscribeUnsubscribeNoticeBoardCallback mUnsubscribeNoticeBoardCallback) {
-        super(mContext, type, CommonRequestMethod.COMMON_REQUEST_METHOD_POST, null);
-        this.mContext = mContext;
-        this.noticeBoardId = noticeBoardId;
-        this.userId = userId;
-        this.mUnsubscribeNoticeBoardCallback = mUnsubscribeNoticeBoardCallback;
-        this.mRequestType = type;
-
-        mParams = new HashMap<>();
-        mParams.put("noticeBoardId", noticeBoardId);
-        mParams.put("userId", userId);
-        super.setParams(mParams);
+    public interface UpdateEmailRequestCallback {
+        void UpdateEmailResponse(ResponseCode responseCode, String statusCode);
     }
+
+    public UpdateEmailRequest(Context mContext,String newEmail, String uToken, UpdateEmailRequestCallback cb ) {
+        super(mContext, RequestType.COMMON_REQUEST_UPDATE_EMAIL, CommonRequestMethod.COMMON_REQUEST_METHOD_GET, null);
+
+        this.mContext = mContext;
+        String url = getRequestTypeURL(RequestType.COMMON_REQUEST_UPDATE_EMAIL);
+        url += "email=" + newEmail;
+        setURL(url);
+
+        mHeaders = new HashMap<>();
+        mHeaders.put("Content-Type", "application/json");
+        mHeaders.put("token", uToken);
+
+        super.setPostHeader(mHeaders);
+
+        this.mUpdateEmailRequestCallback = cb;
+    }
+
 
 
     @Override
     public void onResponseHandler(JSONObject response) {
-        mUnsubscribeNoticeBoardCallback.SubscribeUnsubscribeNoticeBoardResponse(ResponseCode.COMMON_RES_SUCCESS, mRequestType, null);
+        mUpdateEmailRequestCallback.UpdateEmailResponse(ResponseCode.COMMON_RES_SUCCESS,"1");
     }
 
     @Override
@@ -58,7 +63,7 @@ public class SubscribeUnsubscribeNoticeBoardRequest extends CommonRequest{
 
         if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
             resCode = COMMON_RES_CONNECTION_TIMEOUT;
-            mUnsubscribeNoticeBoardCallback.SubscribeUnsubscribeNoticeBoardResponse(resCode, mRequestType, null);
+            mUpdateEmailRequestCallback.UpdateEmailResponse (resCode,null);
         }
         if (errorMsg == VolleyErrorHelper.COMMON_NETWORK_ERROR_TIMEOUT)
         {
@@ -75,15 +80,6 @@ public class SubscribeUnsubscribeNoticeBoardRequest extends CommonRequest{
 //            mRequestData.setmErrorMessage(errorMsg);
         }
 
-        mUnsubscribeNoticeBoardCallback.SubscribeUnsubscribeNoticeBoardResponse(resCode, mRequestType,  errorMsg);
-
+        mUpdateEmailRequestCallback.UpdateEmailResponse (resCode,errorMsg);
     }
-
-
-    public  interface SubscribeUnsubscribeNoticeBoardCallback {
-        void SubscribeUnsubscribeNoticeBoardResponse(CommonRequest.ResponseCode responseCode,RequestType mRequestType, String errorMsg);
-    }
-
-
-
 }

@@ -1,10 +1,12 @@
 package com.localapp.request.helper;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkResponse;
 import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.toolbox.HttpHeaderParser;
 
 import org.json.JSONException;
@@ -44,7 +46,11 @@ public class CustomRequest extends Request<JSONObject> {
         return params;
     }
 
-
+    @Override
+    public Request<?> setRetryPolicy(RetryPolicy retryPolicy) {
+        return super.setRetryPolicy(new DefaultRetryPolicy(0,
+                -1,DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+    }
 
     @Override
     public byte[] getBody() throws AuthFailureError {

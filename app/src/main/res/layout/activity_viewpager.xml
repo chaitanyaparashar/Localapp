@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager_introduction"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        tools:listitem="@layout/pager_item" />
+
+    <RelativeLayout
+        android:id="@+id/viewPagerIndicator"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="5dp"
+        android:gravity="center">
+
+        <LinearLayout
+            android:id="@+id/viewPagerCountDots"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:orientation="horizontal" />
+
+        <LinearLayout
+            android:id="@+id/control_layout"
+            android:layout_below="@+id/viewPagerCountDots"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/btn_next"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="48dp"
+                android:text="skip"
+                android:textColor="#fff"
+                android:background="@drawable/ripple_transpent"
+                android:layout_marginEnd="6dp" />
+
+            <Button
+                android:id="@+id/btn_finish"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="48dp"
+                android:layout_marginStart="6dp"
+                android:textColor="#fff"
+                android:background="@drawable/ripple_blue"
+                android:text="next"
+                android:contentDescription="Let's start" />
+        </LinearLayout>
+
+        <Button
+            android:visibility="gone"
+            android:layout_margin="12dp"
+            android:id="@+id/btn_start"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginStart="6dp"
+            android:textColor="#fff"
+            android:background="@drawable/ripple_blue"
+            android:text="get startted"
+            android:contentDescription="Let's start" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

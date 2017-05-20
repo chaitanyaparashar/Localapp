@@ -12,6 +12,7 @@ public class AppPreferences {
     private SharedPreferences mPrefs;
     private static final String PREF_APP_RATE = "pref_app_rate";
     private static final String PREF_LAUNCH_COUNT = "pref_launch_count";
+    private static final String PREF_LAUNCH_TOUR = "pref_launch_tour";
 
     private AppPreferences(Context paramContext) {
         this.mPrefs = paramContext.getSharedPreferences("app_prefs", 0);
@@ -48,6 +49,16 @@ public class AppPreferences {
     public void resetLaunchCount() {
         SharedPreferences.Editor localEditor = this.mPrefs.edit();
         localEditor.remove(PREF_LAUNCH_COUNT);
+        localEditor.commit();
+    }
+
+    public boolean isTourLaunched() {
+        return this.mPrefs.getBoolean(PREF_LAUNCH_TOUR, false);
+    }
+
+    public void tourLaunched () {
+        SharedPreferences.Editor localEditor = this.mPrefs.edit();
+        localEditor.putBoolean(PREF_LAUNCH_TOUR, true);
         localEditor.commit();
     }
 }

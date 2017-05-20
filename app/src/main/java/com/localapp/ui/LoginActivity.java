@@ -1,6 +1,7 @@
 package com.localapp.ui;
 
 import android.Manifest;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -18,6 +19,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -90,9 +92,28 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
     ProgressDialog mProgressDialog;
 
     @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
+        if (hasFocus) {
+            getWindow().getDecorView().setSystemUiVisibility(
+                    View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                            | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE);}
+
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+
 
         try {
             getSupportActionBar().hide();
@@ -118,7 +139,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         _signupBtn = (Button) findViewById(R.id.link_signup);
         _forgotPass  = (TextView) findViewById(R.id.link_forgotPassword);
         _fbLoginButton = (LoginButton) findViewById(R.id.fb_login_button);
-        _fbLoginButton.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.com_facebook_button_login_logo_blue,0,0,0);
+//        _fbLoginButton.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.com_facebook_button_login_logo_blue,0,0,0);
 
         _loginBtn.setOnClickListener(onClickListener);
         _signupBtn.setOnClickListener(onClickListener);
@@ -133,7 +154,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         fbPermissions.add("user_birthday");
 //        fbPermissions.add("user_location");
 //        fbPermissions.add("user_relationships");
-//        fbPermissions.add("user_work_history");
+        fbPermissions.add("user_work_history");
         _fbLoginButton.setReadPermissions(fbPermissions);
 
         fbCallbackManager = CallbackManager.Factory.create();
@@ -219,7 +240,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         request.executeRequest();
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setCancelable(false);
-        mProgressDialog.setMessage("Please wait...");
+        mProgressDialog.setMessage("Verifying credentials... ");
         mProgressDialog.show();
     }
 
@@ -230,7 +251,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         fbLoginRequest.executeRequest();
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setCancelable(false);
-        mProgressDialog.setMessage("Please wait...");
+        mProgressDialog.setMessage("Verifying credentials... ");
         mProgressDialog.show();
     }
 
@@ -280,7 +301,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
             request.executeRequest();
             mProgressDialog = new ProgressDialog(this);
             mProgressDialog.setCancelable(false);
-            mProgressDialog.setMessage("Please wait...");
+            mProgressDialog.setMessage("Verifying credentials... ");
             mProgressDialog.show();
         }else {
             startActivity(new Intent(getApplicationContext(), HomeActivity.class));
@@ -383,7 +404,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         mProgressDialog.dismiss();
         switch (responseCode) {
             case COMMON_RES_SUCCESS:
-                toast("Password reset successfully, check your email!");
+                toast("Please check your email to reset password");
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:
                 toast("Connection timeout");
@@ -502,7 +523,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
                     request.executeAsync();
                     mProgressDialog = new ProgressDialog(this);
                     mProgressDialog.setCancelable(false);
-                    mProgressDialog.setMessage("Please wait...");
+                    mProgressDialog.setMessage("Verifying credentials... ");
                     mProgressDialog.show();
                 }else {
 

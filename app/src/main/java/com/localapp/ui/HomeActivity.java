@@ -27,6 +27,7 @@ import android.view.WindowManager;
 import android.widget.RatingBar;
 
 import com.localapp.R;
+import com.localapp.appcontroller.AppController;
 import com.localapp.feedback.AppPreferences;
 import com.localapp.login_session.SessionManager;
 import com.google.android.gms.maps.model.LatLng;
@@ -57,6 +58,7 @@ public class HomeActivity extends AppCompatActivity{
             R.drawable.ic_setting
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +69,7 @@ public class HomeActivity extends AppCompatActivity{
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
 
-        AppPreferences.getInstance(this).incrementLaunchCount();
+        AppPreferences.getInstance(AppController.getAppContext()).incrementLaunchCount();
         showRateAppDialogIfNeeded();
 
         // Create the adapter that will return a fragment for each of the three
@@ -235,22 +237,24 @@ public class HomeActivity extends AppCompatActivity{
     //============================================== feedback ===================================//
 
     private void showRateAppDialogIfNeeded() {
-        boolean bool = AppPreferences.getInstance(getApplicationContext()).getAppRate();
-        int i = AppPreferences.getInstance(getApplicationContext()).getLaunchCount();
+        boolean bool = AppPreferences.getInstance(AppController.getAppContext()).getAppRate();
+        int i = AppPreferences.getInstance(AppController.getAppContext()).getLaunchCount();
         if ((bool) && (i == 3)) {
             new CountDownTimerTask(10000,10000).start();
 
         }
 
-        if ((bool) && (i%50 == 0)) {
+        if ((bool) && (i%20 == 0)) {
             new CountDownTimerTask(10000,10000).start();
         }
     }
 
+    float ratingStar = 0f;
     private AlertDialog createAppRatingDialog(String rateAppTitle, String rateAppMessage) {
 
        final View view = LayoutInflater.from(this).inflate(R.layout.app_rating,null);
-        RatingBar ratingBar = (RatingBar) view.findViewById(R.id.ratingBar);
+        final RatingBar ratingBar = (RatingBar) view.findViewById(R.id.ratingBar);
+
 
 
 
@@ -259,8 +263,14 @@ public class HomeActivity extends AppCompatActivity{
 
         final AlertDialog dialog  = new AlertDialog.Builder(this).setPositiveButton(getString(R.string.dialog_app_rate), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface paramAnonymousDialogInterface, int paramAnonymousInt) {
-                openAppInPlayStore(HomeActivity.this);
-                AppPreferences.getInstance(HomeActivity.this.getApplicationContext()).setAppRate(false);
+
+                if (ratingStar > 2) {
+                    openAppInPlayStore(HomeActivity.this);
+                    AppPreferences.getInstance(AppController.getAppContext()).setAppRate(false);
+                }else {
+                    openFeedback(HomeActivity.this);
+                }
+
             }
         }).setNegativeButton(getString(R.string.dialog_your_feedback), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface paramAnonymousDialogInterface, int paramAnonymousInt) {
@@ -270,8 +280,8 @@ public class HomeActivity extends AppCompatActivity{
         }).setNeutralButton(getString(R.string.dialog_ask_later), new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface paramAnonymousDialogInterface, int paramAnonymousInt) {
                 paramAnonymousDialogInterface.dismiss();
-                if (AppPreferences.getInstance(HomeActivity.this).getLaunchCount() < 4) {
-                    AppPreferences.getInstance(HomeActivity.this.getApplicationContext()).resetLaunchCount();
+                if (AppPreferences.getInstance(AppController.getAppContext()).getLaunchCount() < 4) {
+                    AppPreferences.getInstance(AppController.getAppContext()).resetLaunchCount();
                 }
             }
         }).setMessage(rateAppMessage).setTitle(rateAppTitle).setView(view).setCancelable(false).create();
@@ -280,15 +290,10 @@ public class HomeActivity extends AppCompatActivity{
         ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
-                rating = Math.round(rating);
-                ratingBar.setRating(rating);
-                if (rating > 2) {
-                    openAppInPlayStore(HomeActivity.this);
-                }else {
-                    openFeedback(HomeActivity.this);
-                }
+                ratingStar = Math.round(rating);
+                ratingBar.setRating(ratingStar);
 
-                dialog.dismiss();
+
             }
         });
 

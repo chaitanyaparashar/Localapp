@@ -84,8 +84,7 @@
             <android.support.design.widget.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp">
+                android:layout_marginTop="8dp">
 
                 <EditText android:id="@+id/input_phoneNumber"
                     android:layout_width="match_parent"
@@ -96,6 +95,12 @@
                     android:drawableEnd="@drawable/ic_password_visible"
                     android:hint="Phone Number" />
             </android.support.design.widget.TextInputLayout>
+            <TextView
+                android:layout_gravity="right"
+                android:textColor="#2196f3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="We need your number for one cool feature"/>
 
 
             <!--  Email Label -->
@@ -108,7 +113,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:drawablePadding="10dp"
-                    android:inputType="textEmailAddress"
+                    android:editable="false"
                     android:drawableStart="@drawable/ic_email"
                     android:hint="Email" />
             </android.support.design.widget.TextInputLayout>

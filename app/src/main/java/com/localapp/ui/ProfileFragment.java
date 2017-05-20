@@ -187,7 +187,7 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
             uNumberTextView.setVisibility(View.VISIBLE);
         }else {
             uNumberTextView.setVisibility(View.GONE);
-            if (AppPreferences.getInstance(getActivity()).getLaunchCount() < 2) {
+            if (AppPreferences.getInstance(AppController.getAppContext()).getLaunchCount() < 2) {
                 HomeActivity.mViewPager.setCurrentItem(3);
                 startActivityForResult(new Intent(getContext(), UpdateActivity.class).putExtra("request", REQUEST_ALL), UPDATE_REQUEST_CODE);
             }
@@ -288,9 +288,12 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
     }
 
     private void onLogout() {
+        mProgressDialog = new ProgressDialog(getActivity());
+        mProgressDialog.setMessage("Please wait...");
+        mProgressDialog.show();
         session.logoutUser();
         LoginManager.getInstance().logOut();
-        loginLayout.setVisibility(View.VISIBLE);
+        /*loginLayout.setVisibility(View.VISIBLE);
         profileLayout.setVisibility(View.GONE);
         userPic.setImageResource(R.drawable.ic_user);
         uNmaeTextView.setText("");
@@ -298,13 +301,15 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
         uEmailTextView.setText("");
         uProdessionTextView.setText("");
         uBreifInfo.setText("");
-        uDetailTextView.setText("");
+        uDetailTextView.setText("");*/
         HomeActivity.mUserId = "";
         HomeActivity.mLoginToken = "";
         HomeActivity.mPicUrl = null;
 
         startActivity(new Intent(getContext(),LoginActivity.class));
         getActivity().finish();
+
+        mProgressDialog.dismiss();
     }
 
     private void onForgetPassword() {

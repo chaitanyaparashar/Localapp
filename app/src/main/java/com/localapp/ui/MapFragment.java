@@ -63,6 +63,8 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -74,6 +76,7 @@ import com.google.maps.android.ui.IconGenerator;
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
 import com.localapp.camera.Camera2Activity;
+import com.localapp.compressor.Compressor;
 import com.localapp.data.GetUsersRequestData;
 import com.localapp.data.NoticeBoard;
 import com.localapp.data.NoticeBoardMessage;
@@ -97,7 +100,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.StringTokenizer;
 
-import static com.localapp.appcontroller.AppController.getAppContext;
 import static com.localapp.util.utility.getProfessionList;
 
 
@@ -132,12 +134,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
     public static String TAG = "MapFragment";
 
-    private static final int REQUEST_CAMERA_CODE = 201;
-    private static final int REQUEST_LOCATION_CODE = 200;
+    private static final int REQUEST_CAMERA_PERMISSION_CODE = 201;
+    private static final int REQUEST_CALL_PHONE_PERMISSION_CODE = 202;
+    private static final int REQUEST_LOCATION_PERMISSION_CODE = 200;
     final static String[] CAMERA_PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO};
-    final static String[] PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.CALL_PHONE, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA};
+    final static String[] CALL_PHONE_PERMISSIONS = {Manifest.permission.CALL_PHONE};
+    final static String[] LOCATION_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
 
     SessionManager session;
 
@@ -217,7 +219,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
 //        mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !isPermissionGrated()) {
-            requestPermissions(PERMISSIONS, REQUEST_LOCATION_CODE);
+            requestPermissions(LOCATION_PERMISSIONS, REQUEST_LOCATION_PERMISSION_CODE);
         } else {
             requestLocation(); //requesting for location update
         }
@@ -671,7 +673,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 if (status == 1) {
                     startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
                 } else {
-                    requestPermissions(PERMISSIONS, REQUEST_LOCATION_CODE);
+                    requestPermissions(LOCATION_PERMISSIONS, REQUEST_LOCATION_PERMISSION_CODE);
                 }
             }
         })
@@ -902,9 +904,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     }
 
     @Override
-    public void SubscribeUnsubscribeNoticeBoardResponse(CommonRequest.ResponseCode responseCode, String errorMsg) {
+    public void SubscribeUnsubscribeNoticeBoardResponse(CommonRequest.ResponseCode responseCode, CommonRequest.RequestType mRequestType, String errorMsg) {
+        String req = "subscribed";
+        if (mRequestType == CommonRequest.RequestType.COMMON_REQUEST_SUBSCRIBE_NOTICE_BOARD) {
+            req = "subscribed";
+        }else {
+            req = "unsubscribed";
+        }
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
-            Toast.makeText(getContext(), R.string.success, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Noticeboard " + req , Toast.LENGTH_SHORT).show();
         } else if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SERVER_ERROR_WITH_MESSAGE) {
             Toast.makeText(getContext(), errorMsg, Toast.LENGTH_SHORT).show();
         } else {
@@ -1173,7 +1181,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 if (isCameraPermissionGrated()) {
                     openCamera();
                 } else {
-                    requestPermissions(CAMERA_PERMISSIONS, REQUEST_CAMERA_CODE);
+                    requestPermissions(CAMERA_PERMISSIONS, REQUEST_CAMERA_PERMISSION_CODE);
                 }
 
             }
@@ -1198,7 +1206,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
-            case REQUEST_LOCATION_CODE:
+            case REQUEST_LOCATION_PERMISSION_CODE:
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
@@ -1218,15 +1226,24 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                     searchBoxView.requestFocus();
 
                 }
-                return;
+                break;
 
-            case REQUEST_CAMERA_CODE:
+            case REQUEST_CAMERA_PERMISSION_CODE:
                 if (grantResults.length > 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED
                         && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
                     openCamera();
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
                 }
+                break;
+
+            case REQUEST_CALL_PHONE_PERMISSION_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(getActivity(), "You can now call!", Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
+                }
+
 
         }
 
@@ -1246,6 +1263,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         String pName = profile.getuName();
         String pTitle = profile.getProfession();
         String pPrivacy = profile.getuPrivacy();
+        String mMobile = profile.getuMobile();
         final String pEmail = profile.getuEmail();
 
 
@@ -1253,28 +1271,44 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         TextView titleView = (TextView) getView().findViewById(R.id.user_title);
         ImageView actionEmail = (ImageView) getView().findViewById(R.id.action_email);
         ImageView actionCall = (ImageView) getView().findViewById(R.id.action_call);
-        actionCall.setVisibility(View.VISIBLE);
+        if (mMobile != null && !mMobile.equals("null")) {
+            actionCall.setVisibility(View.VISIBLE);
+        }else {
+            actionCall.setVisibility(View.GONE);
+        }
+
         CircularImageView proPicNetworkImageView = (CircularImageView) getView().findViewById(R.id.user_pic);
         Picasso.with(AppController.getAppContext()).load(profile.getuPictureURL()).into(proPicNetworkImageView);
 //            proPicNetworkImageView.setImageUrl(profile.getuPictureURL(), VolleySingleton.getInstance(getApplicationContext()).getImageLoader());
         if (pName != null) {
             textView.setText(pName);
+        }else {
+            textView.setText("");
         }
+
         if (pTitle != null && !pTitle.equals("null")) {
             titleView.setText(pTitle);
+        }else {
+            titleView.setText("");
         }
-        if (pPrivacy != null && !pPrivacy.equals("null") && pPrivacy.equals("1")) {
+        if (pPrivacy != null && !pPrivacy.equals("null") && !pPrivacy.equals("0")) {
             actionCall.setVisibility(View.GONE);
         }
         actionCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String mMobile = profile.getuMobile();
-                if (mMobile != "null") {
-                    mMobile = "+91" + mMobile;
-                    Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.fromParts("tel", mMobile, null));
-                    startActivity(callIntent);
+                if(ActivityCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
+                    String mMobile = profile.getuMobile();
+                    if (mMobile != "null") {
+                        mMobile = "+91" + mMobile;
+                        Intent callIntent = new Intent(Intent.ACTION_CALL, Uri.fromParts("tel", mMobile, null));
+                        startActivity(callIntent);
+                    }
+                }else {
+                    requestPermissions(CALL_PHONE_PERMISSIONS,REQUEST_CALL_PHONE_PERMISSION_CODE);
                 }
+
             }
         });
 
@@ -1493,10 +1527,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             case 20:
                 if (resultCode == 20) {
                     Uri resultData = Uri.parse(data.getStringExtra("result"));
-                    ImageSearchRequest searchRequest = new ImageSearchRequest(getContext(), new File(resultData.getPath()), this);
+
+                    File imgFile = new File(resultData.getPath());
+                    int file_size = Integer.parseInt(String.valueOf(imgFile.length()/1024));
+
+                    if (file_size > 80) {//compress if file size more than 80kb
+                        imgFile = Compressor.getDefault(getActivity()).compressToFile(imgFile);
+                    }
+                    ImageSearchRequest searchRequest = new ImageSearchRequest(getContext(), imgFile , this);
                     searchRequest.executeRequest();
                     mProgressDialog = new ProgressDialog(getContext());
-                    mProgressDialog.setMessage(getString(R.string.please_wait_msg));
+                    mProgressDialog.setMessage("Please wait we are getting results");
                     mProgressDialog.setCancelable(false);
                     mProgressDialog.show();
                 }
@@ -1527,7 +1568,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 if (indexs.size() > 0) {
                     addMarkerByProfile(true, indexs);
                 } else {
-                    Toast.makeText(getContext(), "No data found for this image :(", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "No search result found", Toast.LENGTH_SHORT).show();
                 }
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:
@@ -1794,8 +1835,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                             // for ActivityCompat#requestPermissions for more details.
                             return;
                         }
-                        LocationServices.FusedLocationApi.requestLocationUpdates(
-                                mGoogleApiClient, mLocationRequest, gLocationListener);
+                        try {
+                            LocationServices.FusedLocationApi.requestLocationUpdates(
+                                    mGoogleApiClient, mLocationRequest, gLocationListener);
+                        }catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
                         break;
                     case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                         Log.i(TAG, "Location settings are not satisfied. Attempting to upgrade " +
@@ -1855,6 +1901,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             HomeActivity.mLastKnownLocation = latLng;
             session.saveLastLocation(latLng);
             request(latLng);
+//            drawCircle(latLng);
         }
     }
 
@@ -1870,7 +1917,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            requestPermissions(PERMISSIONS, REQUEST_LOCATION_CODE);
+            requestPermissions(LOCATION_PERMISSIONS, REQUEST_LOCATION_PERMISSION_CODE);
             return;
         }
 
@@ -1906,6 +1953,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
         savedInstanceState.putString(KEY_LAST_UPDATED_TIME_STRING, mLastUpdateTime);
         super.onSaveInstanceState(savedInstanceState);
+    }
+
+
+    public void drawCircle(LatLng mLatLng) {
+        Circle circle = mMap.addCircle(new CircleOptions()
+                .center(mLatLng)
+                .radius(3000)
+                .strokeColor(getResources().getColor(R.color.colorAccent)).strokeWidth(1.0f));
     }
 
 

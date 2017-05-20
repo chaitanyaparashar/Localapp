@@ -1,11 +1,14 @@
 package com.localapp.request;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.localapp.appcontroller.AppController;
@@ -22,8 +25,8 @@ import java.util.Map;
 public abstract class
 CommonRequest {
 
-//    static final String HOST_ADDRESS = "http://13.56.50.98:8080";
-    static final String HOST_ADDRESS = "http://192.172.2.178:8080";//localhost
+    static final String HOST_ADDRESS = "http://13.56.50.98:8080";
+//    static final String HOST_ADDRESS = "http://192.172.2.178:8080";//localhost
     private static final String LOGIN_REQUEST_URL = HOST_ADDRESS + "/login";
 //    private static final String LOGIN_REQUEST_URL = "http://192.172.3.78:8080/login";//local
     private static final String MAP_REQUEST_URL = HOST_ADDRESS + "/pinOnMap";
@@ -43,6 +46,7 @@ CommonRequest {
     private static final String GET_PROFILE_REQUEST_URL = HOST_ADDRESS + "/getUserById";
     private static final String GET_PROFILE_BY_ID_REQUEST_URL = HOST_ADDRESS + "/getProfileById?";
     private static final String UPDATE_PROFILE_REQUEST_URL = HOST_ADDRESS + "/update";
+    private static final String UPDATE_EMAIL_REQUEST_URL = HOST_ADDRESS + "/updateEmail?";
     private static final String FB_LOGIN_REQUEST_URL = HOST_ADDRESS + "/facebookLogin";
     private static final String FCM_PUSH_NOTIFICATION_URL = "https://fcm.googleapis.com/fcm/send";
     private static final String LOCALAPP_INVITE_URL = HOST_ADDRESS + "/email/doMail?";
@@ -68,7 +72,8 @@ CommonRequest {
         COMMON_REQUEST_FCM_PUSH_NOTIFICATION,
         COMMON_REQUEST_GET_PROFILE_BY_ID,
         COMMON_REQUEST_FB_LOGIN,
-        COMMON_REQUEST_LOCALAPP_INVITE;
+        COMMON_REQUEST_LOCALAPP_INVITE,
+        COMMON_REQUEST_UPDATE_EMAIL
 
     }
 
@@ -99,8 +104,6 @@ CommonRequest {
     private JSONObject mJSONParams;
     private RequestType mRequestType;
     private Context mContext;
-    private int socketTimeOut;
-    private int maxNumRetry;
 
 
     public CommonRequest (Context context,RequestType type,
@@ -120,6 +123,7 @@ CommonRequest {
     public String getURL() {
         return mURL;
     }
+
 
     public void setMethod(CommonRequestMethod mMethod) {
         this.mMethod = mMethod;
@@ -141,12 +145,6 @@ CommonRequest {
         this.mRequestType = mRequestType;
     }
 
-    public void setRetryPolicy(int initialTimeoutMs, int maxNumRetries) {
-        if (initialTimeoutMs >20000){
-            socketTimeOut = initialTimeoutMs;
-        }
-        maxNumRetry = maxNumRetries;
-    }
 
 
     public abstract void onResponseHandler (JSONObject response) ;
@@ -229,6 +227,10 @@ CommonRequest {
                  url = LOCALAPP_INVITE_URL;
                  break;
 
+            case COMMON_REQUEST_UPDATE_EMAIL:
+                 url = UPDATE_EMAIL_REQUEST_URL;
+                 break;
+
 
         }
 
@@ -278,7 +280,14 @@ CommonRequest {
                     return ((mPostHeader != null)? mPostHeader : super.getHeaders());
                 }
             };
-            requestQueue.add(jsonObjRequest);
+
+
+            try {
+                requestQueue.add(jsonObjRequest);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
         }
 
 

@@ -16,7 +16,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.localapp.request.CommonRequest.HOST_ADDRESS;
+import static com.localapp.request.CommonRequest.DOMAIN;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_CONNECTION_TIMEOUT;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_FAILED_TO_CONNECT;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_INTERNAL_ERROR;
@@ -75,8 +75,8 @@ public class SignUpRequest {
 
 
     public void executeRequest() {
-//        final String HOST_ADDRESS = "http://192.172.2.178:8080";//localhost
-        final String url = HOST_ADDRESS + "/registerPic";//url for registration with pic
+//        final String DOMAIN = "http://192.172.2.178:8080";//localhost
+        final String url = DOMAIN + "/registerPic";//url for registration with pic
 
         Response.Listener<NetworkResponse> listener = new Response.Listener<NetworkResponse>() {
             @Override

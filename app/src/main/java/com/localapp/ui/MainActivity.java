@@ -6,11 +6,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -106,8 +103,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         view = LayoutInflater.from(this).inflate(R.layout.activity_viewpager,container);
         intro_images = (ViewPager) view.findViewById(R.id.pager_introduction);
-        btnNext = (Button) view.findViewById(R.id.btn_next);
-        btnFinish = (Button) view.findViewById(R.id.btn_finish);
+        btnNext = (Button) view.findViewById(R.id.btn_skip);
+        btnFinish = (Button) view.findViewById(R.id.btn_next);
         btnStarted = (Button) view.findViewById(R.id.btn_start);
 
         btn_layout = (LinearLayout) view.findViewById(R.id.control_layout);
@@ -123,6 +120,8 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         intro_images.setCurrentItem(0);
         intro_images.setOnPageChangeListener(this);
         setUiPageViewController();
+
+
 
     }
 
@@ -217,12 +216,12 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.btn_next:
-                intro_images.setCurrentItem((intro_images.getCurrentItem() < dotsCount)
-                        ? intro_images.getCurrentItem() - 1 : 0);
+            case R.id.btn_skip: AppPreferences.getInstance(AppController.getAppContext()).tourLaunched();startApp();
+                /*intro_images.setCurrentItem((intro_images.getCurrentItem() < dotsCount)
+                        ? intro_images.getCurrentItem() - 1 : 0);*/
                 break;
 
-            case R.id.btn_finish:
+            case R.id.btn_next:
                 intro_images.setCurrentItem((intro_images.getCurrentItem() < dotsCount)
                         ? intro_images.getCurrentItem() + 1 : 0);
                 break;

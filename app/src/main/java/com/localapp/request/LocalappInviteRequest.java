@@ -15,7 +15,7 @@ import com.localapp.request.helper.VolleyErrorHelper;
 
 import java.util.Map;
 
-import static com.localapp.request.CommonRequest.HOST_ADDRESS;
+import static com.localapp.request.CommonRequest.DOMAIN;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_CONNECTION_TIMEOUT;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_FAILED_TO_CONNECT;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_INTERNAL_ERROR;
@@ -76,7 +76,7 @@ public class LocalappInviteRequest{
     }
 
     public void executeRequest() {
-        String url = HOST_ADDRESS + "/email/doMail?";
+        String url = DOMAIN + "/email/doMail?";
         url += "email=" + email;
         Response.Listener<String> listener = new Response.Listener<String>() {
             @Override

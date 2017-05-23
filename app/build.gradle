@@ -15,7 +15,7 @@ android {
         applicationId "com.localapp"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 25
+        versionCode 27
         versionName "1.0"
         multiDexEnabled true
 
@@ -49,6 +49,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     testCompile 'junit:junit:4.12'
+
     compile 'com.android.support:appcompat-v7:25.0.0'
     compile 'com.android.volley:volley:1.0.0'
     compile 'com.android.support:design:25.0.0'
@@ -60,7 +61,7 @@ dependencies {
     compile 'com.google.maps.android:android-maps-utils:0.5'
     compile 'com.googlecode.libphonenumber:libphonenumber:7.0.4'
     compile 'com.github.siyamed:android-shape-imageview:0.9.+@aar'
-    compile 'com.theartofdev.edmodo:android-image-cropper:2.2.+'
+    compile 'com.theartofdev.edmodo:android-image-cropper:2.2.0'
     compile 'com.facebook.android:facebook-android-sdk:4.+'
     compile 'org.fusesource.mqtt-client:mqtt-client:1.12'
     compile 'com.google.firebase:firebase-messaging:9.6.1'
@@ -71,6 +72,5 @@ dependencies {
     compile 'com.android.support.test.espresso:espresso-core:2.2.2'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
     testCompile 'junit:junit:4.12'
-
 }
 apply plugin: 'com.google.gms.google-services'

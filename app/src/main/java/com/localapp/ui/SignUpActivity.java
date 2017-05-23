@@ -563,6 +563,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
         if (name.isEmpty() || name.length() < 3) {
             mNameView.setError("enter a valid name");
+            mNameView.requestFocus();
             valid = false;
             return valid;
         } else {
@@ -577,6 +578,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
             mNumberView.setError(null);
         } catch (NumberParseException e) {
             mNumberView.setError("Enter a valid Mobile re Exception");
+            mNumberView.requestFocus();
 
             valid = false;
             System.err.println("NumberParseException was thrown: " + e.toString());
@@ -589,7 +591,9 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         }
         else {
             mNumberView.setError("Enter a valid Mobile Number");
+            mNumberView.requestFocus();
             valid =false;
+            return valid;
         }
         valid_num = isValidMobile(number);
         if (valid_num) {
@@ -597,13 +601,16 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         }
         else {
             mNumberView.setError("Enter a valid Mobile Number");
+            mNumberView.requestFocus();
             valid =false;
+            return valid;
         }
 
 
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             mEmailView.setError("enter a valid email address");
+            mEmailView.requestFocus();
             valid = false;
             return valid;
         } else {
@@ -612,6 +619,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
         if (profession.isEmpty() || profession.length() <1) {
             mProfessionView.setError("Please select your profession");
+            mProfessionView.requestFocus();
             valid =  false;
             return valid;
         }else {
@@ -621,6 +629,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
         if (password.isEmpty() || password.length() < 6 || password.length() > 16) {
             mPasswordView.setError("between 6 and 16 alphanumeric characters");
+            mPasswordView.requestFocus();
             valid = false;
             return valid;
         } else {
@@ -629,6 +638,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
         if (!cPassword.equals(password)) {
             cPasswordView.setError("Password not matched");
+            cPasswordView.requestFocus();
             valid = false;
             return valid;
         } else {
@@ -637,6 +647,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
         if (brifIntro.isEmpty() || brifIntro.length() < 1) {
             mInfoView.setError("Field Required");
+            mInfoView.requestFocus();
             valid = false;
             return valid;
         } else {
@@ -648,7 +659,6 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
     public void signUp() {
         if (!validate()) {
-            onSignUpFailed("Check input field");
             return;
         }
 
@@ -659,6 +669,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setMessage("Please wait...");
+        mProgressDialog.setCancelable(false);
         mProgressDialog.show();
 
 

@@ -31,6 +31,7 @@ import com.localapp.appcontroller.AppController;
 import com.localapp.feedback.AppPreferences;
 import com.localapp.login_session.SessionManager;
 import com.google.android.gms.maps.model.LatLng;
+
 import java.util.HashMap;
 
 import static com.localapp.ui.MapFragment.REQUEST_CHECK_SETTINGS;

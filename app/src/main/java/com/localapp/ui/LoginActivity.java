@@ -228,6 +228,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
 
         if (mEmail.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(mEmail).matches()) {
             _email.setError("enter a valid email address");
+            _email.requestFocus();
             return;
         }else if (mPassword.isEmpty() || mPassword.length() <6 || mPassword.length() >16) {
             _password.setError("enter a valid password");

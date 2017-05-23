@@ -1,14 +1,11 @@
 package com.localapp.request;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.localapp.appcontroller.AppController;
@@ -25,31 +22,31 @@ import java.util.Map;
 public abstract class
 CommonRequest {
 
-    static final String HOST_ADDRESS = "http://13.56.50.98:8080";
-//    static final String HOST_ADDRESS = "http://192.172.2.178:8080";//localhost
-    private static final String LOGIN_REQUEST_URL = HOST_ADDRESS + "/login";
+    static final String DOMAIN = "http://13.56.50.98:8080";
+//    static final String DOMAIN = "http://192.172.2.178:8080";//localhost
+    private static final String LOGIN_REQUEST_URL = DOMAIN + "/login";
 //    private static final String LOGIN_REQUEST_URL = "http://192.172.3.78:8080/login";//local
-    private static final String MAP_REQUEST_URL = HOST_ADDRESS + "/pinOnMap";
-    private static final String FEED_REQUEST_URL = HOST_ADDRESS + "/feed?";
-    private static final String BROADCAST_REQUEST_URL = HOST_ADDRESS + "/broadcast";
-    private static final String PASSWORD_REQUEST_URL = HOST_ADDRESS + "/forgot/Password?";
-    private static final String MSG_ACCEPT_URL = HOST_ADDRESS + "/message/update";
-    private static final String CREATE_NOTICE_BOARD_URL = HOST_ADDRESS + "/createNoticeBoard";
-    private static final String GET_MY_NOTICE_BOARD_URL = HOST_ADDRESS + "/getAllCreatedNoticeBoard";
-    private static final String POST_NOTICE_BOARD_MSG_URL = HOST_ADDRESS + "/postMessageInNoticeBoard";
-    private static final String GET_NEAREST_NOTICE_BOARD_URL = HOST_ADDRESS + "/nearestNoticeBoard?";
-    private static final String GET_NOTICE_BOARD_MSG_URL = HOST_ADDRESS + "/getMessageFromNoticeBoard";
-    private static final String SUBSCRIBE_NOTICE_BOARD_URL = HOST_ADDRESS + "/suscribeNoticeBoard";
-    private static final String UNSUBSCRIBE_NOTICE_BOARD_URL = HOST_ADDRESS + "/unsuscribeNoticeBoard";
-    private static final String DELETE_NOTICE_BOARD_URL = HOST_ADDRESS + "/DeleteNoticeBoard";
-    private static final String DELETE_NOTICE_BOARD_MSG_URL = HOST_ADDRESS + "/deleteMessageFromNoticeBoard";
-    private static final String GET_PROFILE_REQUEST_URL = HOST_ADDRESS + "/getUserById";
-    private static final String GET_PROFILE_BY_ID_REQUEST_URL = HOST_ADDRESS + "/getProfileById?";
-    private static final String UPDATE_PROFILE_REQUEST_URL = HOST_ADDRESS + "/update";
-    private static final String UPDATE_EMAIL_REQUEST_URL = HOST_ADDRESS + "/updateEmail?";
-    private static final String FB_LOGIN_REQUEST_URL = HOST_ADDRESS + "/facebookLogin";
+    private static final String MAP_REQUEST_URL = DOMAIN + "/pinOnMap";
+    private static final String FEED_REQUEST_URL = DOMAIN + "/feed?";
+    private static final String BROADCAST_REQUEST_URL = DOMAIN + "/broadcast";
+    private static final String PASSWORD_REQUEST_URL = DOMAIN + "/forgot/Password?";
+    private static final String MSG_ACCEPT_URL = DOMAIN + "/message/update";
+    private static final String CREATE_NOTICE_BOARD_URL = DOMAIN + "/createNoticeBoard";
+    private static final String GET_MY_NOTICE_BOARD_URL = DOMAIN + "/getAllCreatedNoticeBoard";
+    private static final String POST_NOTICE_BOARD_MSG_URL = DOMAIN + "/postMessageInNoticeBoard";
+    private static final String GET_NEAREST_NOTICE_BOARD_URL = DOMAIN + "/nearestNoticeBoard?";
+    private static final String GET_NOTICE_BOARD_MSG_URL = DOMAIN + "/getMessageFromNoticeBoard";
+    private static final String SUBSCRIBE_NOTICE_BOARD_URL = DOMAIN + "/suscribeNoticeBoard";
+    private static final String UNSUBSCRIBE_NOTICE_BOARD_URL = DOMAIN + "/unsuscribeNoticeBoard";
+    private static final String DELETE_NOTICE_BOARD_URL = DOMAIN + "/DeleteNoticeBoard";
+    private static final String DELETE_NOTICE_BOARD_MSG_URL = DOMAIN + "/deleteMessageFromNoticeBoard";
+    private static final String GET_PROFILE_REQUEST_URL = DOMAIN + "/getUserById";
+    private static final String GET_PROFILE_BY_ID_REQUEST_URL = DOMAIN + "/getProfileById?";
+    private static final String UPDATE_PROFILE_REQUEST_URL = DOMAIN + "/update";
+    private static final String UPDATE_EMAIL_REQUEST_URL = DOMAIN + "/updateEmail?";
+    private static final String FB_LOGIN_REQUEST_URL = DOMAIN + "/facebookLogin";
     private static final String FCM_PUSH_NOTIFICATION_URL = "https://fcm.googleapis.com/fcm/send";
-    private static final String LOCALAPP_INVITE_URL = HOST_ADDRESS + "/email/doMail?";
+    private static final String LOCALAPP_INVITE_URL = DOMAIN + "/email/doMail?";
 
     public enum RequestType {
         COMMON_REQUEST_LOGIN,

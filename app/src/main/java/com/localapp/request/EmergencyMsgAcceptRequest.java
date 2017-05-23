@@ -19,7 +19,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.localapp.request.CommonRequest.HOST_ADDRESS;
+import static com.localapp.request.CommonRequest.DOMAIN;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_CONNECTION_TIMEOUT;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_FAILED_TO_CONNECT;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_INTERNAL_ERROR;
@@ -48,7 +48,7 @@ public class EmergencyMsgAcceptRequest {
 
     public void executeRequest () {
 
-        final String url = HOST_ADDRESS + "/message/update";
+        final String url = DOMAIN + "/message/update";
 
         JSONObject js = new JSONObject();
         try {

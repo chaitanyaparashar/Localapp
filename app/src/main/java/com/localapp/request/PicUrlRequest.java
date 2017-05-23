@@ -16,7 +16,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 
-import static com.localapp.request.CommonRequest.HOST_ADDRESS;
+import static com.localapp.request.CommonRequest.DOMAIN;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_CONNECTION_TIMEOUT;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_FAILED_TO_CONNECT;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_INTERNAL_ERROR;
@@ -47,7 +47,7 @@ public class PicUrlRequest {
 
     public void executeRequest() {
 
-        final String url = HOST_ADDRESS + "/message/uploadPic";
+        final String url = DOMAIN + "/message/uploadPic";
 
         Response.Listener<NetworkResponse> listener = new Response.Listener<NetworkResponse>() {
             @Override

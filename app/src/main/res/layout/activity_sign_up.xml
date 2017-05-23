@@ -44,13 +44,13 @@
                     android:layout_gravity="center"/>
 
                 <com.localapp.ui.CircularNetworkImageView
-                    android:layout_margin="10dp"
-                    android:padding="10dp"
-                    android:layout_width="130dp"
-                    android:layout_height="130dp"
+                    android:layout_margin="4dp"
+                    android:padding="4dp"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
                     android:src="@drawable/ic_user"
                     android:layout_gravity="center"
-                    app:siBorderWidth="3dp"
+                    app:siBorderWidth="0dp"
                     app:siBorderColor="#FFFFFF"
                     android:id="@+id/image_pic" />
 

@@ -11,9 +11,9 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
@@ -44,6 +45,7 @@ import com.facebook.login.widget.LoginButton;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
+import com.localapp.camera.Camera2Activity;
 import com.localapp.compressor.Compressor;
 import com.localapp.R;
 import com.localapp.camera.CropImage;
@@ -54,6 +56,7 @@ import com.localapp.request.SignUpRequest;
 import com.squareup.picasso.Picasso;
 
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -72,10 +75,11 @@ import java.util.regex.Pattern;
 import static com.localapp.camera.CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE;
 
 public class SignUpActivity extends AppCompatActivity implements SignUpRequest.SignUpResponseCallback{
-    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 111;
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_AND_CAMERA = 111;
     public static final int PICK_IMAGE_REQUEST = 100;
 
     SessionManager session;
+    final static String[] CAMERA_PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA};
 
     EditText mNameView, mNumberView, mEmailView,
             mPasswordView, cPasswordView, mInfoView,
@@ -122,10 +126,10 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         List<String> fbPermissions = new ArrayList<>();
         fbPermissions.add("public_profile");
         fbPermissions.add("email");
-        fbPermissions.add("user_about_me");
+        /*fbPermissions.add("user_about_me");
         fbPermissions.add("user_birthday");
         fbPermissions.add("user_location");
-        fbPermissions.add("user_relationships");
+        fbPermissions.add("user_relationships");*/
         fbPermissions.add("user_work_history");
 
 
@@ -258,7 +262,8 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
             @Override
             public void onClick(View v) {
                 if (isStoragePermissionGranted()){
-                    getPicFromGallery();
+//                    getPicFromGallery();
+                    openCamera();
                 }else {
                     permissionsRequestReadExternalStorage();
                 }
@@ -269,14 +274,10 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
     }
 
-
-    void getPicFromGallery(){
-        Intent intent = new Intent();
-        // Show only images, no videos or anything else
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        // Always show the chooser (if there are multiple options available)
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    void openCamera(){
+        Intent intent = new Intent(this,Camera2Activity.class);
+        intent.putExtra("requestCode", PICK_IMAGE_REQUEST);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
 
 
@@ -305,36 +306,6 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
 
 
-
-  /*      // Creating the PopupWindow
-        final PopupWindow popup = new PopupWindow(context);
-        popup.setContentView(layout);
-        popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                String items = "";
-                for(int mGroupPosition =0; mGroupPosition < listAdapter.getGroupCount(); mGroupPosition++) {
-                    items = items +  listAdapter.getItemAtPostion(mGroupPosition);
-
-                }
-                if (items.length() > 2) {
-                    mProfessionView.setText(items.substring(0,items.length()-1));
-                }
-
-            }
-        });
-
-
-        popup.setFocusable(true);
-
-
-        // Clear the default translucent background
-        popup.setBackgroundDrawable(new BitmapDrawable());
-
-
-//        popup.showAsDropDown(mProfessionView);
-//        popup.showAtLocation(mProfessionView,PopupWindow.INPUT_METHOD_FROM_FOCUSABLE,0,0);*/
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(layout);
         builder.setTitle("Select Profession");
@@ -362,25 +333,15 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
 
     void permissionsRequestReadExternalStorage() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.READ_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // No explanation needed, we can request the permission.
-
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
-                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
-
-            // MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE is an
-            // app-defined int constant. The callback method gets the
-            // result of the request.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(CAMERA_PERMISSIONS,MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_AND_CAMERA);
         }
     }
 
 
     boolean isStoragePermissionGranted() {
-       return ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+       return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
+               ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
     }
 
     @Override
@@ -390,40 +351,25 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
         switch (requestCode){
             case PICK_IMAGE_REQUEST:
-                if (resultCode == RESULT_OK && data != null && data.getData() != null) {
+                if (resultCode == PICK_IMAGE_REQUEST) {
 
-                    Uri uri = data.getData();
+                    Uri resultData = Uri.parse(data.getStringExtra("result"));
+                    imgFile = new File(resultData.getPath());
+
+                    int file_size = Integer.parseInt(String.valueOf(imgFile.length()/1024));
+
+                    if (file_size > 80) {
+                        imgFile = Compressor.getDefault(this).compressToFile(imgFile);
+                    }
+
+                    Glide.with(this).load(imgFile).asBitmap().into(profilePic);
 
 
-                    startCropImageActivity(uri);
+//                    startCropImageActivity(uri);
 
 
                 }
                 break;
-            case CROP_IMAGE_ACTIVITY_REQUEST_CODE:
-                if (resultCode == RESULT_OK && data != null ) {
-
-                    CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                    Uri uri = result.getUri();
-//                    String path = getRealPathFromURI(this,uri);//getRealPathFromURI_API19(this,uri);
-                    try {
-                        Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                        // Log.d(TAG, String.valueOf(bitmap));
-                        imgFile = new File(uri.getPath());
-
-                        int file_size = Integer.parseInt(String.valueOf(imgFile.length()/1024));
-
-                        if (file_size > 80) {//compress if file size more than 80kb
-                            imgFile = Compressor.getDefault(this).compressToFile(imgFile);
-                        }
-
-
-                        profilePic.setImageBitmap(bitmap);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
-                    }
-                }
 
         }
 
@@ -432,80 +378,21 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         fbCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    /**
-     * Start crop image activity for the given image.
-     */
-    private void startCropImageActivity(Uri imageUri) {
-        CropImage.activity(imageUri)
-                .start(this);
-    }
-
-    /*public static String getRealPathFromURI_API19(Context context, Uri uri){
-
-
-        String filePath = "";
-        String wholeID = DocumentsContract.getDocumentId(uri);
-
-        // Split at colon, use second item in the array
-        String id = wholeID.split(":")[1];
-
-        String[] column = { MediaStore.Images.Media.DATA };
-
-        // where id is equal to
-        String sel = MediaStore.Images.Media._ID + "=?";
-
-        Cursor cursor;
-
-
-        cursor = context.getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                column, sel, new String[]{ id }, null);
-
-        int columnIndex = cursor.getColumnIndex(column[0]);
-
-        if (cursor.moveToFirst()) {
-            filePath = cursor.getString(columnIndex);
-        }
-        cursor.close();
-        return filePath;
-    }*/
-
-    public String getRealPathFromURI(Context context, Uri contentUri) {
-        try {
-            Cursor cursor = getContentResolver().query(contentUri, null, null, null, null);
-            cursor.moveToFirst();
-            String document_id = cursor.getString(0);
-            document_id = document_id.substring(document_id.lastIndexOf(":")+1);
-            cursor.close();
-
-            cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,null
-                    , MediaStore.Images.Media._ID + " = ? ", new String[]{document_id}, null);
-            cursor.moveToFirst();
-            String path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
-            cursor.close();
-
-            return path;
-        }catch (Exception e){
-            Log.e("SignupActivity","getRealPathFromURI error: "+e.getMessage());
-            return null;
-        }
-
-
-
-    }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
         switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE: {
+            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_AND_CAMERA: {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 1
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
 
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-                    getPicFromGallery();
+                    openCamera();
 
                 } else {
 
@@ -717,7 +604,15 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
             case COMMON_RES_INTERNAL_ERROR:
                 break;
             case COMMON_RES_SERVER_ERROR_WITH_MESSAGE:
-                onSignUpFailed(data.getmErrorMessage());
+                try {
+                    JSONObject errorObject = new JSONObject(data.getmErrorMessage());
+                    if (errorObject.getInt("status") == 0) {
+                        onSignUpFailed("Please try again or provide a different face image");
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    onSignUpFailed("Something went wrong");
+                }
                 break;
         }
     }
@@ -762,10 +657,29 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
                     try {
                         String fbName = object.getString("name");
                         String fbEmail = object.getString("email");
+                        String companyName = null;
+                        String workLocation;
+                        String workPosition = null;
 //                        String fbGender = object.getString("gender");
 //                        String fbAbout = object.getString("about");
 //                        String fbRelationship_status = object.getString("relationship_status");
 //                        String fbBirthaday = object.getString("birthday");
+
+                        try {
+                            JSONArray workArray = object.getJSONArray("work");
+                            if (workArray.length() != 0){
+                                companyName = workArray.getJSONObject(0).getJSONObject("employer").getString("name");
+                                workLocation = workArray.getJSONObject(0).getJSONObject("location").getString("name");
+                                workPosition = workArray.getJSONObject(0).getJSONObject("position").getString("name");
+
+                                mInfoView.setText("I am "+ workPosition + " at " + companyName + ".");
+                                mProfessionView.append(workPosition);
+                            }
+                        }catch (JSONException e){
+                            e.printStackTrace();
+                        }
+
+
 
 
                         com.facebook.Profile fbProfile = Profile.getCurrentProfile();
@@ -784,20 +698,10 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
                         }
 
 
-/*
-                        Bitmap profilePicBitmap= null;
-                        try {
-                            HttpsURLConnection conn1 = (HttpsURLConnection) url.openConnection();
-                            HttpsURLConnection.setFollowRedirects(true);
-                            conn1.setInstanceFollowRedirects(true);
-                            profilePicBitmap = BitmapFactory.decodeStream(conn1.getInputStream());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }*/
-
 
                         mNameView.setText(fbName);
                         mEmailView.setText(fbEmail);
+
 //                        mDetailView.setText(fbAbout);
                         profilePic.setImageResource(0);
                         Picasso.with(SignUpActivity.this).load(picUrl).placeholder(R.drawable.ic_user).error(R.drawable.ic_user).into(profilePic);

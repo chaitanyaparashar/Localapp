@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,6 +38,7 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.localapp.camera.Camera2Activity;
 import com.localapp.compressor.Compressor;
 import com.localapp.R;
 import com.localapp.camera.CropImage;
@@ -52,6 +54,7 @@ import com.localapp.request.ForgetPasswordRequest;
 import com.localapp.request.LoginRequest;
 import com.localapp.request.UpdateProfileRequest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -67,12 +70,15 @@ import java.util.List;
 
 import static com.localapp.camera.CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE;
 import static com.localapp.ui.ProfileFragment.SIGN_UP_REQUEST_CODE;
+import static com.localapp.ui.SignUpActivity.CAMERA_PERMISSIONS;
 import static com.localapp.ui.SignUpActivity.PICK_IMAGE_REQUEST;
 
 public class LoginActivity extends AppCompatActivity implements LoginRequest.LoginResponseCallback,ForgetPasswordRequest.ForgetPasswordRequestCallback,UpdateProfileRequest.UpdateProfileResponseCallback,
         com.facebook.GraphRequest.GraphJSONObjectCallback,FbLoginRequest.FbLoginResponseCallback,FbSignUpRequest.FbSignUpResponseCallback {
-    private static final int REQUEST_STORAGE_CODE = 111;
+    private static final int REQUEST_STORAGE_CODE = 333;
+    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_AND_CAMERA = 111;
     private final static String[] STORAGE_PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    final static String[] CAMERA_PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA};
     private static final String TAG = "LoginActivity";
     private EditText _email, _password;
     private Button _loginBtn, _signupBtn;
@@ -151,7 +157,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         fbPermissions.add("public_profile");
         fbPermissions.add("email");
 //        fbPermissions.add("user_about_me");
-        fbPermissions.add("user_birthday");
+//        fbPermissions.add("user_birthday");
 //        fbPermissions.add("user_location");
 //        fbPermissions.add("user_relationships");
         fbPermissions.add("user_work_history");
@@ -327,7 +333,12 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         builder.setPositiveButton("UPLOAD", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                getPicFromGallery();
+                if (isStorageAndCameraPermissionGranted()) {
+                    openCamera();
+                }else {
+                    permissionsRequestReadExternalStorage();
+                }
+
             }
         });
 
@@ -347,6 +358,23 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
+    void openCamera(){
+        Intent intent = new Intent(this,Camera2Activity.class);
+        intent.putExtra("requestCode", PICK_IMAGE_REQUEST);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    void permissionsRequestReadExternalStorage() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(CAMERA_PERMISSIONS,MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_AND_CAMERA);
+        }
+    }
+
+    boolean isStorageAndCameraPermissionGranted() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED;
+    }
+
 
     private void toast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
@@ -364,28 +392,20 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
                 break;
 
             case PICK_IMAGE_REQUEST:
-                if (resultCode == RESULT_OK && data != null && data.getData() != null) {
-                    Uri uri = data.getData();
-                    startCropImageActivity(uri);
-                }
-                break;
-            case CROP_IMAGE_ACTIVITY_REQUEST_CODE:
-                if (resultCode == RESULT_OK && data != null ) {
-
-                    CropImage.ActivityResult result = CropImage.getActivityResult(data);
-                    Uri uri = result.getUri();
-//                    String path = getRealPathFromURI(this,uri);//getRealPathFromURI_API19(this,uri);
-                        imgFile = new File(uri.getPath());
+                if (resultCode == PICK_IMAGE_REQUEST) {
+                    Uri resultData = Uri.parse(data.getStringExtra("result"));
+                    imgFile = new File(resultData.getPath());
 
                     int file_size = Integer.parseInt(String.valueOf(imgFile.length()/1024));
 
-                    if (file_size > 80) {//compress if file size more than 80kb
+                    if (file_size > 80) {
                         imgFile = Compressor.getDefault(this).compressToFile(imgFile);
                     }
 
                     tempSignUpData.setPicFile(imgFile);
                     fbSignUpRequest(tempSignUpData);
                 }
+                break;
 
 
         }
@@ -462,6 +482,9 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         try {
             String fbName = object.getString("name");
             String fbEmail = object.getString("email");
+            String companyName = null;
+            String workLocation;
+            String workPosition = null;
             String fbId = AccessToken.getCurrentAccessToken().getUserId();
             String fbToken = AccessToken.getCurrentAccessToken().getToken();
 //            String fbBirthaday = object.getString("birthday");
@@ -490,6 +513,21 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
             signUpData.setFbToken(fbToken);
             signUpData.setmName(fbName);
             signUpData.setmEmail(fbEmail);
+
+
+            try {
+                JSONArray workArray = object.getJSONArray("work");
+                if (workArray.length() != 0){
+                    companyName = workArray.getJSONObject(0).getJSONObject("employer").getString("name");
+                    workLocation = workArray.getJSONObject(0).getJSONObject("location").getString("name");
+                    workPosition = workArray.getJSONObject(0).getJSONObject("position").getString("name");
+
+                    signUpData.setmSpeciality("I am "+ workPosition + " at " + companyName + ".");
+                    signUpData.setProfession(workPosition);
+                }
+            }catch (JSONException e){
+                e.printStackTrace();
+            }
 
             tempSignUpData = signUpData;
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -601,6 +639,29 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
                     toast("Permission denied");
                     LoginManager.getInstance().logOut();
                 }
+
+                break;
+
+            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_AND_CAMERA: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 1
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    openCamera();
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+
+
         }
     }
 

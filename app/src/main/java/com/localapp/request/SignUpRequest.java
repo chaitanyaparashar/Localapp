@@ -111,6 +111,8 @@ public class SignUpRequest {
                     mSignUpResponseCallback.onSignUpResponse(resCode,mSignUpData);
                     return;
                 }
+
+
                 if (errorMsg == VolleyErrorHelper.COMMON_NETWORK_ERROR_TIMEOUT)
                 {
                     resCode = COMMON_RES_CONNECTION_TIMEOUT;

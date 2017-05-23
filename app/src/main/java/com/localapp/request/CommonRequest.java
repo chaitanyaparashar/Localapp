@@ -45,6 +45,7 @@ CommonRequest {
     private static final String UPDATE_PROFILE_REQUEST_URL = DOMAIN + "/update";
     private static final String UPDATE_EMAIL_REQUEST_URL = DOMAIN + "/updateEmail?";
     private static final String FB_LOGIN_REQUEST_URL = DOMAIN + "/facebookLogin";
+    private static final String UPDATE_FCM_TOKEN_REQUEST_URL = DOMAIN + "/updateFcmToken";
     private static final String FCM_PUSH_NOTIFICATION_URL = "https://fcm.googleapis.com/fcm/send";
     private static final String LOCALAPP_INVITE_URL = DOMAIN + "/email/doMail?";
 
@@ -70,7 +71,8 @@ CommonRequest {
         COMMON_REQUEST_GET_PROFILE_BY_ID,
         COMMON_REQUEST_FB_LOGIN,
         COMMON_REQUEST_LOCALAPP_INVITE,
-        COMMON_REQUEST_UPDATE_EMAIL
+        COMMON_REQUEST_UPDATE_EMAIL,
+        COMMON_REQUEST_UPDATE_FCM_TOKEN
 
     }
 
@@ -226,6 +228,10 @@ CommonRequest {
 
             case COMMON_REQUEST_UPDATE_EMAIL:
                  url = UPDATE_EMAIL_REQUEST_URL;
+                 break;
+
+            case COMMON_REQUEST_UPDATE_FCM_TOKEN:
+                 url = UPDATE_FCM_TOKEN_REQUEST_URL;
                  break;
 
 

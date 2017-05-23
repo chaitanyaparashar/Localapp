@@ -96,8 +96,11 @@ public class FbSignUpRequest {
             @Override
             public void onErrorResponse(VolleyError error) {
                 String errorMsg = VolleyErrorHelper.getMessage(error, mContext);
+
                 Log.v("onErrorHandler","error is" + error);
+
                 CommonRequest.ResponseCode resCode = COMMON_RES_INTERNAL_ERROR;
+
                 if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
                     resCode = COMMON_RES_CONNECTION_TIMEOUT;
                     mSignUpResponseCallback.onFbSignUpResponse(resCode,mSignUpData);

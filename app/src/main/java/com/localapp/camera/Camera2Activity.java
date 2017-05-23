@@ -58,6 +58,7 @@ import java.util.TreeSet;
 
 import static com.localapp.camera.CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE;
 import static com.localapp.ui.FeedFragment.VIDEO_REQUEST;
+import static com.localapp.ui.SignUpActivity.PICK_IMAGE_REQUEST;
 
 public class Camera2Activity extends AppCompatActivity implements View.OnClickListener , GalleryRecyclerViewAdapter.OnItemClickListener{
 
@@ -172,7 +173,7 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
             // Do something when your hold starts here.
             Log.v(TAG,"on Long Click");
 
-            if (!isVideoButtonLongPressed) {
+            if (!isVideoButtonLongPressed  && WHICH_REQUEST != PICK_IMAGE_REQUEST) {
 //                startRecordingVideo();
 
                 isVideoButtonLongPressed = true;

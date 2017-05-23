@@ -65,6 +65,10 @@ public class SignUpData {
     public SignUpData() {
     }
 
+    public void setmSpeciality(String mSpeciality) {
+        this.mSpeciality = mSpeciality;
+    }
+
     public String getmPrivacy() {
         return mPrivacy;
     }

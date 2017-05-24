@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -24,6 +26,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.widget.PopupWindowCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -31,10 +34,12 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -43,6 +48,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -82,6 +88,7 @@ import com.localapp.data.GetUsersRequestData;
 import com.localapp.data.NoticeBoard;
 import com.localapp.data.NoticeBoardMessage;
 import com.localapp.data.Profile;
+import com.localapp.feedback.AppPreferences;
 import com.localapp.login_session.SessionManager;
 import com.localapp.request.CommonRequest;
 import com.localapp.request.GetNearestNoticeBoardRequest;
@@ -142,6 +149,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     final static String[] CALL_PHONE_PERMISSIONS = {Manifest.permission.CALL_PHONE};
     final static String[] LOCATION_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
 
+//    ToolTipRelativeLayout toolTipRelativeLayout;
+
     SessionManager session;
 
     private GoogleMap mMap;
@@ -168,6 +177,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     DialogNoticeBoardMessageAdapter messageAdapter;
 
 
+    //******************************** tool tips *******************//
+
+    private RelativeLayout overlayRL;
+    private LinearLayout overlaySerachLL, overlayCamSerachLL;
+    private TextView textHelp;
+
+
     public MapFragment() {
         // Required empty public constructor
     }
@@ -183,6 +199,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         buildGoogleApiClient();
         createLocationRequest();
         buildLocationSettingsRequest();
+
+
         //===========================//
     }
 
@@ -229,6 +247,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             showAlertForLocationSetting(1);
         }*/
 
+        if (!AppPreferences.getInstance(AppController.getAppContext()).isLaunchedMapToolTip()) {
+            toolTips(view);
+        }
         Log.v(TAG, "View ready");
         // Inflate the layout for this fragment
 
@@ -277,7 +298,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         hobbiesBtn.setOnClickListener(filterClickListener);
 
 
+
+        /*toolTipRelativeLayout = (ToolTipRelativeLayout) view.findViewById(R.id.activity_main_tooltipRelativeLayout);
+
+        ToolTip toolTip = new ToolTip()
+                .withText("hi this is a test").withColor(Color.RED).withShadow().withAnimationType(ToolTip.AnimationType.FROM_MASTER_VIEW);
+        */
+
+
+
     }
+
+
+
 
 
     /**
@@ -1963,6 +1996,38 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 .radius(3000)
                 .strokeColor(getResources().getColor(R.color.colorAccent)).strokeWidth(1.0f));
     }
+
+
+
+    private int tipCount = 0;
+    private void toolTips (View view) {
+        overlayRL = (RelativeLayout) view.findViewById(R.id.rlOverlay);
+        overlaySerachLL = (LinearLayout) view.findViewById(R.id.rlSearchBox);
+        overlayCamSerachLL = (LinearLayout) view.findViewById(R.id.rlCamSearch);
+        textHelp = (TextView) view.findViewById(R.id.textHelp);
+
+        overlayRL.setVisibility(View.VISIBLE);
+
+        textHelp.setOnClickListener(toolTipClickListener);
+        overlayRL.setOnClickListener(toolTipClickListener);
+    }
+
+    private View.OnClickListener toolTipClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (tipCount) {
+                case 0:
+                    overlaySerachLL.setVisibility(View.GONE);
+                    overlayCamSerachLL.setVisibility(View.VISIBLE);
+                    textHelp.setText("Got It");
+                    tipCount++;
+                    break;
+                default:
+                    overlayRL.setVisibility(View.GONE);
+                    AppPreferences.getInstance(AppController.getAppContext()).mapToolTipLaunched();
+            }
+        }
+    };
 
 
 }

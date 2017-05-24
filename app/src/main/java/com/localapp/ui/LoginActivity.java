@@ -238,6 +238,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
             return;
         }else if (mPassword.isEmpty() || mPassword.length() <6 || mPassword.length() >16) {
             _password.setError("enter a valid password");
+            _password.requestFocus();
             return;
         }
 

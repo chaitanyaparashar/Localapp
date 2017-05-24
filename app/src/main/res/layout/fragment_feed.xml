@@ -5,6 +5,8 @@
     android:background="#F5F5F5"
     tools:context="com.localapp.ui.FeedFragment">
 
+
+
     <RelativeLayout
         android:background="#F5F5F5"
         android:layout_width="match_parent"
@@ -74,6 +76,89 @@
         </LinearLayout>
 
 
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/rlOverlay"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#a2000000"
+        android:clickable="true">
+
+        <LinearLayout
+            android:id="@+id/rlVoice"
+            android:visibility="visible"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:paddingEnd="16dp"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="28sp"
+                android:gravity="center"
+                android:fontFamily="cursive"
+                android:text="Tap and hold to send Voice message"/>
+
+            <ImageView
+                android:layout_gravity="end"
+                android:layout_marginBottom="48dp"
+                android:layout_marginEnd="16dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/arrow_right_down"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/rlCamMedia"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:orientation="vertical"
+            android:layout_marginEnd="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="28sp"
+                android:fontFamily="cursive"
+                android:text="Send media files"/>
+
+            <ImageView
+                android:layout_gravity="right"
+                android:layout_marginBottom="48dp"
+                android:layout_marginEnd="24dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/arrow_right_down"/>
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/textHelp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="cursive"
+            android:text="Next"
+            android:textColor="@android:color/white"
+            android:textSize="28sp" />
 
     </RelativeLayout>
 

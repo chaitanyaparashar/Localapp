@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -159,11 +160,18 @@ public class InviteActivity extends AppCompatActivity implements LocalappInviteR
 
 
     private void inviteViaMessage() {
-        Intent localIntent = new Intent(Intent.ACTION_SEND);
-        localIntent.putExtra(Intent.EXTRA_TEXT,getString(R.string.invite_text));
-        localIntent.setPackage("com.google.android.apps.messaging");
-        localIntent.setType("text/plain");
-        startActivity(localIntent);
+        try {
+            Intent localIntent = new Intent(Intent.ACTION_SEND);
+            localIntent.putExtra(Intent.EXTRA_TEXT,getString(R.string.invite_text));
+            String defApp = Settings.Secure.getString(getContentResolver(), "sms_default_application");
+//        localIntent.setPackage("com.google.android.apps.messaging");
+            localIntent.setPackage(defApp);
+            localIntent.setType("text/plain");
+            startActivity(localIntent);
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void inviteViaWhtasapp() {

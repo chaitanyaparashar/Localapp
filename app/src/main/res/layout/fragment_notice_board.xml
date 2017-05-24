@@ -5,6 +5,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.localapp.ui.NoticeBoardFragment">
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </FrameLayout>
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -99,6 +105,54 @@
         app:layout_anchor="@id/layout_notice_near_you"
         android:layout_margin="16dp"
         app:layout_anchorGravity="right|end"/>
+
+
+
+    <RelativeLayout
+        android:id="@+id/rlOverlay"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#a2000000"
+        android:clickable="true">
+
+        <LinearLayout
+            android:id="@+id/rlFloating"
+            android:visibility="visible"
+            android:paddingTop="80dp"
+            android:paddingRight="16dp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="28sp"
+                android:gravity="end"
+                android:layout_marginEnd="16dp"
+                android:fontFamily="cursive"
+                android:text="Create Notice Board"/>
+
+            <ImageView
+                android:layout_gravity="end"
+                android:layout_marginBottom="24dp"
+                android:layout_marginEnd="16dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/arrow_right_down"/>
+
+
+        </LinearLayout>
+
+
+
+
+
+    </RelativeLayout>
 
 
 

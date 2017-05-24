@@ -24,6 +24,8 @@ import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_INTERNA
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_SERVER_ERROR_WITH_MESSAGE;
 import static com.localapp.request.SignUpRequest.JSON_FIELD_EMAIL_ID;
 import static com.localapp.request.SignUpRequest.JSON_FIELD_NAME;
+import static com.localapp.request.SignUpRequest.JSON_FIELD_PROFESSION;
+import static com.localapp.request.SignUpRequest.JSON_FIELD_SPECIALITY;
 
 /**
  * Created by 4 way on 04-05-2017.
@@ -57,6 +59,12 @@ public class FbSignUpRequest {
         mParams.put(JSON_FIELD_EMAIL_ID, data.getmEmail());
         mParams.put(JSON_FIELD_FB_ID, data.getFbId());
         mParams.put(JSON_FIELD_FB_TOKEN, data.getFbToken());
+        try {
+            mParams.put(JSON_FIELD_PROFESSION, data.getProfession());
+            mParams.put(JSON_FIELD_SPECIALITY,data.getmSpeciality());
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
 
 //        mParams.put(JSON_FIELD_TYPE, data.getmType());
 

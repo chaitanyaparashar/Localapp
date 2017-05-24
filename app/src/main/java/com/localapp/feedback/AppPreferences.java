@@ -13,6 +13,9 @@ public class AppPreferences {
     private static final String PREF_APP_RATE = "pref_app_rate";
     private static final String PREF_LAUNCH_COUNT = "pref_launch_count";
     private static final String PREF_LAUNCH_TOUR = "pref_launch_tour";
+    private static final String PREF_LAUNCH_MAP_TOOLTIP = "pref_launch_map_toll_tip";
+    private static final String PREF_LAUNCH_BROADCAST_TOOLTIP = "pref_launch_broadcast_toll_tip";
+    private static final String PREF_LAUNCH_NOTICEBOARD_TOOLTIP = "pref_launch_notice_toll_tip";
 
     private AppPreferences(Context paramContext) {
         this.mPrefs = paramContext.getSharedPreferences("app_prefs", 0);
@@ -59,6 +62,37 @@ public class AppPreferences {
     public void tourLaunched () {
         SharedPreferences.Editor localEditor = this.mPrefs.edit();
         localEditor.putBoolean(PREF_LAUNCH_TOUR, true);
+        localEditor.commit();
+    }
+
+    public boolean isLaunchedMapToolTip () {
+        return this.mPrefs.getBoolean(PREF_LAUNCH_MAP_TOOLTIP, false);
+    }
+
+    public void mapToolTipLaunched() {
+        SharedPreferences.Editor localEditor = this.mPrefs.edit();
+        localEditor.putBoolean(PREF_LAUNCH_MAP_TOOLTIP, true);
+        localEditor.commit();
+    }
+
+
+    public boolean isLaunchedBroadcastToolTip () {
+        return this.mPrefs.getBoolean(PREF_LAUNCH_BROADCAST_TOOLTIP, false);
+    }
+
+    public void broadcastToolTipLaunched() {
+        SharedPreferences.Editor localEditor = this.mPrefs.edit();
+        localEditor.putBoolean(PREF_LAUNCH_BROADCAST_TOOLTIP, true);
+        localEditor.commit();
+    }
+
+    public boolean isLaunchedNoticeboardToolTip () {
+        return this.mPrefs.getBoolean(PREF_LAUNCH_NOTICEBOARD_TOOLTIP, false);
+    }
+
+    public void noticeboardToolTipLaunched() {
+        SharedPreferences.Editor localEditor = this.mPrefs.edit();
+        localEditor.putBoolean(PREF_LAUNCH_NOTICEBOARD_TOOLTIP, true);
         localEditor.commit();
     }
 }

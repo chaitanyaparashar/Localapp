@@ -10,7 +10,10 @@
 
 
 
-    <RelativeLayout
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
             android:id="@+id/rl"
             android:background="#FFF"
             android:layout_width="match_parent"
@@ -18,11 +21,11 @@
             android:layout_gravity="bottom"
             android:elevation="10dp">
 
-        <ImageView
-            android:visibility="gone"
-            android:id="@+id/temp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            <ImageView
+                android:visibility="gone"
+                android:id="@+id/temp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
             <LinearLayout
                 android:id="@+id/bottom_filter_lt"
@@ -76,14 +79,14 @@
 
             </LinearLayout>
 
-        <Button
-            android:id="@+id/invite_btn"
-            android:visibility="gone"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:textColor="#fff"
-            android:background="@drawable/submit_button_state"
-            android:text="Invite Neighbors &amp; Have more fun"/>
+            <Button
+                android:id="@+id/invite_btn"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:textColor="#fff"
+                android:background="@drawable/submit_button_state"
+                android:text="Invite Neighbors &amp; Have more fun"/>
 
 
 
@@ -165,52 +168,139 @@
         </RelativeLayout>
 
 
-
-    <LinearLayout
-        android:layout_margin="20dp"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/search_box_style"
-        android:elevation="5dp"
-        android:weightSum="3">
-
-        <AutoCompleteTextView
-            android:paddingLeft="15dp"
-            android:layout_weight="2.5"
-            android:layout_width="0dp"
+        <android.support.v7.widget.CardView
+            android:layout_margin="20dp"
+            android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:maxLines="1"
-            android:selectAllOnFocus="true"
-            android:background="@android:color/transparent"
-            android:singleLine="true"
-            android:hint="Search here..."
-            android:id="@+id/autoCompleteTextView" />
+            app:cardCornerRadius="2dp"
+            android:elevation="4dp">
 
-        <ImageView
-            android:id="@+id/search_camera_btn"
-            android:layout_gravity="center"
-            android:visibility="visible"
-            android:layout_width="30dp"
-            android:tint="#696969"
-            android:layout_height="30dp"
-            android:src="@drawable/ic_camera"/>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:weightSum="3">
 
-        <ImageView
-            android:id="@+id/search_btn"
-            android:padding="2dp"
-            android:src="@android:drawable/ic_search_category_default"
-            android:layout_weight="0.5"
-            android:layout_width="0dp"
-            android:layout_height="50dp" />
+                <AutoCompleteTextView
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:layout_weight="2.5"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp"
+                    android:maxLines="1"
+                    android:selectAllOnFocus="true"
+                    android:background="@android:color/transparent"
+                    android:singleLine="true"
+                    android:hint="Search here..."
+                    android:id="@+id/autoCompleteTextView" />
 
-    </LinearLayout>
+                <ImageView
+                    android:id="@+id/search_camera_btn"
+                    android:layout_gravity="center"
+                    android:visibility="visible"
+                    android:layout_width="30dp"
+                    android:tint="#797777"
+                    android:layout_height="30dp"
+                    android:src="@drawable/ic_camera"/>
 
-    <com.google.android.gms.maps.MapView
-        android:focusableInTouchMode="true"
-        android:focusable="true"
-        android:id="@+id/map_view"
+                <ImageView
+                    android:id="@+id/search_btn"
+                    android:padding="2dp"
+                    android:src="@android:drawable/ic_search_category_default"
+                    android:layout_weight="0.5"
+                    android:layout_width="0dp"
+                    android:layout_height="50dp" />
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+
+
+
+        <com.google.android.gms.maps.MapView
+            android:focusableInTouchMode="true"
+            android:focusable="true"
+            android:id="@+id/map_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </FrameLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlOverlay"
+        android:visibility="gone"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent"
+        android:background="#a2000000"
+        android:clickable="true">
+
+        <LinearLayout
+            android:id="@+id/rlSearchBox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_marginTop="64dp"
+                android:layout_marginStart="48dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/arrow_left_up"/>
+
+            <TextView
+                android:layout_marginStart="68dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:textSize="28sp"
+                android:fontFamily="cursive"
+                android:layout_gravity="right"
+                android:text="Text Search"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/rlCamSearch"
+            android:layout_alignParentEnd="true"
+            android:orientation="vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+
+            <ImageView
+                android:layout_marginTop="64dp"
+                android:layout_marginEnd="70dp"
+                android:layout_marginStart="25dp"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/arrow_right_up"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:fontFamily="cursive"
+                android:textSize="28sp"
+                android:layout_gravity="start"
+                android:text="Face Search"/>
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/textHelp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="116dp"
+            android:layout_marginEnd="16dp"
+            android:fontFamily="cursive"
+            android:text="Next"
+            android:textColor="@android:color/white"
+            android:textSize="28sp" />
+
+        </RelativeLayout>
+
 
 
 </FrameLayout>

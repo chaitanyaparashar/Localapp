@@ -27,6 +27,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +35,7 @@ import com.localapp.R;
 import com.localapp.appcontroller.AppController;
 import com.localapp.data.NoticeBoard;
 import com.localapp.data.NoticeBoardMessage;
+import com.localapp.feedback.AppPreferences;
 import com.localapp.request.CommonRequest;
 import com.localapp.request.DeleteNoticeBoardMessageRequest;
 import com.localapp.request.DeleteNoticeBoardRequest;
@@ -67,6 +69,11 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
 
     private SwipeRefreshLayout swipeRefreshLayout;
 
+    //******************************** tool tips *******************//
+
+    private RelativeLayout overlayRL;
+    private LinearLayout overlayFloatingLL;
+
     public NoticeBoardFragment() {
         // Required empty public constructor
     }
@@ -79,6 +86,9 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
         View fView = inflater.inflate(R.layout.fragment_notice_board, container, false);
 
         setupView(fView);
+        if (!AppPreferences.getInstance(AppController.getAppContext()).isLaunchedNoticeboardToolTip()) {
+            toolTips(fView);
+        }
         return fView;
     }
 
@@ -128,6 +138,11 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
                     startActivityForResult(new Intent(getContext(), CreateNoticeActivity.class),CREATE_NOTICE_BOARD_REQUEST_CODE);
                 }else {
                     Toast.makeText(getContext(), "Please login first...", Toast.LENGTH_SHORT).show();
+                }
+
+
+                if (overlayRL != null) {
+                    overlayRL.setVisibility(View.GONE);
                 }
 
 
@@ -715,6 +730,21 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
                 new CountDownTimerTask(5000, 5000).start();
             }
         }
+    }
+
+    private void toolTips (View view) {
+        overlayRL = (RelativeLayout) view.findViewById(R.id.rlOverlay);
+        overlayFloatingLL = (LinearLayout) view.findViewById(R.id.rlFloating);
+
+        overlayRL.setVisibility(View.VISIBLE);
+
+        overlayRL.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                overlayRL.setVisibility(View.GONE);
+                AppPreferences.getInstance(AppController.getAppContext()).noticeboardToolTipLaunched();
+            }
+        });
     }
 
 }

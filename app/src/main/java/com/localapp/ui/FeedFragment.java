@@ -40,6 +40,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +55,7 @@ import com.localapp.data.GetFeedRequestData;
 import com.localapp.data.Message;
 import com.localapp.data.NotificationData;
 import com.localapp.fcm.FcmNotificationRequest;
+import com.localapp.feedback.AppPreferences;
 import com.localapp.login_session.SessionManager;
 import com.localapp.request.CommonRequest;
 import com.localapp.request.EmergencyMsgAcceptRequest;
@@ -141,6 +143,13 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
     private List<Message> emergencyMessageList;
 
     private View typeMessageAreaPreventClickView;
+
+
+    //******************************** tool tips *******************//
+
+    private RelativeLayout overlayRL;
+    private LinearLayout overlayVoiceLL, overlayCamMediaLL;
+    private TextView textHelp;
 
 
     EmojiconEditText chatText;
@@ -312,6 +321,9 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
 //        String dis = calcDistance(new LatLng(28.550123, 77.326640),new LatLng(28.550189, 77.353430),"m",true);
 //        toast(dis);
 
+        if (!AppPreferences.getInstance(AppController.getAppContext()).isLaunchedBroadcastToolTip()) {
+            toolTips(view);
+        }
 //
 //
         return view;
@@ -1569,4 +1581,34 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
 
         }
     }
+
+    private int tipCount = 0;
+    private void toolTips (View view) {
+        overlayRL = (RelativeLayout) view.findViewById(R.id.rlOverlay);
+        overlayVoiceLL = (LinearLayout) view.findViewById(R.id.rlVoice);
+        overlayCamMediaLL = (LinearLayout) view.findViewById(R.id.rlCamMedia);
+        textHelp = (TextView) view.findViewById(R.id.textHelp);
+
+        overlayRL.setVisibility(View.VISIBLE);
+
+        textHelp.setOnClickListener(toolTipClickListener);
+        overlayRL.setOnClickListener(toolTipClickListener);
+    }
+
+    private View.OnClickListener toolTipClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (tipCount) {
+                case 0:
+                    overlayVoiceLL.setVisibility(View.GONE);
+                    overlayCamMediaLL.setVisibility(View.VISIBLE);
+                    textHelp.setText("Got It");
+                    tipCount++;
+                    break;
+                default:
+                    overlayRL.setVisibility(View.GONE);
+                    AppPreferences.getInstance(AppController.getAppContext()).broadcastToolTipLaunched();
+            }
+        }
+    };
 }

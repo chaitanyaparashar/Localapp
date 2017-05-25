@@ -362,13 +362,11 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
 
 
         mqtt.setClientId(HomeActivity.mLoginToken);
-        try
-        {
+        try {
             mqtt.setHost(sAddress);
             Log.d(TAG, "Address set: " + sAddress);
         }
-        catch(URISyntaxException urise)
-        {
+        catch(URISyntaxException urise) {
             Log.e(TAG, "URISyntaxException connecting to " + sAddress + " - " + urise);
         }
 

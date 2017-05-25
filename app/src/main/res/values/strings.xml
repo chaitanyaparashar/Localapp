@@ -2,15 +2,7 @@
     <string name="app_name">Localapp</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="map">map</string>
-    <string name="feed">feed</string>
-    <string name="title_activity_maps">Map</string>
     <string name="facebook_app_id">235015976963905</string>
-
-
-    <string name="title_activity_camera">CameraActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
 
 
     <!-- Map Fragment -->
@@ -26,10 +18,8 @@
     <string name="login_first">Please login first…</string>
     <string name="please_wait_getting_location">Please wait, Getting location…</string>
     <string name="no_internet_msg">No internet connection"</string>
-    <string name="success">success</string>
     <string name="something_went_wrong">Something went wrong</string>
     <string name="permission_denied">permission denied</string>
-    <string name="please_wait_msg">Please wait …</string>
     <string name="close_app_msg">Press back again to exit Localapp</string>
 
     <string name="FCM_AUTHORIZATION_KEY" templateMergeStrategy="preserve" translatable="false">key=AAAAh1gj7-8:APA91bFJLVxy4cWJ1Q9T8L3UlkpzZk5wRBoHzFjpEMbO1grFkPdzoJ39jaeF2rQUcXEqSvUsKSCoehZbOq_XmuWNZ-rW_UUZlFvurMG-_kEpOZvkgCwdfCANDpC2bKb63bVbNUH7wEde</string>
@@ -41,7 +31,6 @@
     <string name="dialog_app_rate">Rate App</string>
     <string name="dialog_ask_later">Later</string>
     <string name="dialog_your_feedback">Your Feedback</string>
-    <string name="app_message">Launch count is %d</string>
     <string name="title_activity_invite">Invite</string>
     <string name="text_email">Email</string>
     <string name="text">Text</string>

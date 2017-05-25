@@ -1614,7 +1614,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             case COMMON_RES_INTERNAL_ERROR:
                 break;
             case COMMON_RES_SERVER_ERROR_WITH_MESSAGE:
-                Toast.makeText(getContext(), "No data found for this image :(", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "No search result found", Toast.LENGTH_SHORT).show();
                 addMarkerByProfile(false, null);
                 break;
         }

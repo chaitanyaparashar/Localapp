@@ -240,22 +240,7 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-   /* View.OnTouchListener videoTouchListener = new View.OnTouchListener() {
-        @Override
-        public boolean onTouch(View v, MotionEvent event) {
-            v.onTouchEvent(event);
-            // We're only interested in when the button is released.
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                // We're only interested in anything if our speak button is currently pressed.
-                if (isVideoButtonLongPressed) {
-                    // Do something when the button is released.
-//                    stopRecordingVideo();
-                    isVideoButtonLongPressed = false;
-                }
-            }
-            return false;
-        }
-    };*/
+
 
     @Override
     public void onItemClick(GalleryRecyclerViewAdapter.ItemHolder item, int position) {
@@ -324,8 +309,12 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
         }
         @Override
         public void onError(@NonNull CameraDevice camera, int error) {
-            cameraDevice.close();
-            cameraDevice = null;
+            try {
+                cameraDevice.close();
+                cameraDevice = null;
+            }catch (NullPointerException e) {
+                e.printStackTrace();
+            }
         }
     };
 
@@ -576,17 +565,22 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
     }
 
     protected void updatePreview() {
-        if(null == cameraDevice) {
-            Log.e(TAG, "updatePreview error, return");
-        }
-        captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+        try {
+            if(null == cameraDevice) {
+                Log.e(TAG, "updatePreview error, return");
+            }
+            captureRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
 
 //        setFlash(captureRequestBuilder);
-        try {
-            cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), null, mBackgroundHandler);
-        } catch (CameraAccessException e) {
+            try {
+                cameraCaptureSessions.setRepeatingRequest(captureRequestBuilder.build(), null, mBackgroundHandler);
+            } catch (CameraAccessException e) {
+                e.printStackTrace();
+            }
+        }catch (IllegalStateException e) {
             e.printStackTrace();
         }
+
     }
 
     private void closeCamera() {

@@ -881,7 +881,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             case COMMON_RES_CONNECTION_TIMEOUT:
                 break;
             case COMMON_RES_FAILED_TO_CONNECT:
-                Toast.makeText(getContext(), R.string.no_internet_msg, Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getContext(), R.string.no_internet_msg, Toast.LENGTH_SHORT).show();
                 break;
             case COMMON_RES_INTERNAL_ERROR:
                 break;

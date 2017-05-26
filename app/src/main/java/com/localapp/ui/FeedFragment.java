@@ -1537,7 +1537,6 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
 
         @Override
         public void onTick(long millisUntilFinished) {
-            Log.d("CountDownWhisper",message.getmText()+": "+millisUntilFinished / 1000);
         }
 
         @Override

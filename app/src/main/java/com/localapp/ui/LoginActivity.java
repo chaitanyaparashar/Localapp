@@ -52,7 +52,7 @@ import com.localapp.request.FbLoginRequest;
 import com.localapp.request.FbSignUpRequest;
 import com.localapp.request.ForgetPasswordRequest;
 import com.localapp.request.LoginRequest;
-import com.localapp.request.UpdateProfileRequest;
+import com.localapp.request.UpdateFcmTokenRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -68,12 +68,10 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.localapp.camera.CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE;
 import static com.localapp.ui.ProfileFragment.SIGN_UP_REQUEST_CODE;
-import static com.localapp.ui.SignUpActivity.CAMERA_PERMISSIONS;
 import static com.localapp.ui.SignUpActivity.PICK_IMAGE_REQUEST;
 
-public class LoginActivity extends AppCompatActivity implements LoginRequest.LoginResponseCallback,ForgetPasswordRequest.ForgetPasswordRequestCallback,UpdateProfileRequest.UpdateProfileResponseCallback,
+public class LoginActivity extends AppCompatActivity implements LoginRequest.LoginResponseCallback,ForgetPasswordRequest.ForgetPasswordRequestCallback,
         com.facebook.GraphRequest.GraphJSONObjectCallback,FbLoginRequest.FbLoginResponseCallback,FbSignUpRequest.FbSignUpResponseCallback {
     private static final int REQUEST_STORAGE_CODE = 333;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_AND_CAMERA = 111;
@@ -259,7 +257,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         fbLoginRequest.executeRequest();
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setCancelable(false);
-        mProgressDialog.setMessage("Verifying credentials... ");
+        mProgressDialog.setMessage("Verifying credentials...");
         mProgressDialog.show();
     }
 
@@ -305,16 +303,15 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
             Profile profile = new Profile(HomeActivity.mUserId);
             profile.setFcmToken(fcm_token);
             profile.setuToken(HomeActivity.mLoginToken);
-            UpdateProfileRequest request = new UpdateProfileRequest(this,profile,this);
+
+            UpdateFcmTokenRequest request = new UpdateFcmTokenRequest(this,HomeActivity.mUserId, HomeActivity.mLoginToken,fcm_token);
             request.executeRequest();
-            mProgressDialog = new ProgressDialog(this);
-            mProgressDialog.setCancelable(false);
-            mProgressDialog.setMessage("Verifying credentials... ");
-            mProgressDialog.show();
-        }else {
-            startActivity(new Intent(getApplicationContext(), HomeActivity.class));
-            finish();
+
         }
+
+        startActivity(new Intent(getApplicationContext(), HomeActivity.class));
+        finish();
+
 
     }
 
@@ -324,7 +321,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         request.executeRequest();
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setCancelable(false);
-        mProgressDialog.setMessage("Please wait...");
+        mProgressDialog.setMessage("Verifying credentials... ");
         mProgressDialog.show();
     }
 
@@ -387,8 +384,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         switch (requestCode) {
             case SIGN_UP_REQUEST_CODE:
                 if (resultCode != Activity.RESULT_CANCELED && data.getBooleanExtra("result",false)) {
-                    startActivity(new Intent(this,HomeActivity.class));
-                    finish();
+                    fcmTokenUpdateRequest();
                 }
                 break;
 
@@ -467,12 +463,6 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         }
     }
 
-    @Override
-    public void onUpdateProfileResponse(CommonRequest.ResponseCode responseCode) {
-        mProgressDialog.dismiss();
-        startActivity(new Intent(getApplicationContext(), HomeActivity.class));
-        finish();
-    }
 
     //get facebook data from here
     @Override

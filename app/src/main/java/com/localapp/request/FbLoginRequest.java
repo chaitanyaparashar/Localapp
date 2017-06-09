@@ -94,7 +94,7 @@ public class FbLoginRequest extends CommonRequest {
             try {
                 JSONObject obj = new JSONObject(errorResponse);
                 JSONObject errorObject = obj.getJSONObject("error");
-                mLoginData.setFbLoginError(new FbLoginError(errorObject.getInt("code"),errorObject.getString("message")));
+                mLoginData.setFbLoginError(new FbLoginError(errorObject.getInt("status"),errorObject.getString("message")));
             } catch (JSONException e) {
                 e.printStackTrace();
             }

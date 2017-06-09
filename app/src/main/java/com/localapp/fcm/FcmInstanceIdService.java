@@ -7,6 +7,7 @@ import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.localapp.data.Profile;
 import com.localapp.login_session.SessionManager;
 import com.localapp.request.CommonRequest;
+import com.localapp.request.UpdateFcmTokenRequest;
 import com.localapp.request.UpdateProfileRequest;
 import com.localapp.ui.HomeActivity;
 
@@ -14,7 +15,7 @@ import com.localapp.ui.HomeActivity;
  * Created by 4 way on 24-04-2017.
  */
 
-public class FcmInstanceIdService extends FirebaseInstanceIdService implements UpdateProfileRequest.UpdateProfileResponseCallback {
+public class FcmInstanceIdService extends FirebaseInstanceIdService{
     SessionManager sessionManager;
     @Override
     public void onTokenRefresh() {
@@ -33,15 +34,10 @@ public class FcmInstanceIdService extends FirebaseInstanceIdService implements U
             Profile profile = new Profile(HomeActivity.mUserId);
             profile.setFcmToken(token);
             profile.setuToken(HomeActivity.mLoginToken);
-            UpdateProfileRequest request = new UpdateProfileRequest(this,profile,this);
+            UpdateFcmTokenRequest request = new UpdateFcmTokenRequest(this,HomeActivity.mUserId, HomeActivity.mLoginToken,token);
             request.executeRequest();
         }
 
-
-    }
-
-    @Override
-    public void onUpdateProfileResponse(CommonRequest.ResponseCode responseCode) {
 
     }
 }

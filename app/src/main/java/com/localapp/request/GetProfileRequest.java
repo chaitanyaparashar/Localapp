@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.android.volley.VolleyError;
-import com.localapp.data.LoginData;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.localapp.data.Profile;
 import com.localapp.request.helper.VolleyErrorHelper;
 
@@ -68,6 +68,17 @@ public class GetProfileRequest extends CommonRequest {
             mProfile.setProfession(jsonObject.getString("profession"));
             mProfile.setuNotes(jsonObject.getString("notes"));
             mProfile.setuPrivacy(jsonObject.getString("mobilePrivacy"));
+
+            try {
+                String fcmToken = jsonObject.getString("fcmToken");
+                if (fcmToken == null || fcmToken.equals("null")) {     //update fcm token if fcm token is null
+                    fcmToken = FirebaseInstanceId.getInstance().getToken();
+                    UpdateFcmTokenRequest request = new UpdateFcmTokenRequest(mContext,mProfile.getuId(), mProfile.getuToken(),fcmToken);
+                    request.executeRequest();
+                }
+
+            }catch (JSONException ignore){
+            }
 
 
             mGetProfileRequestCallback.onProfileResponse(COMMON_RES_SUCCESS, mProfile);

@@ -244,7 +244,12 @@
                     android:layout_marginTop="30dp"
                     android:visibility="gone"
                     android:layout_marginBottom="30dp" />
+
+
+
+                <!--  fill with facebook btn  -->
                 <Button
+                    android:visibility="gone"
                     android:id="@+id/fb_fill_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

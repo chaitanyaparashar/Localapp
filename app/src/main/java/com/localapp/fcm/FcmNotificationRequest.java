@@ -21,6 +21,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import static com.localapp.fcm.FcmMessagingService.NotiEmergency;
 
 
 /**
@@ -49,6 +50,7 @@ public class FcmNotificationRequest {
             param.put("mobile",mData.getMobile());
             param.put("email",mData.getEmail());
             param.put("userId", HomeActivity.mUserId);
+            param.put("type", NotiEmergency);
 
             mJsonObject.put("data", param);
             mJsonObject.put("to", mData.getFcmToke());//"eFePheo6GIw:APA91bHeXiDGOavcP8THQ95KcjvK_srchXzKbnOcrnQioroXzQrNhoQzkFDkbgd6ubYnZICdRD4jsldzzixRkIRFC5-54MlADNcrIS-3MBcroQgOclxH3C_vDiMHvmjjCbyfzA691jeW");

@@ -819,6 +819,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
 
         adapter.notifyDataSetChanged();
         emergencyListAdapter.notifyDataSetChanged();
+        scrollToBottom();
 
 
     }

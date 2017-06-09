@@ -2,6 +2,7 @@ package com.localapp.ui;
 
 
 import android.app.Activity;
+import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -28,6 +29,7 @@ import android.widget.RatingBar;
 
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
+import com.localapp.data.MessageNotificationData;
 import com.localapp.feedback.AppPreferences;
 import com.localapp.login_session.SessionManager;
 import com.google.android.gms.maps.model.LatLng;
@@ -35,6 +37,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.HashMap;
 
 import static com.localapp.ui.MapFragment.REQUEST_CHECK_SETTINGS;
+import static com.localapp.util.NotificationUtils.notificationList;
 
 public class HomeActivity extends AppCompatActivity{
 
@@ -114,7 +117,33 @@ public class HomeActivity extends AppCompatActivity{
             }
         });
 
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
+
+
+        for (MessageNotificationData data:notificationList) {
+            manager.cancel(data.getNotificationId());//cancel message notification
+        }
+
+        notificationList.clear();
+
+        String notification = getIntent().getStringExtra("noti");
+        if ( notification != null) {
+            actionNotification(notification);
+        }
+
+
+
+
+
+    }
+
+    private void actionNotification(String notification) {
+        switch (notification) {
+            case "new_message":
+                mViewPager.setCurrentItem(1);
+                break;
+        }
     }
 
     private void setupTabIcons() {

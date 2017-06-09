@@ -1,4 +1,4 @@
-package com.localapp.request.helper;
+package com.localapp.request;
 
 import android.content.Context;
 import android.util.Log;
@@ -8,6 +8,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.localapp.data.Profile;
 import com.localapp.request.CommonRequest;
 import com.localapp.request.GetProfileRequest;
+import com.localapp.request.helper.VolleyErrorHelper;
 
 import org.json.JSONArray;
 import org.json.JSONException;

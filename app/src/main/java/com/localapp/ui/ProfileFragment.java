@@ -6,13 +6,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -58,6 +59,7 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
             uEmailTextView,uProdessionTextView,uBreifInfo,
             uDetailTextView;
     private Button logoutBtn,shareBtn;
+    private SwitchCompat mBroadcastSwitch;
 
     //Login
     private EditText _email, _password;
@@ -144,10 +146,28 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
         uDetailTextView = (TextView) view.findViewById(R.id._details);
         logoutBtn = (Button) view.findViewById(R.id._logout_btn);
         shareBtn = (Button) view.findViewById(R.id._share_btn);
+        mBroadcastSwitch = (SwitchCompat) view.findViewById(R.id.set_broadcast_setting);
         logoutBtn.setOnClickListener(onClickListener);
         shareBtn.setOnClickListener(onClickListener);
         editAbout.setOnClickListener(onClickListener);
         editPersonal.setOnClickListener(onClickListener);
+
+
+        if (AppPreferences.getInstance(AppController.getAppContext()).isBroadcastNotificationOn()) {
+            mBroadcastSwitch.setChecked(true);
+        }else {
+            mBroadcastSwitch.setChecked(false);
+        }
+        mBroadcastSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked){
+                    AppPreferences.getInstance(AppController.getAppContext()).setBroadcastNotificationOn();
+                }else {
+                    AppPreferences.getInstance(AppController.getAppContext()).setBroadcastNotificationOff();
+                }
+            }
+        });
     }
 
     private View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -352,7 +372,11 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
     }
 
     private void toast(String msg) {
-        Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+        try {
+            Toast.makeText(getContext(), msg, Toast.LENGTH_SHORT).show();
+        }catch (NullPointerException ignore){
+
+        }
     }
 
     @Override

@@ -10,8 +10,6 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -21,12 +19,10 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.widget.PopupWindowCompat;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,12 +30,10 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -48,7 +42,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -96,7 +89,7 @@ import com.localapp.request.GetNoticeBoardMessageRequest;
 import com.localapp.request.GetUsersRequest;
 import com.localapp.request.ImageSearchRequest;
 import com.localapp.request.SubscribeUnsubscribeNoticeBoardRequest;
-import com.localapp.request.helper.GetProfileByIdRequest;
+import com.localapp.request.GetProfileByIdRequest;
 import com.localapp.util.utility;
 import com.squareup.picasso.Picasso;
 
@@ -276,6 +269,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         uDetailLayout = (RelativeLayout) view.findViewById(R.id.user_detail_rl);
         botomFilter = (LinearLayout) view.findViewById(R.id.bottom_filter_lt);
         inviteButton = (Button) view.findViewById(R.id.invite_btn);
+
+        //=======================//
+        botomFilter.setVisibility(View.GONE);
+        inviteButton.setVisibility(View.VISIBLE);
+        //=======================//
+
+
+
 
         inviteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -869,13 +870,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
                 setSearchHintData(profileList);
 
-                if (profileList.size() > 10) {
+                /*if (profileList.size() > 10) {
                     botomFilter.setVisibility(View.VISIBLE);
                     inviteButton.setVisibility(View.GONE);
                 }else {
                     botomFilter.setVisibility(View.GONE);
                     inviteButton.setVisibility(View.VISIBLE);
-                }
+                }*/
 
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:

@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/card_view"
+        android:background="?android:attr/selectableItemBackground"
         android:layout_gravity="center"
         android:layout_margin="3dp"
         android:elevation="3dp"
@@ -23,7 +24,6 @@
                 android:id="@+id/notice_name_TextView"
                 android:textColor="#2196f3"
                 android:textSize="15sp"
-                android:text="Wings &amp; Whells MKY Aero Club"
                 android:textStyle="bold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />

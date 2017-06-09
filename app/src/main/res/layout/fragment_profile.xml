@@ -1,5 +1,4 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical" >
@@ -9,8 +8,7 @@
         android:id="@+id/profile_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:orientation="vertical">
 
 
         <RelativeLayout
@@ -307,8 +305,56 @@
                 </LinearLayout>
 
 
-                <Button
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/com_facebook_button_border_color_focused"
+                    android:elevation="2dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
 
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1.9"
+                        android:gravity="center_vertical"
+                        android:maxLines="1"
+                        android:padding="8dp"
+                        android:text="NOTIFICATION SETTING"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="#FFFFFF"
+                    android:orientation="horizontal">
+
+                    <android.support.v7.widget.SwitchCompat
+                        android:id="@+id/set_broadcast_setting"
+                        android:padding="5dp"
+                        android:checked="true"
+                        android:layout_margin="5dp"
+                        android:textSize="16sp"
+                        android:drawablePadding="10dp"
+                        android:background="?android:attr/selectableItemBackground"
+                        android:drawableStart="@drawable/ic_notifications_24px"
+                        android:text="Broadcast Notification"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp" />
+
+                </LinearLayout>
+
+
+
+
+
+                <!--Share app button visibility gone-->
+
+                <Button
+                    android:visibility="gone"
                     android:id="@+id/_share_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -340,6 +386,7 @@
 
 
     <RelativeLayout
+        android:visibility="gone"
         android:id="@+id/login_layout"
         android:orientation="vertical"
         android:layout_width="match_parent"

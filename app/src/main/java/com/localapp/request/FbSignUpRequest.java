@@ -121,7 +121,7 @@ public class FbSignUpRequest {
                     try {
                         JSONObject obj = new JSONObject(errorResponse);
                         JSONObject errorObject = obj.getJSONObject("error");
-                        mSignUpData.setFbLoginError(new FbLoginError(errorObject.getInt("code"), errorObject.getString("message")));
+                        mSignUpData.setFbLoginError(new FbLoginError(errorObject.getInt("status"), errorObject.getString("message")));
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

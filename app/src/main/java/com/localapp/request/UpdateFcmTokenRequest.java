@@ -15,11 +15,11 @@ import java.util.Map;
  * Created by 4 way on 23-05-2017.
  */
 
-public class UpdateFcmToken extends CommonRequest{
+public class UpdateFcmTokenRequest extends CommonRequest{
     private Map<String, String> mParams;
     private Context mContext;
 
-    public UpdateFcmToken(Context mContext,String uId, String uToken, String fcmToken ) {
+    public UpdateFcmTokenRequest(Context mContext, String uId, String uToken, String fcmToken ) {
         super(mContext, RequestType.COMMON_REQUEST_UPDATE_FCM_TOKEN, CommonRequestMethod.COMMON_REQUEST_METHOD_POST, null);
 
         this.mContext = mContext;
@@ -33,13 +33,13 @@ public class UpdateFcmToken extends CommonRequest{
 
     @Override
     public void onResponseHandler(JSONObject response) {
-        Log.i("UpdateFcmToken","fcm update success");
+        Log.i("UpdateFcmTokenRequest","fcm update success");
     }
 
     @Override
     public void onErrorHandler(VolleyError error) {
         String errorMsg = VolleyErrorHelper.getMessage(error, mContext);
-        Log.d("UpdateFcmToken",errorMsg);
-        Log.d("UpdateFcmToken",error.getMessage());
+        Log.d("UpdateFcmTokenRequest",errorMsg);
+        Log.d("UpdateFcmTokenRequest",error.getMessage());
     }
 }

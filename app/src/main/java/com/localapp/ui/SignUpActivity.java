@@ -606,12 +606,13 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
             case COMMON_RES_SERVER_ERROR_WITH_MESSAGE:
                 try {
                     JSONObject errorObject = new JSONObject(data.getmErrorMessage());
-                    if (errorObject.getInt("status") == 0) {
+                    if (errorObject.getInt("status") == 2) {
                         onSignUpFailed("Please try again or provide a different face image");
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    onSignUpFailed("Something went wrong");
+//                    onSignUpFailed("Something went wrong");
+                    onSignUpFailed(data.getmErrorMessage());
                 }
                 break;
         }
@@ -684,7 +685,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
                         com.facebook.Profile fbProfile = Profile.getCurrentProfile();
                         if (fbProfile == null){
-                            Toast.makeText(SignUpActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignUpActivity.this, "Something went wrong, Please try again", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
@@ -752,7 +753,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
     /**
      * Background Async Task to download file
      * */
-    class DownloadFileFromURL extends AsyncTask<String, String, String> {
+    private class DownloadFileFromURL extends AsyncTask<String, String, String> {
         String rootDir = getFilesDir().getAbsolutePath();
         String fileName;
         /**

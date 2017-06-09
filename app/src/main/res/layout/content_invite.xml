@@ -19,7 +19,7 @@
             android:padding="4dp"
             android:orientation="vertical"
             android:layout_width="0dp"
-            android:background="@drawable/layout_click_state"
+            android:background="?android:attr/selectableItemBackground"
             android:layout_height="wrap_content"
             android:clickable="true">
             <ImageView
@@ -48,7 +48,7 @@
             android:onClick="onClicked"
             android:orientation="vertical"
             android:layout_width="0dp"
-            android:background="@drawable/layout_click_state"
+            android:background="?android:attr/selectableItemBackground"
             android:layout_height="wrap_content"
             android:clickable="true">
             <ImageView
@@ -75,7 +75,7 @@
             android:onClick="onClicked"
             android:orientation="vertical"
             android:layout_width="0dp"
-            android:background="@drawable/layout_click_state"
+            android:background="?android:attr/selectableItemBackground"
             android:layout_height="wrap_content"
             android:clickable="true">
             <ImageView

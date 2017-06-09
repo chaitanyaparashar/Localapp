@@ -16,6 +16,7 @@ public class AppPreferences {
     private static final String PREF_LAUNCH_MAP_TOOLTIP = "pref_launch_map_toll_tip";
     private static final String PREF_LAUNCH_BROADCAST_TOOLTIP = "pref_launch_broadcast_toll_tip";
     private static final String PREF_LAUNCH_NOTICEBOARD_TOOLTIP = "pref_launch_notice_toll_tip";
+    private static final String PREF_BROADCAST_NOTIFICATION_SETTING = "pref_broadcast_setting";
 
     private AppPreferences(Context paramContext) {
         this.mPrefs = paramContext.getSharedPreferences("app_prefs", 0);
@@ -93,6 +94,22 @@ public class AppPreferences {
     public void noticeboardToolTipLaunched() {
         SharedPreferences.Editor localEditor = this.mPrefs.edit();
         localEditor.putBoolean(PREF_LAUNCH_NOTICEBOARD_TOOLTIP, true);
+        localEditor.commit();
+    }
+
+    public boolean isBroadcastNotificationOn () {
+        return this.mPrefs.getBoolean(PREF_BROADCAST_NOTIFICATION_SETTING, true);
+    }
+
+    public void setBroadcastNotificationOn() {
+        SharedPreferences.Editor localEditor = this.mPrefs.edit();
+        localEditor.putBoolean(PREF_BROADCAST_NOTIFICATION_SETTING, true);
+        localEditor.commit();
+    }
+
+    public void setBroadcastNotificationOff() {
+        SharedPreferences.Editor localEditor = this.mPrefs.edit();
+        localEditor.putBoolean(PREF_BROADCAST_NOTIFICATION_SETTING, false);
         localEditor.commit();
     }
 }

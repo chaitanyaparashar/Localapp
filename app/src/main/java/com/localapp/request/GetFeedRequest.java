@@ -44,7 +44,7 @@ public class GetFeedRequest extends CommonRequest {
         String url = getRequestTypeURL(RequestType.COMMON_REQUEST_FEED);
         url += "latitude=" + String.valueOf(latLng.latitude);
         url += "&longitude=" + String.valueOf(latLng.longitude);
-        url += "&radius=10";
+        url += "&radius=5";
         super.setURL(url);
 
         mGetFeedRequestCallback = cb;

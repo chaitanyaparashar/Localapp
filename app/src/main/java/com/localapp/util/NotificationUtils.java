@@ -24,6 +24,7 @@ import java.util.List;
 public class NotificationUtils {
 
     public static List<MessageNotificationData> notificationList = new ArrayList<>();
+    public static int numMessage = 0;
 
     public static boolean isAppIsInBackground(Context context) {
         boolean isInBackground = true;

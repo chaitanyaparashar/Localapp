@@ -38,6 +38,7 @@ import java.util.HashMap;
 
 import static com.localapp.ui.MapFragment.REQUEST_CHECK_SETTINGS;
 import static com.localapp.util.NotificationUtils.notificationList;
+import static com.localapp.util.NotificationUtils.numMessage;
 
 public class HomeActivity extends AppCompatActivity{
 
@@ -125,7 +126,9 @@ public class HomeActivity extends AppCompatActivity{
             manager.cancel(data.getNotificationId());//cancel message notification
         }
 
+        manager.cancel(1);
         notificationList.clear();
+        numMessage = 0;
 
         String notification = getIntent().getStringExtra("noti");
         if ( notification != null) {

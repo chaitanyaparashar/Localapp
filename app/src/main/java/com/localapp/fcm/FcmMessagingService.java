@@ -1,20 +1,16 @@
 package com.localapp.fcm;
 
-import android.app.Notification;
+
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
-import android.graphics.Rect;
+
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.support.v7.app.NotificationCompat;
+import android.os.Build;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.app.NotificationCompat;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -22,23 +18,17 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
 import com.localapp.data.MessageNotificationData;
-import com.localapp.data.NotificationData;
-import com.localapp.data.Profile;
+
 import com.localapp.feedback.AppPreferences;
 import com.localapp.login_session.SessionManager;
 import com.localapp.ui.HomeActivity;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import static com.localapp.util.NotificationUtils.getCroppedBitmap;
 import static com.localapp.util.NotificationUtils.isAppIsInBackground;
 import static com.localapp.util.NotificationUtils.notificationList;
+import static com.localapp.util.NotificationUtils.numMessage;
 
 /**
  * Created by 4 way on 24-04-2017.
@@ -48,6 +38,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
 
     static final int NotiEmergency = 0;
     private static final int NotiBroadcast = 1;
+    final String GROUP_KEY_MESSAGES = "group_key_messages";
 
 
 
@@ -148,11 +139,27 @@ public class FcmMessagingService extends FirebaseMessagingService {
                 intent.putExtra("noti","new_message");
                 PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+                NotificationCompat.Builder builder0 = new NotificationCompat.Builder(this)
+                        .setGroup(GROUP_KEY_MESSAGES)
+                        .setGroupSummary(true)
+                        .setContentIntent(pendingIntent)
+                        .setSmallIcon(R.mipmap.ic_localapp)
+                        .setColor(Color.parseColor("#2196f3"));
+
+                if (numMessage == 0 && Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                    NotificationManagerCompat.from(this).notify(1, builder0.build());
+                    numMessage++;
+                }
+
 
                 NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-                builder.setContentTitle(title+" ("+ notificationList.get(index).getMessageList().size() +")");
+                builder.setGroup(GROUP_KEY_MESSAGES);
+                if (notificationList.get(index).getMessageList().size() == 1) {
+                    builder.setContentTitle(title+" ("+ notificationList.get(index).getMessageList().size() +" message)");
+                }else {
+                    builder.setContentTitle(title+" ("+ notificationList.get(index).getMessageList().size() +" messages)");
+                }
                 builder.setContentText(message);
-                builder.setCategory(Notification.CATEGORY_MESSAGE);
                 builder.setContentIntent(pendingIntent);
                 builder.setSmallIcon(R.mipmap.ic_localapp);
                 try {
@@ -168,7 +175,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
                 for (int i =0; i < notificationList.get(index).getMessageList().size(); i++) {
                     if (i < 3) {
                         inboxStyle.addLine(notificationList.get(index).getMessageList().get(i));
-                        inboxStyle.setSummaryText("New Message");
+                        inboxStyle.setSummaryText(notificationList.get(index).getMessageList().size()+" new message");
                     }else {
                         inboxStyle.addLine("+"+(notificationList.get(index).getMessageList().size() -3)+" more");
                         break;
@@ -181,8 +188,9 @@ public class FcmMessagingService extends FirebaseMessagingService {
                 builder.setColor(Color.parseColor("#2196f3"));
                 builder.setAutoCancel(true);
 
-                NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                notificationManager.notify(index + 2, builder.build());
+                NotificationManagerCompat.from(this).notify(index + 2, builder.build());
+//                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//                notificationManager.notify(index + 2, builder.build());
 
 
 

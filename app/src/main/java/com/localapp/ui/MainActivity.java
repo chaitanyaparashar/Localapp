@@ -67,12 +67,14 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         setContentView(R.layout.activity_main);
 
 
+
         if (AppPreferences.getInstance(AppController.getAppContext()).isTourLaunched()) {
             startApp();
             finish();
         }
 
 
+//        startService(new Intent(AppController.getAppContext(), LocationService.class));
         container = (FrameLayout) findViewById(R.id.container);
 
         setReference();

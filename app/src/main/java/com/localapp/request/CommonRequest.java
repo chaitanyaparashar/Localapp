@@ -22,8 +22,8 @@ import java.util.Map;
 public abstract class
 CommonRequest {
 
-    static final String DOMAIN = "http://13.56.50.98:8080";
-//    static final String DOMAIN = "http://192.172.2.178:8080";//localhost
+//    static final String DOMAIN = "http://13.56.50.98:8080";
+    static final String DOMAIN = "http://192.172.2.178:8080";//localhost
     private static final String LOGIN_REQUEST_URL = DOMAIN + "/login";
 //    private static final String LOGIN_REQUEST_URL = "http://192.172.3.78:8080/login";//local
     private static final String MAP_REQUEST_URL = DOMAIN + "/pinOnMap";
@@ -48,6 +48,7 @@ CommonRequest {
     private static final String UPDATE_FCM_TOKEN_REQUEST_URL = DOMAIN + "/updateFcmToken";
     private static final String FCM_PUSH_NOTIFICATION_URL = "https://fcm.googleapis.com/fcm/send";
     private static final String LOCALAPP_INVITE_URL = DOMAIN + "/email/doMail?";
+    private static final String LOCATION_UPDATE_IN_BACKGROUND_URL = DOMAIN + "/locationUpdate";
 
     public enum RequestType {
         COMMON_REQUEST_LOGIN,
@@ -72,7 +73,8 @@ CommonRequest {
         COMMON_REQUEST_FB_LOGIN,
         COMMON_REQUEST_LOCALAPP_INVITE,
         COMMON_REQUEST_UPDATE_EMAIL,
-        COMMON_REQUEST_UPDATE_FCM_TOKEN
+        COMMON_REQUEST_UPDATE_FCM_TOKEN,
+        COMMON_REQUEST_LOCATION_UPDATE_IN_BACKGROUND
 
     }
 
@@ -233,6 +235,10 @@ CommonRequest {
             case COMMON_REQUEST_UPDATE_FCM_TOKEN:
                  url = UPDATE_FCM_TOKEN_REQUEST_URL;
                  break;
+
+            case COMMON_REQUEST_LOCATION_UPDATE_IN_BACKGROUND:
+                url = LOCATION_UPDATE_IN_BACKGROUND_URL;
+                break;
 
 
         }

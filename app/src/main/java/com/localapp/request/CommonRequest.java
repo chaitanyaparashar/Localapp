@@ -22,8 +22,8 @@ import java.util.Map;
 public abstract class
 CommonRequest {
 
-//    static final String DOMAIN = "http://13.56.50.98:8080";
-    static final String DOMAIN = "http://192.172.2.178:8080";//localhost
+    static final String DOMAIN = "http://13.56.50.98:8080";
+//    static final String DOMAIN = "http://192.172.2.178:8080";//localhost
     private static final String LOGIN_REQUEST_URL = DOMAIN + "/login";
 //    private static final String LOGIN_REQUEST_URL = "http://192.172.3.78:8080/login";//local
     private static final String MAP_REQUEST_URL = DOMAIN + "/pinOnMap";

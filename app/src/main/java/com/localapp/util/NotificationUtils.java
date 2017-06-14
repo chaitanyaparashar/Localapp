@@ -1,6 +1,7 @@
 package com.localapp.util;
 
 import android.app.ActivityManager;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -10,12 +11,19 @@ import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Looper;
+import android.support.v4.app.NotificationManagerCompat;
 import android.util.Log;
 
+import com.localapp.appcontroller.AppController;
 import com.localapp.data.MessageNotificationData;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 /**
  * Created by 4 way on 07-06-2017.
@@ -67,5 +75,17 @@ public class NotificationUtils {
         //return _bmp;
         return output;
     }
+
+    public static void clearNotificationTimer(final int id, long delayInMilliseconds){
+        Handler h = new Handler(Looper.getMainLooper());
+
+        h.postDelayed(new Runnable() {
+            public void run() {
+                NotificationManager notificationManager = (NotificationManager) AppController.getAppContext().getSystemService(NOTIFICATION_SERVICE);
+                notificationManager.cancel(id);
+            }
+        }, delayInMilliseconds);
+    }
+
 
 }

@@ -53,7 +53,8 @@ public class LocationUpdateBackgroundRequest extends CommonRequest{
     @Override
     public void onErrorHandler(VolleyError error) {
         String errorMsg = VolleyErrorHelper.getMessage(error, mContext);
-        Log.v("onErrorHandler","error is" + error);
+        Log.e("onErrorHandler","error is" + error);
+        Log.e("onErrorHandler","error is" + errorMsg);
 
         CommonRequest.ResponseCode resCode;
 

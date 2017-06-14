@@ -13,7 +13,6 @@ import android.util.Log;
 import com.localapp.appcontroller.AppController;
 import com.localapp.login_session.SessionManager;
 import com.localapp.request.LocationUpdateBackgroundRequest;
-import com.localapp.ui.HomeActivity;
 import com.localapp.util.NotificationUtils;
 
 import java.util.HashMap;
@@ -43,12 +42,12 @@ public class LocationService extends Service {
 
         @Override
         public void onLocationChanged(Location location) {
-            Log.e(TAG, "onLocationChanged: " + location.getProvider());
-            Log.e(TAG, "onLocationChanged: " + location);
+            Log.i(TAG, "onLocationChanged: " + location.getProvider());
+            Log.i(TAG, "onLocationChanged: " + location);
             mLastLocation.set(location);
 
             if (SessionManager.getInstance(AppController.getAppContext()).isLoggedIn() && NotificationUtils.isAppIsInBackground(AppController.getAppContext())) {
-                Log.d(TAG, "onLocationChanged in background");
+                Log.i(TAG, "onLocationChanged in background");
                 HashMap<String, String> user = SessionManager.getInstance(AppController.getAppContext()).getUserDetails();
                 String mLoginToken = user.get(SessionManager.KEY_LOGIN_TOKEN);
                 String mUserId = user.get(SessionManager.KEY_LOGIN_USER_ID);
@@ -61,7 +60,7 @@ public class LocationService extends Service {
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
-            Log.e(TAG, "onStatusChanged: " + provider);
+            Log.v(TAG, "onStatusChanged: " + provider);
         }
 
         /**
@@ -72,7 +71,7 @@ public class LocationService extends Service {
          */
         @Override
         public void onProviderEnabled(String provider) {
-            Log.e(TAG, "onProviderEnabled: " + provider);
+            Log.v(TAG, "onProviderEnabled: " + provider);
         }
 
         /**
@@ -85,7 +84,7 @@ public class LocationService extends Service {
          */
         @Override
         public void onProviderDisabled(String provider) {
-            Log.e(TAG, "onProviderDisabled: " + provider);
+            Log.d(TAG, "onProviderDisabled: " + provider);
         }
     }
 
@@ -114,7 +113,7 @@ public class LocationService extends Service {
      */
     @Override
     public void onCreate() {
-        Log.e(TAG, "onCreate");
+        Log.d(TAG, "onCreate");
         initializeLocationManager();
         try {
             mLocationManager.requestLocationUpdates(
@@ -144,7 +143,7 @@ public class LocationService extends Service {
      */
     @Override
     public void onDestroy() {
-        Log.e(TAG, "onDestroy");
+        Log.d(TAG, "onDestroy");
         super.onDestroy();
         if (mLocationManager != null) {
             for (LocationListener mLocationListener : mLocationListeners) {
@@ -158,7 +157,7 @@ public class LocationService extends Service {
     }
 
     private void initializeLocationManager() {
-        Log.e(TAG, "initializeLocationManager");
+        Log.d(TAG, "initializeLocationManager");
         if (mLocationManager == null) {
             mLocationManager = (LocationManager) getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         }

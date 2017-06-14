@@ -15,3 +15,28 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+-dontwarn org.fusesource.hawtdispatch.**
+-dontwarn com.github.siyamed.shapeimageview.path.parser.**
+-dontwarn com.squareup.picasso.**
+-dontwarn okio.**
+-dontwarn com.squareup.javawriter.JavaWriter
+
+
+# ------------------- TEST DEPENDENCIES -------------------
+-dontwarn org.hamcrest.**
+-dontwarn android.test.**
+-dontwarn android.support.test.**
+
+-keep class org.hamcrest.** {
+   *;
+}
+
+-keep class org.junit.** { *; }
+-dontwarn org.junit.**
+
+-keep class junit.** { *; }
+-dontwarn junit.**
+
+#-------------------------
+-keepattributes Signature
+

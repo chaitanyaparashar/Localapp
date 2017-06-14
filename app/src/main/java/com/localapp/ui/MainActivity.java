@@ -13,6 +13,7 @@ import android.widget.LinearLayout;
 
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
+import com.localapp.background.LocationService;
 import com.localapp.feedback.AppPreferences;
 import com.localapp.login_session.SessionManager;
 
@@ -65,6 +66,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
 
         setContentView(R.layout.activity_main);
+
+
+        if (AppPreferences.getInstance(AppController.getAppContext()).getLaunchCount() == 0){
+            startService(new Intent(this, LocationService.class));
+        }
 
 
 

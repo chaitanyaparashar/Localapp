@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:focusable="true"
-    android:id="@+id/fmap_layout"
     android:focusableInTouchMode="true"
     tools:context="com.localapp.ui.MapFragment">
 

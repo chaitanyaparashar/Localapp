@@ -55,7 +55,6 @@
 
             <include
                 layout="@layout/type_message_area"
-                android:id="@+id/msg_area"
                 android:background="#FFFFFF"
                 android:gravity="bottom"
                 android:layout_width="match_parent"

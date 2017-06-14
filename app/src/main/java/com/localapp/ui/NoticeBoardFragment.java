@@ -106,6 +106,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
      * @param fView
      */
     private void setupView(View fView) {
+
         recyclerView = (RecyclerView) fView.findViewById(R.id.notice_board_recyclerView);
         recyclerViewNearYou = (RecyclerView) fView.findViewById(R.id.notice_board_near_you_recyclerView);
         recyclerView.setHasFixedSize(true);

@@ -43,7 +43,6 @@
 
             <ImageButton
                 android:layout_margin="8dp"
-                android:id="@+id/update_button"
                 android:tint="#2196f3"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"

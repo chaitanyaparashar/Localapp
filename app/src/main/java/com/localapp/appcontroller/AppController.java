@@ -3,6 +3,8 @@ package com.localapp.appcontroller;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
+import android.os.Build;
+import android.util.Log;
 
 /**
  * Created by 4 way on 12-04-2017.
@@ -20,6 +22,8 @@ public class AppController extends Application {
         mInstance = this;
 
         this.setAppContext(getApplicationContext());
+
+//        Thread.setDefaultUncaughtExceptionHandler(new AppExceptionHandler(getAppContext()));
     }
     public static synchronized AppController getInstance(){
         return mInstance;
@@ -53,7 +57,7 @@ public class AppController extends Application {
         return mAppContext;
     }
     public void setAppContext(Context mAppContext) {
-        this.mAppContext = mAppContext;
+        AppController.mAppContext = mAppContext;
     }
 
     private static boolean activityVisible;

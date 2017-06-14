@@ -1756,7 +1756,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
          * @param countDownInterval The interval along the way to receive
          *                          {@link #onTick(long)} callbacks.
          */
-        public CountDownTimerTask(long millisInFuture, long countDownInterval) {
+        private CountDownTimerTask(long millisInFuture, long countDownInterval) {
             super(millisInFuture, countDownInterval);
         }
 

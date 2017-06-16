@@ -1,9 +1,14 @@
 package com.localapp.ui;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -16,6 +21,8 @@ import com.localapp.appcontroller.AppController;
 import com.localapp.background.LocationService;
 import com.localapp.feedback.AppPreferences;
 import com.localapp.login_session.SessionManager;
+
+import static com.localapp.util.utility.isServiceRunning;
 
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener,View.OnClickListener{
     SessionManager session;
@@ -63,12 +70,11 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         }catch (NullPointerException e){
             e.printStackTrace();
         }
-
-
         setContentView(R.layout.activity_main);
 
 
-        if (AppPreferences.getInstance(AppController.getAppContext()).getLaunchCount() == 0){
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M && AppPreferences.getInstance(AppController.getAppContext()).getLaunchCount() == 0){
             startService(new Intent(this, LocationService.class));
         }
 

@@ -1,5 +1,6 @@
 package com.localapp.util;
 
+import android.app.ActivityManager;
 import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
@@ -82,6 +83,19 @@ public class utility {
             case ExpandableListAdapter.PROFESSION_GROUP_HOUSEWIFE: return ExpandableListAdapter.PROFESSION_GROUP_HOUSEWIFE_LIST;
             default: return null;
         }
+    }
+
+    public static boolean isServiceRunning(Context mContext,Class<?> serviceClass){
+        ActivityManager activityManager = (ActivityManager) mContext.getSystemService(Context.ACTIVITY_SERVICE);
+
+        // Loop through the running services
+        for(ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                // If the service is running then return true
+                return true;
+            }
+        }
+        return false;
     }
 
 }

@@ -50,6 +50,7 @@ import com.localapp.compressor.Compressor;
 import com.localapp.R;
 import com.localapp.camera.CropImage;
 import com.localapp.data.SignUpData;
+import com.localapp.feedback.AppPreferences;
 import com.localapp.login_session.SessionManager;
 import com.localapp.request.CommonRequest;
 import com.localapp.request.SignUpRequest;
@@ -630,6 +631,8 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         HomeActivity.mUserId = data.getmUserId();
         HomeActivity.mPicUrl = data.getPicUrl();
         session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mPicUrl, HomeActivity.mLastKnownLocation);
+
+        AppPreferences.getInstance(this).setMobiruckSignupPostback(true);//postback true
 
         Intent returnIntent = new Intent();
         returnIntent.putExtra("result",true);

@@ -46,6 +46,7 @@ import com.localapp.data.FbLoginError;
 import com.localapp.data.LoginData;
 import com.localapp.data.Profile;
 import com.localapp.data.SignUpData;
+import com.localapp.feedback.AppPreferences;
 import com.localapp.login_session.SessionManager;
 import com.localapp.request.CommonRequest;
 import com.localapp.request.FbLoginRequest;
@@ -179,6 +180,9 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
             }
         };
 
+
+
+
     }
 
     private View.OnClickListener onClickListener = new View.OnClickListener() {
@@ -293,6 +297,8 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         HomeActivity.mUserId = data.getmUserId();
         HomeActivity.mPicUrl = data.getPicUrl();
         session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mPicUrl, HomeActivity.mLastKnownLocation);
+
+        AppPreferences.getInstance(this).setMobiruckSignupPostback(true);//postback true
 
         fcmTokenUpdateRequest();
     }

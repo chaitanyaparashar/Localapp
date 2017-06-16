@@ -23,7 +23,7 @@ public class AppController extends Application {
 
         this.setAppContext(getApplicationContext());
 
-//        Thread.setDefaultUncaughtExceptionHandler(new AppExceptionHandler(getAppContext()));
+        Thread.setDefaultUncaughtExceptionHandler(new AppExceptionHandler(getAppContext()));
     }
     public static synchronized AppController getInstance(){
         return mInstance;

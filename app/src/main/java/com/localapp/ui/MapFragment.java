@@ -11,6 +11,8 @@ import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.net.Uri;
@@ -75,6 +77,7 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
+import com.localapp.background.LocationService;
 import com.localapp.camera.Camera2Activity;
 import com.localapp.compressor.Compressor;
 import com.localapp.data.GetUsersRequestData;
@@ -91,17 +94,21 @@ import com.localapp.request.ImageSearchRequest;
 import com.localapp.request.SubscribeUnsubscribeNoticeBoardRequest;
 import com.localapp.request.GetProfileByIdRequest;
 import com.localapp.util.utility;
+import com.mobiruck.Mobiruck;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.StringTokenizer;
 
 import static com.localapp.util.utility.getProfessionList;
+import static com.localapp.util.utility.isServiceRunning;
 
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GetUsersRequest.GetUsersResponseCallback,
@@ -138,9 +145,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     private static final int REQUEST_CAMERA_PERMISSION_CODE = 201;
     private static final int REQUEST_CALL_PHONE_PERMISSION_CODE = 202;
     private static final int REQUEST_LOCATION_PERMISSION_CODE = 200;
+    private static final int REQUEST_READ_PHONE_STATE_CODE = 225;
     final static String[] CAMERA_PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO};
     final static String[] CALL_PHONE_PERMISSIONS = {Manifest.permission.CALL_PHONE};
     final static String[] LOCATION_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+    final static String[] READ_PHONE_STATE_PERMISSIONS = {Manifest.permission.READ_PHONE_STATE};
 
 //    ToolTipRelativeLayout toolTipRelativeLayout;
 
@@ -821,6 +830,103 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     void request(LatLng latLng) {
         GetUsersRequest usersRequest = new GetUsersRequest(getActivity(), latLng, HomeActivity.mLoginToken, MapFragment.this);
         usersRequest.executeRequest();
+
+        try {
+            if (AppPreferences.getInstance(getActivity()).isMobiruckPostBack()) {
+                Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
+                List<Address> addresses = null;
+                try {
+                    addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1);
+
+
+                    String ncr = null;
+                    try {
+                        ncr = addresses.get(0).getLocality();
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
+
+                    if (ncr == null || !isMarketingLocation(ncr, true)) {
+                        try {
+                            String state = addresses.get(0).getAdminArea();
+                            isMarketingLocation(state, false);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {
+
+                }
+
+            }
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+
+    private boolean isMarketingLocation(String cityName, boolean isNCR) {
+
+        if (isNCR) {
+            switch (cityName) {
+                case "Noida":
+                case "Faridabad":
+                case "Gurgaon":
+                case "Gurugram":
+                case "Ghaziabad":
+                case "Delhi":
+                case "New Delhi":
+                case "Maharashtra":
+                case "Bengaluru":
+                    mobiRuckPostBack();
+                    Log.d("state1", cityName);
+
+                    return true;
+
+                default:return false;
+            }
+        }
+
+        switch (cityName) {
+            case "New Delhi":
+            case "Delhi":
+            case "Maharashtra":
+            case "Bengaluru":
+                mobiRuckPostBack();
+                Log.d("state2", cityName);
+                return true;
+            default:
+                Log.d("state2", "location not found");
+                return false;
+        }
+
+
+
+    }
+
+
+    private void mobiRuckPostBack(){
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED){
+
+            if (AppPreferences.getInstance(getActivity()).isMobiruckPostBack()) {
+                Mobiruck mMobiruck = new Mobiruck(getActivity());
+                mMobiruck.triggerConversion();
+                AppPreferences.getInstance(getActivity()).setMobiruckSignupPostback(false);
+                Log.d("mobiRuckPostBack", "called");
+            }
+
+
+        }else {
+            requestPermissions(READ_PHONE_STATE_PERMISSIONS, REQUEST_READ_PHONE_STATE_CODE);
+        }
+
     }
 
 
@@ -1252,6 +1358,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                         mMap.setMyLocationEnabled(true);
 //                        requestLocation();
                         startLocationUpdates();
+                        if (!isServiceRunning(getActivity(),LocationService.class)) {
+                            getActivity().startService(new Intent(AppController.getAppContext(), LocationService.class));
+                        }
                     }
                 } else {
                     // permission denied, boo! Disable the
@@ -1275,6 +1384,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             case REQUEST_CALL_PHONE_PERMISSION_CODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     Toast.makeText(getActivity(), "You can now call!", Toast.LENGTH_SHORT).show();
+                }else {
+                    Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
+                }
+                break;
+            case REQUEST_READ_PHONE_STATE_CODE:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                    mobiRuckPostBack();
                 }else {
                     Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
                 }

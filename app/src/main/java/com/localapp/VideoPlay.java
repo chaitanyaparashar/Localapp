@@ -21,7 +21,11 @@ public class VideoPlay extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video_play);
 
-        getSupportActionBar().hide();
+        try {
+            getSupportActionBar().hide();
+        }catch (NullPointerException ignore){
+
+        }
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
         url=super.getIntent().getStringExtra("url");
         videoView=(VideoView)findViewById(R.id.videoView);

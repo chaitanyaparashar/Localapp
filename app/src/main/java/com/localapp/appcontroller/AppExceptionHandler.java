@@ -4,10 +4,8 @@ import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
+
 import java.lang.Thread.UncaughtExceptionHandler;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Created by 4 way on 13-06-2017.
@@ -32,18 +30,14 @@ public class AppExceptionHandler implements UncaughtExceptionHandler {
     @Override
     public void uncaughtException(Thread t, Throwable e) {
         StackTraceElement[] arr = e.getStackTrace();
-        List<String> strings =  new ArrayList<>();
 
-        String d = strings.toString();
-        final StringBuffer report = new StringBuffer(e.toString());
+        final StringBuilder report = new StringBuilder(e.toString());
         final String lineSeperator = "-----------------------------------\n\n";
         final String SINGLE_LINE_SEP = "\n";
         final String DOUBLE_LINE_SEP = "\n\n";
         report.append(DOUBLE_LINE_SEP);
         int length = arr.length;
-        Log.e("llllll",""+length);
-        length = (length > 20) ? 20:length;
-        Log.e("llllll",""+length);
+        length = (length > 10) ? 10:length;
         report.append("----------- Stack trace -----------\n\n");
         for (int i = 0; i < length; i++) {
             report.append( "    ");
@@ -98,6 +92,11 @@ public class AppExceptionHandler implements UncaughtExceptionHandler {
         report.append(lineSeperator);
 
         Log.e("Report ::", report.toString());
+
+        /*Intent crashedIntent = new Intent(context, CrashActivity.class);
+        crashedIntent.putExtra(CrashActivity.ERROR_REPORT, report.toString());
+        crashedIntent.putExtra(CrashActivity.ERROR_MESSAGE, report.toString());
+        context.startActivity(crashedIntent);*/
 
         /*Intent crashedIntent = new Intent(context, ExceptionActivity.class);
         crashedIntent.putExtra(ExceptionActivity.ERROR_REPORT, report.toString());*/

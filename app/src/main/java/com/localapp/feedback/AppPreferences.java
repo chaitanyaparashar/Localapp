@@ -17,6 +17,7 @@ public class AppPreferences {
     private static final String PREF_LAUNCH_BROADCAST_TOOLTIP = "pref_launch_broadcast_toll_tip";
     private static final String PREF_LAUNCH_NOTICEBOARD_TOOLTIP = "pref_launch_notice_toll_tip";
     private static final String PREF_BROADCAST_NOTIFICATION_SETTING = "pref_broadcast_setting";
+    private static final String PREF_MOBIRUCK_SIGNUP_POSTBACK = "pref_mobiruck_postback";
 
     private AppPreferences(Context paramContext) {
         this.mPrefs = paramContext.getSharedPreferences("app_prefs", 0);
@@ -110,6 +111,16 @@ public class AppPreferences {
     public void setBroadcastNotificationOff() {
         SharedPreferences.Editor localEditor = this.mPrefs.edit();
         localEditor.putBoolean(PREF_BROADCAST_NOTIFICATION_SETTING, false);
+        localEditor.commit();
+    }
+
+    public boolean isMobiruckPostBack() {
+        return this.mPrefs.getBoolean(PREF_MOBIRUCK_SIGNUP_POSTBACK, false);
+    }
+
+    public void setMobiruckSignupPostback(boolean postback) {
+        SharedPreferences.Editor localEditor = this.mPrefs.edit();
+        localEditor.putBoolean(PREF_MOBIRUCK_SIGNUP_POSTBACK, postback);
         localEditor.commit();
     }
 }

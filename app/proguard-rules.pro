@@ -20,12 +20,18 @@
 -dontwarn com.squareup.picasso.**
 -dontwarn okio.**
 -dontwarn com.squareup.javawriter.JavaWriter
+-dontwarn android.net.http.**
+-dontwarn com.android.internal.http.multipart.**
+
+
+
 
 
 # ------------------- TEST DEPENDENCIES -------------------
 -dontwarn org.hamcrest.**
 -dontwarn android.test.**
 -dontwarn android.support.test.**
+
 
 -keep class org.hamcrest.** {
    *;

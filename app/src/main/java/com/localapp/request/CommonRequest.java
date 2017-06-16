@@ -49,6 +49,7 @@ CommonRequest {
     private static final String FCM_PUSH_NOTIFICATION_URL = "https://fcm.googleapis.com/fcm/send";
     private static final String LOCALAPP_INVITE_URL = DOMAIN + "/email/doMail?";
     private static final String LOCATION_UPDATE_IN_BACKGROUND_URL = DOMAIN + "/locationUpdate";
+    private static final String REPORT_CRASH_ERROR_URL = DOMAIN + "/crash/add";
 
     public enum RequestType {
         COMMON_REQUEST_LOGIN,
@@ -74,7 +75,9 @@ CommonRequest {
         COMMON_REQUEST_LOCALAPP_INVITE,
         COMMON_REQUEST_UPDATE_EMAIL,
         COMMON_REQUEST_UPDATE_FCM_TOKEN,
-        COMMON_REQUEST_LOCATION_UPDATE_IN_BACKGROUND
+        COMMON_REQUEST_LOCATION_UPDATE_IN_BACKGROUND,
+        COMMON_REQUEST_REPORT_CRASH_ERROR
+
 
     }
 
@@ -240,6 +243,9 @@ CommonRequest {
                 url = LOCATION_UPDATE_IN_BACKGROUND_URL;
                 break;
 
+            case COMMON_REQUEST_REPORT_CRASH_ERROR:
+                url = REPORT_CRASH_ERROR_URL;
+                break;
 
         }
 

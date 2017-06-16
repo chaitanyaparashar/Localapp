@@ -77,14 +77,18 @@ public class NotificationUtils {
     }
 
     public static void clearNotificationTimer(final int id, long delayInMilliseconds){
-        Handler h = new Handler(Looper.getMainLooper());
+        try {
+            Handler h = new Handler(Looper.getMainLooper());
 
-        h.postDelayed(new Runnable() {
-            public void run() {
-                NotificationManager notificationManager = (NotificationManager) AppController.getAppContext().getSystemService(NOTIFICATION_SERVICE);
-                notificationManager.cancel(id);
-            }
-        }, delayInMilliseconds);
+            h.postDelayed(new Runnable() {
+                public void run() {
+                    NotificationManager notificationManager = (NotificationManager) AppController.getAppContext().getSystemService(NOTIFICATION_SERVICE);
+                    notificationManager.cancel(id);
+                }
+            }, delayInMilliseconds);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 

@@ -299,6 +299,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mPicUrl, HomeActivity.mLastKnownLocation);
 
         AppPreferences.getInstance(this).setMobiruckSignupPostback(true);//postback true
+        Log.d(TAG,"post back true");
 
         fcmTokenUpdateRequest();
     }

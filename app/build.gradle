@@ -15,8 +15,8 @@ android {
         applicationId "com.localapp"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 36
-        versionName "1.0"
+        versionCode 41
+        versionName "1.1"
         multiDexEnabled true
 
         resConfigs "en"
@@ -57,6 +57,7 @@ dependencies {
     compile 'com.android.support:support-v4:25.3.1'
     compile 'com.google.android.gms:play-services-maps:9.6.1'
     compile 'com.google.android.gms:play-services-location:9.6.1'
+    //compile 'com.google.android.gms:play-services-analytics:9.6.1'
     compile 'com.android.support:support-vector-drawable:25.3.1'
     compile 'hani.momanii.supernova_emoji_library:supernova-emoji-library:0.0.2'
     compile 'com.google.maps.android:android-maps-utils:0.5'

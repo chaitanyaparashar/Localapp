@@ -15,6 +15,8 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+
 -dontwarn org.fusesource.hawtdispatch.**
 -dontwarn com.github.siyamed.shapeimageview.path.parser.**
 -dontwarn com.squareup.picasso.**

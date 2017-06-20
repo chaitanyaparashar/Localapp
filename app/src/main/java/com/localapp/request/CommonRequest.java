@@ -50,6 +50,7 @@ CommonRequest {
     private static final String LOCALAPP_INVITE_URL = DOMAIN + "/email/doMail?";
     private static final String LOCATION_UPDATE_IN_BACKGROUND_URL = DOMAIN + "/locationUpdate";
     private static final String REPORT_CRASH_ERROR_URL = DOMAIN + "/crash/add";
+    private static final String UPDATE_POSTBACK_STATUS_URL = DOMAIN + "/updatePostBackStatus?";
 
     public enum RequestType {
         COMMON_REQUEST_LOGIN,
@@ -76,7 +77,8 @@ CommonRequest {
         COMMON_REQUEST_UPDATE_EMAIL,
         COMMON_REQUEST_UPDATE_FCM_TOKEN,
         COMMON_REQUEST_LOCATION_UPDATE_IN_BACKGROUND,
-        COMMON_REQUEST_REPORT_CRASH_ERROR
+        COMMON_REQUEST_REPORT_CRASH_ERROR,
+        COMMON_REQUEST_UPDATE_POSTBACK_STATUS
 
 
     }
@@ -245,6 +247,9 @@ CommonRequest {
 
             case COMMON_REQUEST_REPORT_CRASH_ERROR:
                 url = REPORT_CRASH_ERROR_URL;
+                break;
+            case COMMON_REQUEST_UPDATE_POSTBACK_STATUS:
+                url  = UPDATE_POSTBACK_STATUS_URL;
                 break;
 
         }

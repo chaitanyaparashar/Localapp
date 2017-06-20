@@ -16,6 +16,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
 import com.localapp.background.LocationService;
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             R.mipmap.page_item_5
     };
 
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -71,6 +73,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             e.printStackTrace();
         }
         setContentView(R.layout.activity_main);
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);// FirebaseAnalytics
+
 
 
 

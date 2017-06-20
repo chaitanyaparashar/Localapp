@@ -2,12 +2,15 @@ package com.localapp.ui;
 
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -32,10 +35,13 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -93,8 +99,11 @@ import com.localapp.request.GetUsersRequest;
 import com.localapp.request.ImageSearchRequest;
 import com.localapp.request.SubscribeUnsubscribeNoticeBoardRequest;
 import com.localapp.request.GetProfileByIdRequest;
+import com.localapp.request.UpdateEmailRequest;
+import com.localapp.request.helper.UpdatePostBackRequest;
 import com.localapp.util.utility;
 import com.mobiruck.Mobiruck;
+import com.mobiruck.ReferrerReceiver;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -190,10 +199,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         // Required empty public constructor
     }
 
+    public static MapFragment mapFragmentinstance;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        this.mapFragmentinstance = this;
 
         //===========================//
         mRequestingLocationUpdates = true;
@@ -204,6 +216,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
 
         //===========================//
+    }
+
+    static MapFragment getInstance() {
+        return mapFragmentinstance;
     }
 
     @Override
@@ -696,9 +712,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
      * Alert dialog for if your location setting is off
      * @param status
      */
-    private void showAlertForLocationSetting(final int status) {
+    public void showAlertForLocationSetting(final int status) {
         String msg, title, btnText;
-        if (status == 1) {
+        /*if (status == 1) {
             msg = getString(R.string.alert_msg_location_setting);
             title = getString(R.string.enable_location);
             btnText = getString(R.string.location_Settings);
@@ -706,29 +722,57 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             msg = getString(R.string.alert_msg_access_location);
             title = getString(R.string.permission_access);
             btnText = getString(R.string.grant);
+        }*/
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+        final Dialog dialogperm = new Dialog(getActivity(),R.style.AppTheme);
+        dialogperm.setCancelable(false);
+
+
+
+        try {
+            dialogperm.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT,ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        }catch (NullPointerException ne){
+            ne.printStackTrace();
         }
 
-        final AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
-        dialog.setCancelable(false);
-        dialog.setTitle(title)
-                .setMessage(msg).setPositiveButton(btnText, new DialogInterface.OnClickListener() {
+        dialogperm.getWindow().setGravity(Gravity.BOTTOM);
+        dialogperm.setContentView(R.layout.permission_dialog);
+
+        View.OnClickListener permissionDiaogListener = new View.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (status == 1) {
-                    startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                } else {
-                    requestPermissions(LOCATION_PERMISSIONS, REQUEST_LOCATION_PERMISSION_CODE);
+            public void onClick(View v) {
+                int id = v.getId();
+                if (id == R.id.permission_button){
+
+                    if (status == 1){
+                        requestPermissions(LOCATION_PERMISSIONS, REQUEST_LOCATION_PERMISSION_CODE);
+                        dialogperm.dismiss();
+                    }else {
+                        startLocationUpdates();
+                        dialogperm.dismiss();
+                    }
+
+
+                }else {
+                    dialogperm.dismiss();
                 }
             }
-        })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        getActivity().finish();
-                    }
-                });
+        };
 
-        dialog.show();
+
+        ImageView crossImageView = (ImageView) dialogperm.findViewById(R.id.imageView_close);
+        Button permissionButton = (Button) dialogperm.findViewById(R.id.permission_button);
+
+        crossImageView.setOnClickListener(permissionDiaogListener);
+        permissionButton.setOnClickListener(permissionDiaogListener);
+
+
+        if (!dialogperm.isShowing()) {
+            dialogperm.show();
+        }
     }
 
 
@@ -847,9 +891,27 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                     }
 
                     if (ncr == null || !isMarketingLocation(ncr, true)) {
+
                         try {
                             String state = addresses.get(0).getAdminArea();
-                            isMarketingLocation(state, false);
+
+                            if (state == null || !isMarketingLocation(state, false)){
+
+                                String state2 = addresses.get(0).getAddressLine(2);
+
+                                if (state2 != null) {
+
+                                    String stateArray[] = addresses.get(0).getAddressLine(2).split(",");
+
+                                    if (!isMarketingLocation(stateArray[0], false)){
+                                        AppPreferences.getInstance(getActivity()).setMobiruckSignupPostback(false);
+                                    }
+
+                                }else {
+                                    Log.d("Signup Location",addresses.get(0).getAddressLine(0));
+                                    AppPreferences.getInstance(getActivity()).setMobiruckSignupPostback(false);
+                                }
+                            }
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -873,6 +935,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
     private boolean isMarketingLocation(String cityName, boolean isNCR) {
 
+        Log.d(TAG, "isMarketingLocation called");
         if (isNCR) {
             switch (cityName) {
                 case "Noida":
@@ -882,21 +945,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 case "Ghaziabad":
                 case "Delhi":
                 case "New Delhi":
-                case "Maharashtra":
+                case "Pune":
+                case "Mumbai":
                 case "Bengaluru":
                     mobiRuckPostBack();
                     Log.d("state1", cityName);
 
                     return true;
 
-                default:return false;
+                default: return false;
             }
         }
 
         switch (cityName) {
             case "New Delhi":
             case "Delhi":
-            case "Maharashtra":
+            case "Pune":
+            case "Mumbai":
             case "Bengaluru":
                 mobiRuckPostBack();
                 Log.d("state2", cityName);
@@ -918,6 +983,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             if (AppPreferences.getInstance(getActivity()).isMobiruckPostBack()) {
                 Mobiruck mMobiruck = new Mobiruck(getActivity());
                 mMobiruck.triggerConversion();
+
+                postBackUpdate();//update in db
+
                 AppPreferences.getInstance(getActivity()).setMobiruckSignupPostback(false);
                 Log.d("mobiRuckPostBack", "called");
             }
@@ -928,6 +996,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         }
 
     }
+
+    private void postBackUpdate() {
+        UpdatePostBackRequest postBackRequest = new UpdatePostBackRequest(getActivity(),HomeActivity.mUserId);
+        postBackRequest.executeRequest();
+    }
+
 
 
     private void profileRequest(String profileID) {
@@ -1365,9 +1439,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 } else {
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
 
                     searchBoxView.requestFocus();
+                    showAlertForLocationSetting(1);
 
                 }
                 break;
@@ -1392,7 +1467,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
                     mobiRuckPostBack();
                 }else {
-                    Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
                 }
 
 
@@ -1691,6 +1766,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                     mProgressDialog.setMessage("Please wait we are getting results");
                     mProgressDialog.setCancelable(false);
                     mProgressDialog.show();
+                }
+                break;
+
+            case REQUEST_CHECK_SETTINGS:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        Log.i(TAG, "User agreed to make required location settings changes.");
+                        // Nothing to do. startLocationupdates() gets called in onResume again.
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        Log.i(TAG, "User chose not to make required location settings changes.");
+//                        showAlertForLocationSetting(2);
+                        getActivity().finish();
+                        /*mRequestingLocationUpdates = false;
+                        updateUI();*/
+                        break;
                 }
                 break;
 

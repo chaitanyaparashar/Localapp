@@ -1,7 +1,6 @@
 package com.localapp.ui;
 
 
-import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -247,18 +246,23 @@ public class HomeActivity extends AppCompatActivity{
 
         switch (requestCode) {
             case REQUEST_CHECK_SETTINGS:
-                switch (resultCode) {
+                MapFragment mapFragment = MapFragment.getInstance();
+                mapFragment.onActivityResult(requestCode,resultCode,data);
+                /*switch (resultCode) {
                     case Activity.RESULT_OK:
                         Log.i(TAG, "User agreed to make required location settings changes.");
                         // Nothing to do. startLocationupdates() gets called in onResume again.
                         break;
                     case Activity.RESULT_CANCELED:
                         Log.i(TAG, "User chose not to make required location settings changes.");
-                        finish();
-                        /*mRequestingLocationUpdates = false;
-                        updateUI();*/
+                        MapFragment mapFragment = MapFragment.getInstance();
+                        mapFragment.showAlertForLocationSetting(1);
+                        mapFragment.onActivityResult(requestCode,);
+//                        finish();
+                        *//*mRequestingLocationUpdates = false;
+                        updateUI();*//*
                         break;
-                }
+                }*/
                 break;
         }
     }

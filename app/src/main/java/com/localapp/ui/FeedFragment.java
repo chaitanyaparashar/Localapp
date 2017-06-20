@@ -114,7 +114,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
 
     private final String TAG = "FeedFragment";
     private static final String sAddress = "tcp://13.56.50.98:1883";
-//    private final String sAddress = "tcp://192.172.2.178:1883";//local
+//    private final String sAddress = "tcp://192.172.2.178:1883";//localhost
 //    private final String sAddress = "tcp://192.172.3.23:2883";
     private static final String mTopic = "localapp";
     private static final String mTopicAcceptMsg = "accept";
@@ -459,7 +459,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
                                 messages.add(messageData);
                                 adapter.notifyDataSetChanged();
                                 recyclerView.scrollToPosition(adapter.getItemCount() - 1);
-//                                scrollToBottom();
+//                                smoothScrollToBottom();
                                 if (messageData.getMessageType() == MessageType.EMERGENCY) {
                                     emergencyMessageListView.setVisibility(View.VISIBLE);
                                     emergencyMessageList.add(messageData);
@@ -594,7 +594,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
                 messages.add(messageData);
                 adapter.notifyDataSetChanged();
                 chatText.setText("");
-                scrollToBottom();
+                smoothScrollToBottom();
 
                 if (messageData.getMessageType() == MessageType.WHISPER){//remove after 2 min if WHISPER Message
                     whisperMsg(messageData);
@@ -696,7 +696,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
         }else {
             messages.add(messageData);
             adapter.notifyDataSetChanged();
-            scrollToBottom();
+            smoothScrollToBottom();
 
         }
     }
@@ -792,10 +792,16 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
         }
     };
 
-    private void scrollToBottom() {
+    private void smoothScrollToBottom() {
         adapter.notifyDataSetChanged();
         if (adapter.getItemCount() > 1)
             recyclerView.getLayoutManager().smoothScrollToPosition(recyclerView, null, adapter.getItemCount() - 1);
+    }
+
+    private void scrollToBottom() {
+        adapter.notifyDataSetChanged();
+        if (adapter.getItemCount() > 1)
+            recyclerView.scrollToPosition(adapter.getItemCount() - 1);
     }
 
     private void setBroadcastHistory(GetFeedRequestData simpleMsgData, GetFeedRequestData emergencyMsgData) {
@@ -819,7 +825,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
 
         adapter.notifyDataSetChanged();
         emergencyListAdapter.notifyDataSetChanged();
-        scrollToBottom();
+        smoothScrollToBottom();
 
 
     }

@@ -586,7 +586,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
                     messageData.setMsgIdOnlyForFrontEnd("");
                 }
 
-                messageData.setTimeStamp(String.valueOf(System.currentTimeMillis()/1000));
+                messageData.setTimeStamp(String.valueOf(System.currentTimeMillis()));
                 messageData.setmText(text);
                 messageData.setMediaType(MediaType.MEDIA_TEXT);
                 messageData.setmLatLng(HomeActivity.mLastKnownLocation);

@@ -10,7 +10,9 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.localapp.appcontroller.AppController;
+import com.localapp.feedback.AppPreferences;
 import com.localapp.login_session.SessionManager;
 import com.localapp.request.LocationUpdateBackgroundRequest;
 import com.localapp.util.NotificationUtils;
@@ -51,6 +53,10 @@ public class LocationService extends Service {
                 HashMap<String, String> user = SessionManager.getInstance(AppController.getAppContext()).getUserDetails();
                 String mLoginToken = user.get(SessionManager.KEY_LOGIN_TOKEN);
                 String mUserId = user.get(SessionManager.KEY_LOGIN_USER_ID);
+
+                SessionManager.getInstance(AppController.getAppContext())
+                        .saveLastLocation(new LatLng(mLastLocation.getLatitude(),mLastLocation.getLongitude())); //save current location
+
 
                 LocationUpdateBackgroundRequest request = new LocationUpdateBackgroundRequest(AppController.getAppContext(),mLastLocation, mUserId,mLoginToken);
                 request.executeRequest();

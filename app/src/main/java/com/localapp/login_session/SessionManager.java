@@ -93,6 +93,21 @@ public class SessionManager {
 
     }
 
+    public LatLng getLastSaveLocation(){
+        LatLng latLng = null;
+        try {
+
+            Double lat = Double.valueOf(pref.getString(SessionManager.KEY_LAT, null));
+            Double lng = Double.valueOf(pref.getString(SessionManager.KEY_LNG, null));
+
+            latLng = new LatLng(lat,lng);
+        }catch (NullPointerException ne){
+            ne.printStackTrace();
+        }
+
+        return latLng;
+    }
+
     /**
      * Check login method wil check user login status
      * If false it will redirect user to login page

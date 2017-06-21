@@ -25,6 +25,11 @@
 -dontwarn android.net.http.**
 -dontwarn com.android.internal.http.multipart.**
 
+#---------------- google ---------
+
+-keep class com.google.android.gms.** { *; }
+-dontwarn com.google.android.gms.**
+
 
 
 

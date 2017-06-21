@@ -1,8 +1,9 @@
-package com.localapp.appcontroller;
+package com.localapp.analytics;
 
 import android.content.Context;
 
-
+import com.google.android.gms.analytics.GoogleAnalytics;
+import com.google.android.gms.analytics.Tracker;
 import com.localapp.R;
 
 import java.util.HashMap;
@@ -37,7 +38,7 @@ public final class AnalyticsTrackers {
         return sInstance;
     }
 
-//    private final Map<Target, Tracker> mTrackers = new HashMap<Target, Tracker>();
+    private final Map<Target, Tracker> mTrackers = new HashMap<Target, Tracker>();
     private final Context mContext;
 
     /**
@@ -47,7 +48,7 @@ public final class AnalyticsTrackers {
         mContext = context.getApplicationContext();
     }
 
-    /*public synchronized Tracker get(Target target) {
+    public synchronized Tracker get(Target target) {
         if (!mTrackers.containsKey(target)) {
             Tracker tracker;
             switch (target) {
@@ -61,5 +62,5 @@ public final class AnalyticsTrackers {
         }
 
         return mTrackers.get(target);
-    }*/
+    }
 }

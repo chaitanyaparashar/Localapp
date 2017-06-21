@@ -938,14 +938,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         Log.d(TAG, "isMarketingLocation called");
         if (isNCR) {
             switch (cityName) {
-                case "Noida":
-                case "Faridabad":
-                case "Gurgaon":
-                case "Gurugram":
-                case "Ghaziabad":
                 case "Delhi":
                 case "New Delhi":
-                case "Pune":
                 case "Mumbai":
                 case "Bengaluru":
                     mobiRuckPostBack();
@@ -960,7 +954,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         switch (cityName) {
             case "New Delhi":
             case "Delhi":
-            case "Pune":
             case "Mumbai":
             case "Bengaluru":
                 mobiRuckPostBack();
@@ -971,6 +964,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 return false;
         }
 
+        /*
+
+
+        case "Noida":
+        case "Faridabad":
+        case "Gurgaon":
+        case "Gurugram":
+        case "Ghaziabad":
+        case "Pune":
+
+
+        case "Pune":
+
+        */
 
 
     }
@@ -980,7 +987,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         if (ActivityCompat.checkSelfPermission(getApplicationContext(),
                 Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED){
 
-            if (AppPreferences.getInstance(getActivity()).isMobiruckPostBack()) {
+            String source = AppPreferences.getInstance(getActivity()).getUtmSource();
+
+            if (AppPreferences.getInstance(getActivity()).isMobiruckPostBack() && source.equals("expletus")) {
                 Mobiruck mMobiruck = new Mobiruck(getActivity());
                 mMobiruck.triggerConversion();
 

@@ -18,6 +18,7 @@ public class AppPreferences {
     private static final String PREF_LAUNCH_NOTICEBOARD_TOOLTIP = "pref_launch_notice_toll_tip";
     private static final String PREF_BROADCAST_NOTIFICATION_SETTING = "pref_broadcast_setting";
     private static final String PREF_MOBIRUCK_SIGNUP_POSTBACK = "pref_mobiruck_postback";
+    public static final String PREF_UTM_SOURCE = "utm_source";
 
     private AppPreferences(Context paramContext) {
         this.mPrefs = paramContext.getSharedPreferences("app_prefs", 0);
@@ -122,5 +123,18 @@ public class AppPreferences {
         SharedPreferences.Editor localEditor = this.mPrefs.edit();
         localEditor.putBoolean(PREF_MOBIRUCK_SIGNUP_POSTBACK, postback);
         localEditor.commit();
+    }
+
+
+    public void setUtm_source (String source) {
+        SharedPreferences.Editor localEditor = this.mPrefs.edit();
+        localEditor.putString(PREF_UTM_SOURCE, source);
+        localEditor.commit();
+    }
+
+    public String getUtmSource() {
+        String utm_source;
+        utm_source = this.mPrefs.getString(PREF_UTM_SOURCE, "");
+        return utm_source;
     }
 }

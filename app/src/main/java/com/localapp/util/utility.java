@@ -5,6 +5,8 @@ import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.SphericalUtil;
 import com.localapp.ui.ExpandableListAdapter;
 import com.localapp.ui.HomeActivity;
 
@@ -96,6 +98,53 @@ public class utility {
             }
         }
         return false;
+    }
+
+
+
+
+    /*********** calculate distance by google**********/
+    /**
+     *
+     * @param from
+     * @param to
+     * @param unit
+     * @param showUnit
+     * @return
+     */
+    public static String calcDistance(LatLng from, LatLng to, String unit, boolean showUnit) {
+        double distance = SphericalUtil.computeDistanceBetween(from, to);
+        return formatNumber(distance,unit,showUnit);
+    }
+
+    private static String formatNumber(double distance,String unit,boolean showUnit) {
+        /*String unit = "m";
+        if (distance < 1) {
+            distance *= 1000;
+            unit = "mm";
+        } else if (distance > 1000) {
+            distance /= 1000;
+            unit = "km";
+        }*/
+
+        switch (unit) {
+            case "km":
+                distance /= 1000;
+                unit = "km";
+                break;
+            case "mm":
+                distance *= 1000;
+                unit = "mm";
+                break;
+            default:
+                unit = "m";
+        }
+
+        if (!showUnit) {
+            unit = "";
+        }
+
+        return String.format("%4.3f%s", distance, unit);
     }
 
 

@@ -61,6 +61,7 @@ import com.localapp.request.CommonRequest;
 import com.localapp.request.EmergencyMsgAcceptRequest;
 import com.localapp.request.GetFeedRequest;
 import com.localapp.request.PicUrlRequest;
+import com.localapp.util.utility;
 import com.squareup.picasso.Picasso;
 import com.localapp.util.RecyclerTouchListener;
 import com.google.android.gms.maps.model.LatLng;
@@ -895,49 +896,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
     }
 
 
-    /*********** calculate distance by google**********/
-    /**
-     *
-     * @param from
-     * @param to
-     * @param unit
-     * @param showUnit
-     * @return
-     */
-    private String calcDistance(LatLng from, LatLng to,String unit,boolean showUnit) {
-        double distance = SphericalUtil.computeDistanceBetween(from, to);
-        return formatNumber(distance,unit,showUnit);
-    }
 
-    private String formatNumber(double distance,String unit,boolean showUnit) {
-        /*String unit = "m";
-        if (distance < 1) {
-            distance *= 1000;
-            unit = "mm";
-        } else if (distance > 1000) {
-            distance /= 1000;
-            unit = "km";
-        }*/
-
-        switch (unit) {
-            case "km":
-                distance /= 1000;
-                unit = "km";
-                break;
-            case "mm":
-                distance *= 1000;
-                unit = "mm";
-                break;
-            default:
-                unit = "m";
-        }
-
-        if (!showUnit) {
-            unit = "";
-        }
-
-        return String.format("%4.3f%s", distance, unit);
-    }
 
     public enum MessageType {
         STRAIGHT,
@@ -962,7 +921,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
     }
 
     private boolean isMessageForMe(MessageType messageType, LatLng latLng) {
-        double distance = Double.valueOf(calcDistance(HomeActivity.mLastKnownLocation,latLng,"km",false));
+        double distance = Double.valueOf(utility.calcDistance(HomeActivity.mLastKnownLocation,latLng,"km",false));
         switch (messageType) {
             case STRAIGHT:
                 if (distance <= 2)

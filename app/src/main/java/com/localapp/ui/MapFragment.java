@@ -110,6 +110,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -235,7 +236,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         try {
             if (extras != null) {
                 String notificationUserID = extras.getString("userId");
-                profileRequest(notificationUserID);
+                if (notificationUserID != null && !notificationUserID.equals("")) {
+                    profileRequest(notificationUserID);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -942,6 +945,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 case "New Delhi":
                 case "Mumbai":
                 case "Bengaluru":
+                case "Noida":
+                case "Gurgaon":
                     mobiRuckPostBack();
                     Log.d("state1", cityName);
 
@@ -1687,8 +1692,29 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
         @Override
         protected boolean shouldRenderAsCluster(Cluster<Profile> cluster) {
+            boolean shouldRender = true;
             // Always render clusters.
-            return cluster.getSize() > 1;
+            if (cluster.getSize()>1 && cluster.getSize() <5) {
+                Collection<Profile> profileList = cluster.getItems();
+
+                int sameDistanceCount = 0;
+                for (Profile profile : profileList) {
+                    double distance = Double.parseDouble(utility.calcDistance(cluster.getPosition(),profile.getPosition(),"mm",false));
+
+                    if (distance < 20) {
+                        sameDistanceCount ++;
+                    }
+
+                }
+
+                if(sameDistanceCount > 1){
+                    shouldRender = false;
+                }
+
+            }else {
+                shouldRender = cluster.getSize() > 1;
+            }
+            return shouldRender;
         }
 
 
@@ -2210,8 +2236,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     public void drawCircle(LatLng mLatLng) {
         Circle circle = mMap.addCircle(new CircleOptions()
                 .center(mLatLng)
-                .radius(3000)
-                .strokeColor(getResources().getColor(R.color.colorAccent)).strokeWidth(1.0f));
+                .radius(5000)
+                .strokeColor(getResources().getColor(R.color.black_overlay)).strokeWidth(4.0f));
     }
 
 

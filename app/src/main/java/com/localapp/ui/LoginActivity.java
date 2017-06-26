@@ -12,6 +12,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -76,8 +77,13 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         com.facebook.GraphRequest.GraphJSONObjectCallback,FbLoginRequest.FbLoginResponseCallback,FbSignUpRequest.FbSignUpResponseCallback {
     private static final int REQUEST_STORAGE_CODE = 333;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_AND_CAMERA = 111;
+    private static final int REQUEST_IMPORTANT_PERMISSIONS_CODE = 777;
+
     private final static String[] STORAGE_PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     final static String[] CAMERA_PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA};
+    final static String[] IMPORTANT_PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.READ_PHONE_STATE};
+
     private static final String TAG = "LoginActivity";
     private EditText _email, _password;
     private Button _loginBtn, _signupBtn;
@@ -132,9 +138,49 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
 
         setupView();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             requestPermissions(STORAGE_PERMISSIONS, 11111);
+        }*/
+
+        if (!isImportantPermissionGranted()) {
+            showPermissionDialog();
         }
+
+    }
+
+    private void showPermissionDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(R.layout.permission_popup);
+
+        builder.setPositiveButton("Allow", new DialogInterface.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                requestPermissions(IMPORTANT_PERMISSIONS,REQUEST_IMPORTANT_PERMISSIONS_CODE);
+            }
+        });
+
+        builder.setNegativeButton("Skip",null);
+
+        builder.show();
+    }
+
+    private boolean isImportantPermissionGranted() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if ((checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
+                    && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)
+                    && (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                    || checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+                    && checkSelfPermission(Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
+                Log.v("", "Permission is granted");
+                return true;
+            } else {
+                Log.v("", "Permission not granted");
+                return false;
+            }
+        }
+
+        return false;
     }
 
     public void setupView() {

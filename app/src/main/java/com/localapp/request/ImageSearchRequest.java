@@ -16,6 +16,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.localapp.request.CommonRequest.DOMAIN;
 import static com.localapp.request.CommonRequest.ResponseCode.COMMON_RES_CONNECTION_TIMEOUT;
@@ -33,6 +35,7 @@ public class ImageSearchRequest {
     private File imageFile;
     private CommonFileUpload mFileUpload;
     private Profile userProfile;
+    private List<Profile> profileList = new ArrayList<>();
 
     private ImageSearchResponseCallback mImageSearchResponseCallback;
 
@@ -44,18 +47,20 @@ public class ImageSearchRequest {
     }
 
     public interface ImageSearchResponseCallback {
-        void ImageSearchResponse(CommonRequest.ResponseCode responseCode, Profile uProfile, String errorMsg);
+        void ImageSearchResponse(CommonRequest.ResponseCode responseCode, List<Profile> uProfile, String errorMsg);
     }
 
     public void executeRequest() {
 
-        final String url = DOMAIN + "/searchImage";
+//        final String url = DOMAIN + "/searchImage";
+        final String url = DOMAIN + "/searchUsersByImage";
 
-        Response.Listener<NetworkResponse> listener = new Response.Listener<NetworkResponse>() {
+        /*Response.Listener<NetworkResponse> listener = new Response.Listener<NetworkResponse>() {
             @Override
             public void onResponse(NetworkResponse response) {
                 String jsonStr = new String(response.data);
                 String picUrl = null;
+
                 JSONObject profile;
 
                 try {
@@ -108,6 +113,102 @@ public class ImageSearchRequest {
                 }
                 mImageSearchResponseCallback.ImageSearchResponse(CommonRequest.ResponseCode.COMMON_RES_SUCCESS, userProfile, null);
             }
+        };*/
+
+
+        Response.Listener<NetworkResponse> listener = new Response.Listener<NetworkResponse>() {
+            @Override
+            public void onResponse(NetworkResponse response) {
+                String jsonStr = new String(response.data);
+                String picUrl = null;
+
+                String uId = null;
+                String uName  = null;
+                String uEmail = null;
+                String uPictureURL = null;
+                String uToken  = null;
+                String uMobile  = null;
+                String uSpeciality  = null;
+                String uNotes  = null;
+                String uProfession = null;
+                String mPrivacy = null;
+                LatLng latLng = null;
+
+                JSONArray jsonArray;
+
+                try {
+                    jsonArray = new JSONObject(jsonStr).getJSONArray("data");
+
+                    for (int i = 0; i< jsonArray.length();i++){
+                        JSONObject profile = jsonArray.getJSONObject(i);
+
+
+                        uId = profile.getString("id");
+                        uName = profile.getString("name");
+                        uEmail = profile.getString("email");
+                        uPictureURL = profile.getString("picUrl");
+                        uToken = profile.getString("token");
+                        uMobile = profile.getString("mobile");
+                        uSpeciality = profile.getString("speciality");
+                        uNotes = profile.getString("notes");
+                        uProfession = profile.getString("profession");
+                        mPrivacy = null;
+                        try {
+                            mPrivacy = profile.getString("mobilePrivacy");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                        try {
+                            JSONArray lngJsonArray = profile.getJSONArray("longlat");
+                            if (lngJsonArray.length() > 0) {
+                                latLng = new LatLng(Double.parseDouble(lngJsonArray.getString(0)), Double.parseDouble(lngJsonArray.getString(1)));
+                            }
+                        } catch (JSONException e) {
+                            Log.v("Request", e.getMessage());
+                        }
+
+
+
+
+
+                        userProfile = new Profile(uId);
+
+                        userProfile.setuEmail(uEmail);
+                        userProfile.setuName(uName);
+                        userProfile.setuPictureURL(uPictureURL);
+                        userProfile.setuToken(uToken);
+                        userProfile.setuMobile(uMobile);
+                        userProfile.setuSpeciality(uSpeciality);
+                        userProfile.setuNotes(uNotes);
+                        userProfile.setuLatLng(latLng);
+                        userProfile.setProfession(uProfession);
+                        userProfile.setuPrivacy(mPrivacy);
+
+
+
+                        profileList.add(userProfile);
+
+
+
+                    }
+
+
+
+
+
+
+
+
+
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                mImageSearchResponseCallback.ImageSearchResponse(CommonRequest.ResponseCode.COMMON_RES_SUCCESS, profileList, null);
+            }
         };
 
 
@@ -120,7 +221,7 @@ public class ImageSearchRequest {
                 CommonRequest.ResponseCode resCode = COMMON_RES_INTERNAL_ERROR;
                 if (error.networkResponse != null && error.networkResponse.statusCode == 404) {
                     resCode = COMMON_RES_CONNECTION_TIMEOUT;
-                    mImageSearchResponseCallback.ImageSearchResponse(resCode,userProfile,null);
+                    mImageSearchResponseCallback.ImageSearchResponse(resCode,profileList,null);
                     return;
                 }
                 if (errorMsg == VolleyErrorHelper.COMMON_NETWORK_ERROR_TIMEOUT)
@@ -137,7 +238,7 @@ public class ImageSearchRequest {
 //                    mSignUpData.setmErrorMessage(errorMsg);
                 }
 
-                mImageSearchResponseCallback.ImageSearchResponse(resCode,userProfile,errorMsg);
+                mImageSearchResponseCallback.ImageSearchResponse(resCode,profileList,errorMsg);
             }
         };
 

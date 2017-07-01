@@ -92,7 +92,7 @@
 
 
             <RelativeLayout
-                android:clickable="false"
+                android:clickable="true"
                 android:id="@+id/user_detail_rl"
                 android:visibility="gone"
                 android:background="#FFF"

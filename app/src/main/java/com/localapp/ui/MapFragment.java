@@ -406,8 +406,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     }
 
 
-    private void addItems() {
-        /*************** data for testing ***********/
+    /*private void addItems() {
+        *//*************** data for testing ***********//*
         for (int i = 0; i < 10; i++) {
             mClusterManager.addItem(new Profile(position(), "Walter"));
         }
@@ -437,7 +437,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         }
 
 
-    }
+    }*/
 
     /**
      * set potion of myLocationButton
@@ -1586,6 +1586,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     }
 
 
+
     private class ProfileRenderer extends DefaultClusterRenderer<Profile> {
 
 
@@ -1827,7 +1828,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     }
 
 
-    @Override
+    /*@Override
     public void ImageSearchResponse(CommonRequest.ResponseCode res, Profile uProfile, String errorMsg) {
         mProgressDialog.dismiss();
         switch (res) {
@@ -1845,6 +1846,56 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 if (indexs.size() > 0) {
                     addMarkerByProfile(true, indexs);
                 } else {
+                    Toast.makeText(getContext(), "No search result found", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case COMMON_RES_CONNECTION_TIMEOUT:
+                Toast.makeText(getContext(), "Something went wrong please try again", Toast.LENGTH_SHORT).show();
+                break;
+            case COMMON_RES_FAILED_TO_CONNECT:
+                Toast.makeText(getContext(), R.string.no_internet_msg, Toast.LENGTH_SHORT).show();
+                break;
+            case COMMON_RES_INTERNAL_ERROR:
+                break;
+            case COMMON_RES_SERVER_ERROR_WITH_MESSAGE:
+                Toast.makeText(getContext(), "No search result found", Toast.LENGTH_SHORT).show();
+                addMarkerByProfile(false, null);
+                break;
+        }
+    }*/
+
+
+    @Override
+    public void ImageSearchResponse(CommonRequest.ResponseCode responseCode, List<Profile> uProfile, String errorMsg) {
+        mProgressDialog.dismiss();
+        switch (responseCode) {
+            case COMMON_RES_SUCCESS:
+                ArrayList<Integer> indexs = new ArrayList<>();
+                for (Profile p : profileList) {
+
+                    boolean isFound = false;
+                    for (Profile rProfile : uProfile){
+                        if (p.getuId() != null && p.getuId().contentEquals(rProfile.getuId())) {
+                            indexs.add(profileList.indexOf(p));
+                            isFound = true;
+
+                            break;
+                        }
+                    }
+
+                    if (isFound)break;
+
+
+                }
+
+                if (indexs.size() > 0) {
+                    addMarkerByProfile(true, indexs);
+                } /*else if (!uProfile.isEmpty()){
+                    profileList.add(uProfile.get(0));
+                    indexs.add(profileList.indexOf(uProfile.get(0)));
+                    addMarkerByProfile(true, indexs);
+//
+                }*/else {
                     Toast.makeText(getContext(), "No search result found", Toast.LENGTH_SHORT).show();
                 }
                 break;

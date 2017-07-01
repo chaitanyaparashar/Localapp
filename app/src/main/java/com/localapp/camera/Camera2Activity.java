@@ -1,8 +1,10 @@
 package com.localapp.camera;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -123,9 +125,15 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera2);
-        android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
-        this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+        // Remember that you should never show the action bar if the
+        // status bar is hidden, so hide that too if necessary.
+        /*ActionBar actionBar = getActionBar();
+        actionBar.hide();*/
 
         WHICH_REQUEST = getIntent().getIntExtra("requestCode" ,-1);
 
@@ -164,7 +172,9 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
 
 
 
-        prepareGallery();
+//        prepareGallery();
+
+        new GetAllImagePathTask().execute(); //background task
     }
 
     boolean isVideoButtonLongPressed = false;
@@ -258,14 +268,14 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
     }
 
 
-    public void prepareGallery() {
+    public void prepareGallery(List<Uri> imageList) {
 
-        List<Uri> imageList = new ArrayList<>();
+        /*List<Uri> imageList = new ArrayList<>();
 
         ArrayList<File> files = getFilePaths();
         for (File file:files) {
             imageList.add(Uri.fromFile(file));
-        }
+        }*/
 
 
 
@@ -363,8 +373,8 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
                 }
 
             }
-            int width = 640;
-            int height = 480;
+            int width = 960;
+            int height =720;
             if (jpegSizes != null && 0 < jpegSizes.length) {
                 width = jpegSizes[0].getWidth();
                 height = jpegSizes[0].getHeight();
@@ -543,7 +553,8 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
             CameraCharacteristics characteristics = manager.getCameraCharacteristics(cameraId);
             StreamConfigurationMap map = characteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
             assert map != null;
-            imageDimension = map.getOutputSizes(SurfaceTexture.class)[0];
+//            imageDimension = new Size(960,720);
+            imageDimension = map.getOutputSizes(SurfaceTexture.class)[1];
             // Add permission for camera and let user grant the permission
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED &&
                     ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
@@ -783,6 +794,53 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
         return resultIAV;
 
 
+    }
+
+    private class GetAllImagePathTask extends AsyncTask<Void,Void,List<Uri>>{
+
+        /**
+         * Override this method to perform a computation on a background thread. The
+         * specified parameters are the parameters passed to {@link #execute}
+         * by the caller of this task.
+         * <p>
+         * This method can call {@link #publishProgress} to publish updates
+         * on the UI thread.
+         *
+         * @param params The parameters of the task.
+         * @return A result, defined by the subclass of this task.
+         * @see #onPreExecute()
+         * @see #onPostExecute
+         * @see #publishProgress
+         */
+        @Override
+        protected List<Uri> doInBackground(Void... params) {
+            List<Uri> imageList = new ArrayList<>();
+
+            ArrayList<File> files = getFilePaths();
+            for (File file:files) {
+                imageList.add(Uri.fromFile(file));
+            }
+            return imageList;
+        }
+
+
+        /**
+         * <p>Runs on the UI thread after {@link #doInBackground}. The
+         * specified result is the value returned by {@link #doInBackground}.</p>
+         * <p>
+         * <p>This method won't be invoked if the task was cancelled.</p>
+         *
+         * @param uris The result of the operation computed by {@link #doInBackground}.
+         * @see #onPreExecute
+         * @see #doInBackground
+         * @see #onCancelled(Object)
+         */
+        @Override
+        protected void onPostExecute(List<Uri> uris) {
+            super.onPostExecute(uris);
+
+            prepareGallery(uris);
+        }
     }
 
 }

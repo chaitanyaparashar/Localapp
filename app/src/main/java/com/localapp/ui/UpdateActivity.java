@@ -343,7 +343,16 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
             mProfile.setuMobile(mNumberView.getText().toString().trim());
             mProfile.setuEmail(mEmailView.getText().toString().trim());
             mProfile.setuPrivacy(mNumberView.getTag().toString());
+        }else if (whichUpdate == REQUEST_ABOUT){
+            mProfile.setProfession(mProfessionView.getText().toString().trim());
+            mProfile.setuSpeciality(mInfoView.getText().toString().trim());
+            mProfile.setuNotes(mDetailView.getText().toString().trim());
         }else {
+            mProfile.setuName(mNameView.getText().toString().trim());
+            mProfile.setuMobile(mNumberView.getText().toString().trim());
+            mProfile.setuEmail(mEmailView.getText().toString().trim());
+            mProfile.setuPrivacy(mNumberView.getTag().toString());
+
             mProfile.setProfession(mProfessionView.getText().toString().trim());
             mProfile.setuSpeciality(mInfoView.getText().toString().trim());
             mProfile.setuNotes(mDetailView.getText().toString().trim());

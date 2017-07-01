@@ -46,33 +46,23 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
     private FirebaseAnalytics mFirebaseAnalytics;
 
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-
-        if (hasFocus) {
-            getWindow().getDecorView().setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);}
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // To make activity full screen.
-        /*requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        getWindow().setNavigationBarColor(0);*/
 
         super.onCreate(savedInstanceState);
-        try {
+
+        /*try {
             getSupportActionBar().hide();
         }catch (NullPointerException e){
             e.printStackTrace();
-        }
+        }*/
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
         setContentView(R.layout.activity_main);
+
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);// FirebaseAnalytics
 
@@ -91,17 +81,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         }
 
 
-//        startService(new Intent(AppController.getAppContext(), LocationService.class));
         container = (FrameLayout) findViewById(R.id.container);
 
         setReference();
-        /*session = new SessionManager(this);
-        if (session.isLoggedIn()) {
-            startActivity(new Intent(getApplicationContext(), HomeActivity.class));
-        }else {
-            startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-        }
-        finish();*/
+
 
 
 
@@ -135,8 +118,9 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         btnStarted.setOnClickListener(this);
 
         mAdapter = new ViewPagerAdapter(this, mImageResources);
+        intro_images.setPageTransformer(true,new FadePageTransformer());
         intro_images.setAdapter(mAdapter);
-        intro_images.setCurrentItem(0);
+        intro_images.setCurrentItem(0,true);
         intro_images.setOnPageChangeListener(this);
         setUiPageViewController();
 
@@ -202,14 +186,6 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             btnStarted.setVisibility(View.GONE);
             btn_layout.setVisibility(View.VISIBLE);
         }
-
-        /*if (position + 1 == dotsCount) {
-            btnNext.setVisibility(View.GONE);
-            btnFinish.setVisibility(View.VISIBLE);
-        } else {
-            btnNext.setVisibility(View.VISIBLE);
-            btnFinish.setVisibility(View.GONE);
-        }*/
     }
 
     /**
@@ -241,11 +217,25 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
                 break;
 
             case R.id.btn_next:
-                intro_images.setCurrentItem((intro_images.getCurrentItem() < dotsCount)
-                        ? intro_images.getCurrentItem() + 1 : 0);
+                intro_images.setCurrentItem((intro_images.getCurrentItem() < dotsCount) ? intro_images.getCurrentItem() + 1 : 0,true);
                 break;
             case R.id.btn_start: AppPreferences.getInstance(AppController.getAppContext()).tourLaunched();startApp();
                 break;
+        }
+    }
+
+    public class FadePageTransformer implements ViewPager.PageTransformer {
+        public void transformPage(View view, float position) {
+            view.setTranslationX(view.getWidth() * -position);
+
+            if(position <= -1.0F || position >= 1.0F) {
+                view.setAlpha(0.0F);
+            } else if( position == 0.0F ) {
+                view.setAlpha(1.0F);
+            } else {
+                // position is between -1.0F & 0.0F OR 0.0F & 1.0F
+                view.setAlpha(1.0F - Math.abs(position));
+            }
         }
     }
 }

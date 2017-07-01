@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:fitsSystemWindows="true"
+    android:fitsSystemWindows="false"
     android:clipToPadding="false"
     tools:context="com.localapp.camera.Camera2Activity">
 
@@ -28,7 +28,7 @@
 
     <LinearLayout
         android:id="@+id/ll"
-        android:layout_marginBottom="25dp"
+        android:layout_marginBottom="48dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:layout_width="wrap_content"

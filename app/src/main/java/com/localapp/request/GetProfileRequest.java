@@ -73,8 +73,10 @@ public class GetProfileRequest extends CommonRequest {
                 String fcmToken = jsonObject.getString("fcmToken");
                 if (fcmToken == null || fcmToken.equals("null")) {     //update fcm token if fcm token is null
                     fcmToken = FirebaseInstanceId.getInstance().getToken();
-                    UpdateFcmTokenRequest request = new UpdateFcmTokenRequest(mContext,mProfile.getuId(), mProfile.getuToken(),fcmToken);
-                    request.executeRequest();
+                    if (fcmToken != null) {
+                        UpdateFcmTokenRequest request = new UpdateFcmTokenRequest(mContext, mProfile.getuId(), mProfile.getuToken(), fcmToken);
+                        request.executeRequest();
+                    }
                 }
 
             }catch (JSONException ignore){

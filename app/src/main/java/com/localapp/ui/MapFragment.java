@@ -129,7 +129,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
     //==============================================//
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
-    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000*2;
+    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 1000*60*2;
     public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
@@ -205,12 +205,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        Log.d(TAG,"onCreate");
         this.mapFragmentinstance = this;
 
         //===========================//
         mRequestingLocationUpdates = true;
-        updateValuesFromBundle(savedInstanceState);
+//        updateValuesFromBundle(savedInstanceState);
         buildGoogleApiClient();
         createLocationRequest();
         buildLocationSettingsRequest();
@@ -468,6 +468,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         mMapView.onLowMemory();
     }
 
+    boolean isStartedLocationUpdate = false;
     @Override
     public void onResume() {
         super.onResume();
@@ -477,8 +478,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         // Within {@code onPause()}, we pause location updates, but leave the
         // connection to GoogleApiClient intact.  Here, we resume receiving
         // location updates if the user has requested them.
-        if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates) {
+        if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates && !isStartedLocationUpdate) {
             startLocationUpdates();
+            Log.d(TAG,"onResume");
         }
         updateUI();
 
@@ -500,10 +502,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     @Override
     public void onPause() {
         super.onPause();
+        Log.d(TAG,"onPause");
         // Stop location updates to save battery, but don't disconnect the GoogleApiClient object.
-        if (mGoogleApiClient.isConnected()) {
+        /*if (mGoogleApiClient.isConnected()) {
             stopLocationUpdates();
-        }
+        }*/
         AppController.activityPaused();
     }
 
@@ -519,6 +522,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 //        mLocationManager.removeUpdates(this);
         super.onStop();
         if (mGoogleApiClient.isConnected()) {
+            stopLocationUpdates();
             mGoogleApiClient.disconnect();
         }
     }
@@ -1002,6 +1006,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
                 AppPreferences.getInstance(getActivity()).setMobiruckSignupPostback(false);
                 Log.d("mobiRuckPostBack", "called");
+            }else {
+                AppPreferences.getInstance(getActivity()).setMobiruckSignupPostback(false);
             }
 
 
@@ -2143,6 +2149,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
 
     protected void startLocationUpdates() {
+        Log.d(TAG,"startLocationUpdates");
         LocationServices.SettingsApi.checkLocationSettings(
                 mGoogleApiClient,
                 mLocationSettingsRequest
@@ -2166,6 +2173,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                         try {
                             LocationServices.FusedLocationApi.requestLocationUpdates(
                                     mGoogleApiClient, mLocationRequest, gLocationListener);
+                            isStartedLocationUpdate = true;
+
                         }catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -2197,6 +2206,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
 
     protected void stopLocationUpdates() {
+        Log.d(TAG,"stopLocationUpdates");
         // It is a good practice to remove location requests when the activity is in a paused or
         // stopped state. Doing so helps battery performance and is especially
         // recommended in applications that request frequent location updates.
@@ -2206,6 +2216,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         ).setResultCallback(new ResultCallback<Status>() {
             @Override
             public void onResult(Status status) {
+                Log.d(TAG,status.toString());
+
+                isStartedLocationUpdate = false;
 //                mRequestingLocationUpdates = false;
 //                setButtonsEnabledState();
             }
@@ -2218,6 +2231,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             mCurrentLocation = location;
             mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
             updateLocationUI();
+
+            Log.d(TAG,mLastUpdateTime);
         }
 
     };
@@ -2249,6 +2264,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             return;
         }
 
+        Log.d(TAG,"onConnected");
         if (mCurrentLocation == null) {
             mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
@@ -2276,12 +2292,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     /**
      * Stores activity data in the Bundle.
      */
-    public void onSaveInstanceState(Bundle savedInstanceState) {
+    /*public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
         savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
         savedInstanceState.putString(KEY_LAST_UPDATED_TIME_STRING, mLastUpdateTime);
         super.onSaveInstanceState(savedInstanceState);
-    }
+    }*/
 
 
     public void drawCircle(LatLng mLatLng) {

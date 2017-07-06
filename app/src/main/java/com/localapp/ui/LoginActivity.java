@@ -142,7 +142,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
             requestPermissions(STORAGE_PERMISSIONS, 11111);
         }*/
 
-        if (!isImportantPermissionGranted()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !isImportantPermissionGranted()) {
             showPermissionDialog();
         }
 
@@ -493,6 +493,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
 
     @Override
     public void onLoginResponse(CommonRequest.ResponseCode responseCode, LoginData data) {
+        mProgressDialog.dismiss();
         switch (responseCode) {
             case COMMON_RES_SUCCESS:
                 _email.setText("");
@@ -501,17 +502,17 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:
                 toast("Connection timeout");
-                mProgressDialog.dismiss();
+//                mProgressDialog.dismiss();
                 break;
             case COMMON_RES_FAILED_TO_CONNECT:
                 toast("No internet connection");
-                mProgressDialog.dismiss();
+//                mProgressDialog.dismiss();
                 break;
             case COMMON_RES_INTERNAL_ERROR:
                 break;
             case COMMON_RES_SERVER_ERROR_WITH_MESSAGE:
                 toast(data.getErrorMessage());
-                mProgressDialog.dismiss();
+//                mProgressDialog.dismiss();
                 break;
         }
     }

@@ -27,6 +27,7 @@ public class AppController extends Application {
         super.onCreate();
         mInstance = this;
 
+
         AnalyticsTrackers.initialize(this);
         AnalyticsTrackers.getInstance().get(AnalyticsTrackers.Target.APP);
 

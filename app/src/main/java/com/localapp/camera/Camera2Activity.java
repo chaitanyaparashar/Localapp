@@ -309,7 +309,7 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
         @Override
         public void onOpened(@NonNull CameraDevice camera) {
             //This is called when the camera is open
-            Log.e(TAG, "onOpened");
+            Log.d(TAG, "onOpened");
             cameraDevice = camera;
             createCameraPreview();
         }
@@ -543,7 +543,7 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
 
     private void openCamera() {
         CameraManager manager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
-        Log.e(TAG, "is camera open");
+        Log.d(TAG, "is camera open");
         try {
             //if device have single camera
             if (manager.getCameraIdList().length == 1) {
@@ -572,7 +572,7 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
         } catch (CameraAccessException e) {
             e.printStackTrace();
         }
-        Log.e(TAG, "openCamera X");
+        Log.d(TAG, "openCamera X");
     }
 
     protected void updatePreview() {
@@ -673,7 +673,7 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
     @Override
     protected void onResume() {
         super.onResume();
-        Log.e(TAG, "onResume");
+        Log.d(TAG, "onResume");
         startBackgroundThread();
         if (textureView.isAvailable()) {
             openCamera();
@@ -683,7 +683,7 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
     }
     @Override
     protected void onPause() {
-        Log.e(TAG, "onPause");
+        Log.d(TAG, "onPause");
         //closeCamera();
         stopBackgroundThread();
         super.onPause();

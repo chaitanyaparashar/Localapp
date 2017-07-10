@@ -57,7 +57,9 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera);
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         // camera surface view created

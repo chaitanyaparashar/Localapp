@@ -29,7 +29,9 @@ public class CreateNoticeActivity extends AppCompatActivity implements CreateNot
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_notice);
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
+        if (actionBar != null) {
+            actionBar.hide();
+        }
         nameEditText = (EditText) findViewById(R.id._input_name);
         noticeEditText = (EditText) findViewById(R.id._input_notice);
 

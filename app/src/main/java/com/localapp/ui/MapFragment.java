@@ -119,6 +119,7 @@ import java.util.StringTokenizer;
 
 import static com.localapp.util.utility.getProfessionList;
 import static com.localapp.util.utility.isServiceRunning;
+import static com.localapp.util.utility.openPublicProfile;
 
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GetUsersRequest.GetUsersResponseCallback,
@@ -1511,6 +1512,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         String pPrivacy = profile.getuPrivacy();
         String mMobile = profile.getuMobile();
         final String pEmail = profile.getuEmail();
+        final String user_id = profile.getuId();
 
 
         TextView textView = (TextView) getView().findViewById(R.id.user_name);
@@ -1525,6 +1527,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
         CircularImageView proPicNetworkImageView = (CircularImageView) getView().findViewById(R.id.user_pic);
         Picasso.with(AppController.getAppContext()).load(profile.getuPictureURL()).into(proPicNetworkImageView);
+        proPicNetworkImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (user_id != null) {
+                    openPublicProfile(getContext(),user_id);
+                }
+            }
+        });
 //            proPicNetworkImageView.setImageUrl(profile.getuPictureURL(), VolleySingleton.getInstance(getApplicationContext()).getImageLoader());
         if (pName != null) {
             textView.setText(pName);

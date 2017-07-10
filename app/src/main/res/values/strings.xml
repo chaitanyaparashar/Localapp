@@ -37,6 +37,7 @@
     <string name="text_whatspp">WhatsApp</string>
 
     <string name="invite_text">"Join localapp, the neighbors Community app to know, search and interact with neighborhoods.\nhttps://play.google.com/store/apps/details?id=com.localapp"</string>
+    <string name="title_activity_public_profile">PublicProfileActivity</string>
 
 
 </resources>

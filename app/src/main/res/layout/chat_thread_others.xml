@@ -42,15 +42,37 @@
         android:layout_marginBottom="10dp"
         android:layout_marginEnd="10dp"
         android:layout_height="wrap_content">
-        <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
-            android:id="@+id/textViewMsg"
-            android:elevation="5dp"
-            emojicon:emojiconSize="25sp"
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+        <TextView
+            android:layout_gravity="end"
+            android:id="@+id/textViewName"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="8dp"
+            android:textSize="12sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="16dp"
-            android:text="Android charting application xml ui design. Android charting application xml ui design tutorial with example. Android charting application xml ui design. Android charting application xml ui design. "
-            android:textColor="#000" />
+            android:text="dsjhdhdhs"/>
+
+            <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+                android:id="@+id/textViewMsg"
+                android:elevation="5dp"
+                emojicon:emojiconSize="25sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="8dp"
+                android:text="Android chaui design. "
+                android:textColor="#000" />
+
+        </LinearLayout>
+
 
     </android.support.v7.widget.CardView>
 

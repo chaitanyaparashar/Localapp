@@ -2,11 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.localapp">
 
-
-
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -33,9 +30,6 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-
-
-
     <application
         android:name=".appcontroller.AppController"
         android:allowBackup="true"
@@ -46,8 +40,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ui.MainActivity"
-            android:theme="@style/AppThemeFullScreen"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeFullScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -74,8 +68,8 @@
         <activity android:name=".camera.CameraActivity" />
         <activity
             android:name=".camera.Camera2Activity"
-            android:theme="@style/AppThemeFullScreen"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeFullScreen" />
         <activity android:name=".VideoPlay" />
         <activity android:name=".ui.SignUpActivity" />
         <activity android:name=".ui.UpdateActivity" />
@@ -103,70 +97,62 @@
             android:label="@string/title_activity_invite"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <receiver android:name=".background.BroadcastReceiverOnBootComplete"
+        <receiver
+            android:name=".background.BroadcastReceiverOnBootComplete"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>
-                <action android:name="android.intent.action.PACKAGE_ADDED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.PACKAGE_ADDED" />
             </intent-filter>
-
         </receiver>
 
-        <service android:name=".background.LocationService" android:process=":location_service"/>
-
-
+        <service
+            android:name=".background.LocationService"
+            android:process=":location_service" />
         //=========================== Analytics ==========================//
-
-        <receiver android:name=".analytics.CustomTrackingReceiver"
+        <receiver
+            android:name=".analytics.CustomTrackingReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
         </receiver>
-
-
-
-
-
-
         <receiver
             android:name="com.mobiruck.ReferrerReceiver"
-            android:exported="true" >
-        </receiver>
+            android:exported="true" />
 
-        <service android:name="com.mobiruck.UpdateServices" >
-        </service>
+        <service android:name="com.mobiruck.UpdateServices" />
 
-
-        <receiver android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
+        <receiver
+            android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"
             android:enabled="true"
-            android:exported="true">
-        </receiver>
-        <service android:name="com.google.android.gms.analytics.CampaignTrackingService"
+            android:exported="true" />
+
+        <service
+            android:name="com.google.android.gms.analytics.CampaignTrackingService"
             android:enabled="true"
             android:exported="false" />
 
-        <receiver android:name="com.google.android.gms.analytics.AnalyticsReceiver"
+        <receiver
+            android:name="com.google.android.gms.analytics.AnalyticsReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />
             </intent-filter>
         </receiver>
 
-        <service android:name="com.google.android.gms.analytics.AnalyticsService"
+        <service
+            android:name="com.google.android.gms.analytics.AnalyticsService"
             android:enabled="true"
-            android:exported="false"/>
+            android:exported="false" />
 
-
-
-
-
-
-
+        <activity
+            android:name=".ui.public_profile.PublicProfileActivity"
+            android:label=""
+            android:theme="@style/AppTheme.StatusBarTransparent"></activity>
     </application>
-
 
 </manifest>

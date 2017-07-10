@@ -2,6 +2,7 @@ package com.localapp.util;
 
 import android.app.ActivityManager;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -9,6 +10,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.SphericalUtil;
 import com.localapp.ui.ExpandableListAdapter;
 import com.localapp.ui.HomeActivity;
+import com.localapp.ui.public_profile.PublicProfileActivity;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -146,6 +148,16 @@ public class utility {
 
         return String.format("%4.3f%s", distance, unit);
     }
+
+
+    public static void openPublicProfile(Context mContext, String userId){
+        Intent intent = new Intent(mContext,PublicProfileActivity.class);
+        intent.putExtra("action_id",userId);
+        mContext.startActivity(intent);
+
+    }
+
+
 
 
 

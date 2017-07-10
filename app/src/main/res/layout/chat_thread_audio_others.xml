@@ -16,22 +16,47 @@
         android:layout_height="wrap_content"
         app:cardCornerRadius="8dp">
 
-        <ImageButton
-            android:id="@+id/_audio_play"
-            android:layout_margin="10dp"
-            android:backgroundTint="#2196f3"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:background="@android:drawable/ic_media_play"/>
+            android:orientation="vertical">
 
-        <SeekBar
-            android:id="@+id/_seekBar"
-            android:layout_marginLeft="30dp"
-            android:layout_marginRight="10dp"
-            android:layout_gravity="center"
-            android:layout_width="210dp"
+        <TextView
+            android:textSize="12sp"
+            android:layout_gravity="end"
+            android:id="@+id/textViewName"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
+
+        <FrameLayout
+            android:layout_margin="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/_audio_play"
+                android:layout_margin="10dp"
+                android:backgroundTint="#2196f3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:background="@android:drawable/ic_media_play"/>
+
+            <SeekBar
+                android:id="@+id/_seekBar"
+                android:layout_marginStart="30dp"
+                android:layout_marginEnd="10dp"
+                android:layout_gravity="center"
+                android:layout_width="210dp"
+                android:layout_height="wrap_content" />
+
+            </FrameLayout>
+
+        </LinearLayout>
+
+
 
     </android.support.v7.widget.CardView>
 

@@ -3,10 +3,14 @@ package com.localapp.ui;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.graphics.Palette;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -37,7 +41,9 @@ import com.localapp.request.GetProfileRequest;
 import com.localapp.request.LoginRequest;
 import com.localapp.request.UpdateProfileRequest;
 import com.localapp.request.helper.VolleySingleton;
+import com.localapp.ui.public_profile.PublicProfileActivity;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import static com.localapp.ui.UpdateActivity.REQUEST_ABOUT;
 import static com.localapp.ui.UpdateActivity.REQUEST_ALL;
@@ -49,7 +55,7 @@ import static com.localapp.ui.UpdateActivity.REQUEST_PERSONAL;
  */
 
 public class ProfileFragment extends Fragment implements LoginRequest.LoginResponseCallback,GetProfileRequest.GetProfileRequestCallback,UpdateProfileRequest.UpdateProfileResponseCallback,
-        ForgetPasswordRequest.ForgetPasswordRequestCallback{
+        ForgetPasswordRequest.ForgetPasswordRequestCallback, Target{
     private LinearLayout profileLayout;
     private RelativeLayout loginLayout;
     private CircularImageView userPic;
@@ -60,6 +66,8 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
             uDetailTextView;
     private Button logoutBtn,shareBtn;
     private SwitchCompat mBroadcastSwitch;
+
+    private RelativeLayout backgroundLayout;
 
     //Login
     private EditText _email, _password;
@@ -117,9 +125,11 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
     }
 
     public void setupView(View view) {
+
         //layouts
         profileLayout = (LinearLayout) view.findViewById(R.id.profile_layout);
         loginLayout = (RelativeLayout) view.findViewById(R.id.login_layout);
+        backgroundLayout = (RelativeLayout) view.findViewById(R.id.rl_fm_profile);
 
 
 
@@ -198,6 +208,7 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
 
     public void setProfileData(Profile profile) {
         Picasso.with(AppController.getAppContext()).load(profile.getuPictureURL()).placeholder(R.drawable.ic_user).into(userPic);
+        Picasso.with(AppController.getAppContext()).load(profile.getuPictureURL()).placeholder(R.drawable.ic_user).into(this);
         uNmaeTextView.setText(profile.getuName());
         uEmailTextView.setText(profile.getuEmail());
 
@@ -246,6 +257,8 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
 
     public void setProfileData(LoginData profileData) {
         Picasso.with(AppController.getAppContext()).load(profileData.getPicUrl()).placeholder(R.drawable.ic_user).into(userPic);
+        Picasso.with(AppController.getAppContext()).load(profileData.getPicUrl()).placeholder(R.drawable.ic_user).into(this);
+
         uNmaeTextView.setText(profileData.getmName());
         uEmailTextView.setText(profileData.getEmail());
 
@@ -284,6 +297,25 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
         myProfile = new Profile(profileData.getUserId());
         myProfile.setuEmail(profileData.getEmail());
         myProfile.setuMobile(profileData.getmMobile());
+    }
+
+
+    private void setPallet(final Bitmap bitmap) {
+        Palette.from(bitmap)
+                .generate(new Palette.PaletteAsyncListener() {
+                    @Override
+                    public void onGenerated(Palette palette) {
+                        Palette.Swatch textSwatch = palette.getVibrantSwatch();
+                        if (textSwatch != null) {
+                            backgroundLayout.setBackgroundColor(textSwatch.getRgb());
+                        }/*else {
+                            new PublicProfileActivity.DoInBackground().execute(bitmap);
+                        }*/
+
+                    }
+
+
+                });
     }
 
     private void onLogin() {
@@ -491,9 +523,13 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
     @Override
     public void onResume() {
         super.onResume();
-        getView().setFocusableInTouchMode(true);
-        getView().requestFocus();
-        getView().setOnKeyListener(onKeyListener);
+        View view = getView();
+
+        if (view != null) {
+            view.setFocusableInTouchMode(true);
+            view.requestFocus();
+            view.setOnKeyListener(onKeyListener);
+        }
     }
 
     View.OnKeyListener onKeyListener = new View.OnKeyListener() {
@@ -506,4 +542,21 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
             return false;
         }
     };
+
+
+    @Override
+    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+        setPallet(bitmap);
+    }
+
+
+    @Override
+    public void onBitmapFailed(Drawable errorDrawable) {
+
+    }
+
+    @Override
+    public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+    }
 }

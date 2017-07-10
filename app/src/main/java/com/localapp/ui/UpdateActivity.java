@@ -69,7 +69,10 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update);
         android.support.v7.app.ActionBar actionBar = getSupportActionBar();
-        actionBar.hide();
+
+        if (actionBar != null) {
+            actionBar.hide();
+        }
 
         whichUpdate = getIntent().getIntExtra("request",REQUEST_PERSONAL);
 

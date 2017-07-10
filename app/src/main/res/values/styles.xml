@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
@@ -38,11 +38,10 @@
     </style>
 
     <style name="TextLabel" parent="AppTheme">
-        <item name="android:textColorHint">#c5c5c5 </item>
+        <item name="android:textColorHint">#c5c5c5</item>
         <item name="colorControlNormal">#c5c5c5</item>
         <item name="colorControlActivated">@color/colorAccent</item>
     </style>
-
 
 
     <style name="AppThemeFullScreen" parent="AppTheme.NoActionBar">
@@ -55,6 +54,7 @@
     </style>
 
 
+    <style name="AppTheme.StatusBarTransparent" parent="AppTheme"></style>
 
 
 </resources>

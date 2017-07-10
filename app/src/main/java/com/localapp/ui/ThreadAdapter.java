@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.localapp.R;
@@ -30,6 +31,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
+
+import static com.localapp.util.utility.openPublicProfile;
 
 /**
  * Created by 4 way on 21-02-2017.
@@ -186,11 +189,17 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         //Adding messages to the views
-        Message message = messages.get(position);
+        final Message message = messages.get(position);
         FeedFragment.MediaType mediaType = message.getMediaType();
         String text = message.getmText();
         String mURL = message.getMediaURL();
+        String userName = message.getName();
+        final String user_id = message.getmUserID();
         String userPicUrl = message.getPicUrl();//"https://s3-us-west-1.amazonaws.com/com.fourway.localapp.profileimage/vijay@gmail.com";
+
+        if (holder.nameTextView != null) {
+            holder.nameTextView.setText("~" + userName);
+        }
 
         if (message.getMessageType() != null) {
             holder.messageTypeImageView.setImageResource(getEmojiResourceIdByMsgType(message.getMessageType()));
@@ -200,6 +209,17 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
 //            holder.proPic.setImageUrl(userPicUrl, VolleySingleton.getInstance(context).getImageLoader());
 //            holder.proPic.setImageBitmap(message.getImgBitmap());
         }
+
+        holder.proPic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (user_id != null){
+                    openPublicProfile(context,user_id);
+                }
+            }
+        });
+
+
 
         /*if (message.getMediaType()!= null && message.getMediaType() == FeedFragment.MediaType.MEDIA_IMAGE) {
 
@@ -264,6 +284,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         public EmojiconTextView textViewMessage;
         public CircularImageView proPic;
         public ImageView messageTypeImageView;
+        public TextView nameTextView;
 
         public RoundedImageView imageMedia;
 
@@ -281,6 +302,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
 
         public ViewHolder(View itemView) {
             super(itemView);
+            nameTextView = (TextView) itemView.findViewById(R.id.textViewName);
             textViewMessage = (EmojiconTextView) itemView.findViewById(R.id.textViewMsg);
             proPic = (CircularImageView) itemView.findViewById(R.id.msg_pic);
             messageTypeImageView = (ImageView) itemView.findViewById(R.id.msg_emoji);

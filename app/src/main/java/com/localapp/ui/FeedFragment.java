@@ -921,6 +921,8 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
     }
 
     private boolean isMessageForMe(MessageType messageType, LatLng latLng) {
+        if (latLng == null) return false;
+
         double distance = Double.valueOf(utility.calcDistance(HomeActivity.mLastKnownLocation,latLng,"km",false));
         switch (messageType) {
             case STRAIGHT:

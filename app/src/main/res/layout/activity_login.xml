@@ -25,6 +25,7 @@
             android:layout_gravity="center_horizontal" />
 
         <TextView
+            android:fontFamily="@string/font_family_regular"
             android:layout_gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -41,6 +42,7 @@
                 android:theme="@style/TextLabel"
             android:layout_marginBottom="8dp">
             <EditText android:id="@+id/input_email"
+                android:fontFamily="@string/font_family_regular"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textColorHighlight="#2196f3"
@@ -61,6 +63,7 @@
             android:theme="@style/TextLabel"
             android:layout_marginBottom="8dp">
             <EditText
+                android:fontFamily="@string/font_family_regular"
                 android:id="@+id/input_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -73,6 +76,7 @@
         </android.support.design.widget.TextInputLayout>
 
         <Button
+            android:fontFamily="@string/font_family_regular"
             android:id="@+id/btn_login"
             android:layout_width="fill_parent"
             android:layout_height="40dp"
@@ -90,6 +94,7 @@
         <TextView android:id="@+id/link_forgotPassword"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:fontFamily="@string/font_family_regular"
             android:layout_marginTop="8dp"
             android:text="FORGOT PASSWORD ?"
             android:textColor="#2196f3"
@@ -111,6 +116,7 @@
                 android:layout_height="0.5dp"
                 android:background="#fff"/>
             <TextView
+                android:fontFamily="@string/font_family_regular"
                 android:layout_gravity="center"
                 android:layout_width="0dp"
                 android:layout_weight="0.5"
@@ -129,6 +135,7 @@
 
         <com.facebook.login.widget.LoginButton
             android:id="@+id/fb_login_button"
+            android:fontFamily="@string/font_family_regular"
             android:layout_marginBottom="12dp"
             android:layout_marginTop="8dp"
             android:paddingTop="14dp"
@@ -142,6 +149,7 @@
         android:textColor="@color/com_facebook_messenger_blue"-->
 
         <Button
+            android:fontFamily="@string/font_family_regular"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="12dp"
             android:id="@+id/link_signup"
@@ -153,8 +161,7 @@
             android:gravity="center"
             android:background="@drawable/submit_button_state"
             android:text="Sign up with Email"
-            android:textSize="14sp"
-            />
+            android:textSize="14sp" />
 
 
 

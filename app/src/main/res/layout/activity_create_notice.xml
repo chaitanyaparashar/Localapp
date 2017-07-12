@@ -29,6 +29,7 @@
             android:layout_centerVertical="true"
             android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
+            android:fontFamily="@string/font_family_regular"
             android:layout_height="wrap_content"
             android:text="Create New Board"/>
 
@@ -48,12 +49,14 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
             <TextView
+                android:fontFamily="@string/font_family_regular"
                 android:textSize="22sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Name"/>
 
             <EditText
+                android:fontFamily="@string/font_family_regular"
                 android:id="@+id/_input_name"
                 android:elevation="1dp"
                 android:layout_width="300dp"
@@ -63,6 +66,7 @@
                 android:background="@drawable/search_box_style"/>
 
             <TextView
+                android:fontFamily="@string/font_family_regular"
                 android:textSize="22sp"
                 android:layout_marginTop="20dp"
                 android:layout_width="wrap_content"
@@ -70,6 +74,7 @@
                 android:text="Notice"/>
 
             <EditText
+                android:fontFamily="@string/font_family_regular"
                 android:id="@+id/_input_notice"
                 android:elevation="1dp"
                 android:layout_width="300dp"
@@ -84,6 +89,7 @@
                 android:background="@drawable/search_box_style"/>
 
             <Button
+                android:fontFamily="@string/font_family_regular"
                 android:layout_marginTop="10dp"
                 android:layout_gravity="right"
                 android:layout_width="120dp"

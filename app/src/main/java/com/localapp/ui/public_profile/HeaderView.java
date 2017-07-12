@@ -25,9 +25,8 @@ public class HeaderView extends LinearLayout {
     @Bind(R.id.name)
     TextView name;
 
-    /*@Bind(R.id.last_seen)
-    TextView lastSeen;
-*/
+    @Bind(R.id.distance)
+    TextView distance;
     public HeaderView(Context context) {
         super(context);
     }
@@ -51,9 +50,9 @@ public class HeaderView extends LinearLayout {
         ButterKnife.bind(this);
     }
 
-    public void bindTo(String name) {
+    public void bindTo(String name, String distance) {
         this.name.setText(name);
-//        this.lastSeen.setText(lastSeen);
+        this.distance.setText(distance);
     }
 
     public void setTextColor(@ColorInt int color){

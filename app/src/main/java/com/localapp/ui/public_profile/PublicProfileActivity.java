@@ -44,6 +44,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 import static com.localapp.util.ColorUtils.getDominantColor1;
+import static com.localapp.util.utility.calcDistance;
 
 public class PublicProfileActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener, GetProfileByIdRequest.GetProfileByIdRequestCallback, Target{
     private static String TAG = "PublicProfileActivity";
@@ -171,13 +172,21 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
         String uNotes = mProfile.getuNotes();
         String uPrivacy = mProfile.getuPrivacy();
         String profession = mProfile.getProfession();
+        LatLng mLatLng = mProfile.getuLatLng();
+        String distance = calcDistance(HomeActivity.mLastKnownLocation,mLatLng,"km",false);
 
         Picasso.with(AppController.getAppContext()).load(uPictureURL).placeholder(R.drawable.ic_user).into(mProfileImageView);
         Picasso.with(AppController.getAppContext()).load(uPictureURL).placeholder(R.drawable.ic_user).into(this);
 
 
-        toolbarHeaderView.bindTo(uName);
-        floatHeaderView.bindTo(uName);
+
+        if (distance != null) {
+            toolbarHeaderView.bindTo(uName, distance + " km");
+            floatHeaderView.bindTo(uName, distance + " km");
+        }else {
+            toolbarHeaderView.bindTo(uName, "");
+            floatHeaderView.bindTo(uName, "");
+        }
 
         if (uSpeciality != null && !uSpeciality.equals("null") && !uSpeciality.isEmpty()) {
             mSpeciality.setText(uSpeciality);

@@ -44,9 +44,20 @@
                 app:siBorderWidth="0dp"
                 app:siRadius="4dp"
                 app:siBorderColor="#fff"
+                android:src="@mipmap/ic_launcher"
                 android:layout_width="210dp"
                 android:layout_height="210dp"
                 android:scaleType="centerCrop"/>
+
+            <TextView
+                android:id="@+id/sms_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:layout_gravity="end"
+                android:layout_marginBottom="4dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginEnd="8dp" />
 
         </LinearLayout>
 

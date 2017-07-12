@@ -220,8 +220,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:textColor="#000"
-                android:id="@+id/_mobile"
-                android:text="8009134905"/>
+                android:id="@+id/_mobile" />
 
             <ImageButton
                 android:id="@+id/action_call"
@@ -253,8 +252,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:textColor="#000"
-                android:id="@+id/_email"
-                android:text="vijay@gmail.com"/>
+                android:id="@+id/_email" />
 
             <ImageButton
                 android:id="@+id/action_email"

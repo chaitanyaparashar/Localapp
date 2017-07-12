@@ -47,6 +47,7 @@ public class HomeActivity extends AppCompatActivity{
     public static LatLng mLastKnownLocation = null;
     public static String mUserId = "";
     public static String mPicUrl = null;
+    public static String mUserName = "";
     TabLayout tabLayout;
 
     public static SectionsPagerAdapter mSectionsPagerAdapter;
@@ -221,6 +222,7 @@ public class HomeActivity extends AppCompatActivity{
         mUserId = user.get(SessionManager.KEY_LOGIN_USER_ID);
 //        mUserId = "58b909b1f81fde3f9ce5ea31";//hardcoded
         mPicUrl = user.get(SessionManager.KEY_LOGIN_USER_PIC_URL);
+        mUserName = user.get(SessionManager.KEY_LOGIN_USER_NAME);
         try {
             Double lat = Double.valueOf(user.get(SessionManager.KEY_LAT));
             Double lng = Double.valueOf(user.get(SessionManager.KEY_LNG));

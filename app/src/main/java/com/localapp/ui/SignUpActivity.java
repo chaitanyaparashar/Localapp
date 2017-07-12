@@ -630,7 +630,8 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         HomeActivity.mLoginToken = data.getmToken();
         HomeActivity.mUserId = data.getmUserId();
         HomeActivity.mPicUrl = data.getPicUrl();
-        session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mPicUrl, HomeActivity.mLastKnownLocation);
+        HomeActivity.mUserName = data.getmName();
+        session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mUserName, HomeActivity.mPicUrl, HomeActivity.mLastKnownLocation);
 
         AppPreferences.getInstance(this).setMobiruckSignupPostback(true);//postback true
 

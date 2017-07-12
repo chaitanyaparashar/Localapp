@@ -209,6 +209,12 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
     public void setProfileData(Profile profile) {
         Picasso.with(AppController.getAppContext()).load(profile.getuPictureURL()).placeholder(R.drawable.ic_user).into(userPic);
         Picasso.with(AppController.getAppContext()).load(profile.getuPictureURL()).placeholder(R.drawable.ic_user).into(this);
+
+        if (HomeActivity.mUserName == null || HomeActivity.mUserName.equals("")) {
+            HomeActivity.mUserName = profile.getuName();
+            session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mUserName, HomeActivity.mPicUrl, HomeActivity.mLastKnownLocation);
+        }
+
         uNmaeTextView.setText(profile.getuName());
         uEmailTextView.setText(profile.getuEmail());
 
@@ -384,7 +390,8 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
         HomeActivity.mLoginToken = data.getAccessToken();
         HomeActivity.mUserId = data.getUserId();
         HomeActivity.mPicUrl = data.getPicUrl();
-        session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mPicUrl, HomeActivity.mLastKnownLocation);
+        HomeActivity.mUserName = data.getmName();
+        session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mUserName, HomeActivity.mPicUrl, HomeActivity.mLastKnownLocation);
 
         setProfileData(data);
         fcmTokenUpdateRequest();

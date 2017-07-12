@@ -16,6 +16,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 
 import static android.support.test.espresso.core.deps.guava.base.Preconditions.checkArgument;
@@ -71,6 +72,35 @@ public class utility {
         }
 
         return true;
+    }
+
+    public static String getSmsTime(String milliseconds) {
+
+        try {
+            Calendar smsTime = Calendar.getInstance();
+            smsTime.setTimeInMillis(Long.parseLong(milliseconds));
+
+            Calendar now = Calendar.getInstance();
+
+            DateFormat sdfTime = new SimpleDateFormat("h:mm aa", Locale.ENGLISH);
+            DateFormat sdf = new SimpleDateFormat("d MMMM,  h:mm aa", Locale.ENGLISH);
+            DateFormat sdfY = new SimpleDateFormat("d MMMM YYYY,  h:mm aa", Locale.ENGLISH);
+
+            if (now.get(Calendar.DATE) == smsTime.get(Calendar.DATE) ) {
+                return "Today, " + sdfTime.format(smsTime.getTime());
+            } else if (now.get(Calendar.DATE) - smsTime.get(Calendar.DATE) == 1  ){
+                return "Yesterday, " + sdfTime.format(smsTime.getTime());
+            } else if (now.get(Calendar.YEAR) == smsTime.get(Calendar.YEAR)) {
+                return sdf.format(smsTime.getTime());
+            } else {
+                return sdfY.format(smsTime.getTime());
+            }
+        }catch (NumberFormatException nfe) {
+            return "";
+        }catch (NullPointerException npe) {
+            return "";
+        }
+
     }
 
 
@@ -146,8 +176,39 @@ public class utility {
             unit = "";
         }
 
-        return String.format("%4.3f%s", distance, unit);
+        return String.format("%4.2f%s", distance, unit);
     }
+
+
+    /*private static String formatNumber(double distance,String unit) {
+        *//*String unit = "m";
+        if (distance < 1) {
+            distance *= 1000;
+            unit = "mm";
+        } else if (distance > 1000) {
+            distance /= 1000;
+            unit = "km";
+        }*//*
+
+        switch (unit) {
+            case "km":
+                distance /= 1000;
+                unit = "km";
+                break;
+            case "mm":
+                distance *= 1000;
+                unit = "mm";
+                break;
+            default:
+                unit = "m";
+        }
+
+        if (!true) {
+            unit = "";
+        }
+
+        return String.format("%4.2f%s", distance, unit);
+    }*/
 
 
     public static void openPublicProfile(Context mContext, String userId){

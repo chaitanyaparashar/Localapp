@@ -439,6 +439,11 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
                         try {
                             jsonObject = new JSONObject(messagePayLoad);
                             messageData.setmUserID(jsonObject.getString("userId"));
+                            try {
+                                messageData.setName(jsonObject.getString("userName"));
+                            }catch (JSONException je) {
+                                je.printStackTrace();
+                            }
                             messageData.setMsgIdOnlyForFrontEnd(jsonObject.getString("emergencyId"));
                             messageData.setPicUrl(jsonObject.getString("picUrl"));
                             messageData.setMediaURL(jsonObject.getString("mediaUrl"));
@@ -566,6 +571,10 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
                     messageData.setmUserID("");
                 }
 
+                if (HomeActivity.mUserName != null){
+                    messageData.setName(HomeActivity.mUserName);
+                }
+
                 if (sessionManager.getFcmToken() != null) {
                     messageData.setFcmToken(sessionManager.getFcmToken());
                 }else {
@@ -615,6 +624,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
                 mParams.put("token",messageData.getToken());
                 mParams.put("fcmToken",messageData.getFcmToken());
                 mParams.put("userId",messageData.getmUserID());
+                mParams.put("userName", messageData.getName());
                 mParams.put("picUrl",messageData.getPicUrl());
                 mParams.put("mediaUrl","");
                 mParams.put("mediaType",""+messageData.getMediaType().getNumber());

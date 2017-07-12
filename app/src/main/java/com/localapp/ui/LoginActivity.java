@@ -331,7 +331,8 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         HomeActivity.mLoginToken = data.getAccessToken();
         HomeActivity.mUserId = data.getUserId();
         HomeActivity.mPicUrl = data.getPicUrl();
-        session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mPicUrl, HomeActivity.mLastKnownLocation);
+        HomeActivity.mUserName = data.getmName();
+        session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mUserName, HomeActivity.mPicUrl, HomeActivity.mLastKnownLocation);
         fcmTokenUpdateRequest();
 
 
@@ -342,7 +343,8 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         HomeActivity.mLoginToken = data.getmToken();
         HomeActivity.mUserId = data.getmUserId();
         HomeActivity.mPicUrl = data.getPicUrl();
-        session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mPicUrl, HomeActivity.mLastKnownLocation);
+        HomeActivity.mUserName = data.getmName();
+        session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mUserName, HomeActivity.mPicUrl, HomeActivity.mLastKnownLocation);
 
         AppPreferences.getInstance(this).setMobiruckSignupPostback(true);//postback true
         Log.d(TAG,"post back true");

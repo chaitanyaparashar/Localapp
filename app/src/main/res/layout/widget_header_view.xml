@@ -14,11 +14,11 @@
         android:textSize="@dimen/header_view_start_text_size"
         android:textStyle="bold" />
 
-    <!--<TextView
-        android:id="@+id/last_seen"
+    <TextView
+        android:id="@+id/distance"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:maxLines="1"
-        android:textColor="@android:color/white" />-->
+        android:textColor="@android:color/white" />
 
 </com.localapp.ui.public_profile.HeaderView>

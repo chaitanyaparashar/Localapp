@@ -5,6 +5,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -56,6 +57,7 @@ import android.widget.Toast;
 
 import com.github.siyamed.shapeimageview.CircularImageView;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
@@ -117,6 +119,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.StringTokenizer;
 
+import static android.app.Activity.RESULT_OK;
 import static com.localapp.util.utility.getProfessionList;
 import static com.localapp.util.utility.isServiceRunning;
 import static com.localapp.util.utility.openPublicProfile;
@@ -1823,7 +1826,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
             case REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
-                    case Activity.RESULT_OK:
+                    case RESULT_OK:
                         Log.i(TAG, "User agreed to make required location settings changes.");
                         // Nothing to do. startLocationupdates() gets called in onResume again.
                         break;
@@ -1836,6 +1839,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                         break;
                 }
                 break;
+
+            case REQUEST_RESOLVE_ERROR:
+                mResolvingError = false;
+                if (resultCode == RESULT_OK) {
+                    // Make sure the app is not already connected or attempting to connect
+                    if (!mGoogleApiClient.isConnecting() &&
+                            !mGoogleApiClient.isConnected()) {
+                        mGoogleApiClient.connect();
+                    }
+                }
+
 
 
         }
@@ -2260,20 +2274,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
 
 
+
+
+
+
+
     @Override
     public void onConnected(Bundle bundle) {
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(LOCATION_PERMISSIONS, REQUEST_LOCATION_PERMISSION_CODE);
             return;
         }
 
+//        showErrorDialog(0);
         Log.d(TAG,"onConnected");
         if (mCurrentLocation == null) {
             mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
@@ -2294,10 +2308,75 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         mGoogleApiClient.connect();
     }
 
+
+
+
+    private boolean mResolvingError = false;
+    // Request code to use when launching the resolution activity
+    private static final int REQUEST_RESOLVE_ERROR = 1001;
+    private static final String DIALOG_ERROR = "dialog_error";
+
+
+
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + connectionResult.getErrorCode());
+    public void onConnectionFailed(@NonNull ConnectionResult result) {
+        Log.d(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+        if (mResolvingError) {
+            // Already attempting to resolve an error.
+            return;
+        } else if (result.hasResolution()) {
+            try {
+                mResolvingError = true;
+                result.startResolutionForResult(getActivity(), REQUEST_RESOLVE_ERROR);
+            } catch (IntentSender.SendIntentException e) {
+                // There was an error with the resolution intent. Try again.
+                mGoogleApiClient.connect();
+            }
+        } else {
+            // Show dialog using GoogleApiAvailability.getErrorDialog()
+            showErrorDialog(result.getErrorCode());
+            mResolvingError = true;
+        }
+
     }
+
+    /* Creates a dialog for an error message */
+    private void showErrorDialog(int errorCode) {
+        // Create a fragment for the error dialog
+        ErrorDialogFragment dialogFragment = new ErrorDialogFragment();
+        // Pass the error that should be displayed
+        Bundle args = new Bundle();
+        args.putInt(DIALOG_ERROR, errorCode);
+        dialogFragment.setArguments(args);
+        dialogFragment.show(getActivity().getFragmentManager(), "errordialog");
+    }
+
+
+    /* Called from ErrorDialogFragment when the dialog is dismissed. */
+    public void onDialogDismissed() {
+        mResolvingError = false;
+    }
+
+    /* A fragment to display an error dialog */
+    public static class ErrorDialogFragment extends DialogFragment {
+        public ErrorDialogFragment() { }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Get the error code and retrieve the appropriate dialog
+            int errorCode = this.getArguments().getInt(DIALOG_ERROR);
+            return GoogleApiAvailability.getInstance().getErrorDialog(
+                    this.getActivity(), errorCode, REQUEST_RESOLVE_ERROR);
+        }
+
+        @Override
+        public void onDismiss(DialogInterface dialog) {
+            MapFragment.getInstance().onDialogDismissed();
+        }
+    }
+
+
+
 
     /**
      * Stores activity data in the Bundle.

@@ -32,6 +32,7 @@ import java.util.HashMap;
 
 import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
 
+import static com.localapp.util.utility.getSmsTime;
 import static com.localapp.util.utility.openPublicProfile;
 
 /**
@@ -193,7 +194,8 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         FeedFragment.MediaType mediaType = message.getMediaType();
         String text = message.getmText();
         String mURL = message.getMediaURL();
-        String userName = message.getName();
+        String userName = (message.getName() != null) ? message.getName() : "";
+        String timeStamp = message.getTimeStamp();
         final String user_id = message.getmUserID();
         String userPicUrl = message.getPicUrl();//"https://s3-us-west-1.amazonaws.com/com.fourway.localapp.profileimage/vijay@gmail.com";
 
@@ -201,6 +203,9 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
             holder.nameTextView.setText("~" + userName);
         }
 
+        if (holder.timeTextView != null){
+            holder.timeTextView.setText(getSmsTime(timeStamp));
+        }
         if (message.getMessageType() != null) {
             holder.messageTypeImageView.setImageResource(getEmojiResourceIdByMsgType(message.getMessageType()));
         }
@@ -284,7 +289,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         public EmojiconTextView textViewMessage;
         public CircularImageView proPic;
         public ImageView messageTypeImageView;
-        public TextView nameTextView;
+        public TextView nameTextView, timeTextView;
 
         public RoundedImageView imageMedia;
 
@@ -303,6 +308,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         public ViewHolder(View itemView) {
             super(itemView);
             nameTextView = (TextView) itemView.findViewById(R.id.textViewName);
+            timeTextView = (TextView) itemView.findViewById(R.id.sms_time);
             textViewMessage = (EmojiconTextView) itemView.findViewById(R.id.textViewMsg);
             proPic = (CircularImageView) itemView.findViewById(R.id.msg_pic);
             messageTypeImageView = (ImageView) itemView.findViewById(R.id.msg_emoji);

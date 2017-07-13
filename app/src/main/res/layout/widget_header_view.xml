@@ -10,6 +10,10 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/activity_horizontal_margin"
         android:ellipsize="end"
+        android:shadowColor="#7F000000"
+        android:shadowRadius="2"
+        android:shadowDx="1"
+        android:shadowDy="1"
         android:maxLines="1"
         android:textColor="@android:color/white"
         android:textSize="@dimen/header_view_start_text_size"
@@ -17,6 +21,10 @@
 
     <TextView
         android:fontFamily="@string/font_family_regular"
+        android:shadowColor="#7F000000"
+        android:shadowRadius="2"
+        android:shadowDx="1"
+        android:shadowDy="1"
         android:id="@+id/distance"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

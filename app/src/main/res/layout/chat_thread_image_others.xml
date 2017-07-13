@@ -1,84 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingRight="10dp"
-    android:paddingLeft="5dp"
+    android:paddingEnd="10dp"
+    android:paddingStart="5dp"
     android:paddingTop="10dp"
     android:layout_margin="2dp">
 
-    <android.support.v7.widget.CardView
-        android:elevation="3dp"
-        android:layout_toRightOf="@+id/rl"
-        android:layout_margin="16dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="4dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-        <TextView
-            android:textSize="12sp"
-            android:layout_gravity="end"
-            android:id="@+id/textViewName"
-            android:layout_marginTop="4dp"
-            android:layout_marginEnd="4dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-            <com.github.siyamed.shapeimageview.RoundedImageView
-                android:id="@+id/msg_img"
-                android:layout_margin="4dp"
-                app:siBorderWidth="0dp"
-                app:siRadius="4dp"
-                app:siBorderColor="#fff"
-                android:layout_width="210dp"
-                android:layout_height="210dp"
-                android:scaleType="centerCrop"/>
-
-            <TextView
-                android:id="@+id/sms_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="12sp"
-                android:layout_gravity="start"
-                android:layout_marginBottom="4dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="4dp" />
-
-        </LinearLayout>
-
-
-
-    </android.support.v7.widget.CardView>
-
-    <RelativeLayout
-        android:id="@+id/rl"
-        android:layout_alignParentLeft="true"
-        android:layout_margin="5dp"
+    <LinearLayout
+        android:id="@+id/ll"
+        android:layout_alignParentStart="true"
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
-        <com.localapp.ui.CircularNetworkImageView
-            android:layout_centerHorizontal="true"
-            android:id="@+id/msg_pic"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
+        <RelativeLayout
+            android:id="@+id/rl"
+            android:layout_margin="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <com.localapp.ui.CircularNetworkImageView
+                android:id="@+id/msg_pic"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="10dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_user" />
+
+        </RelativeLayout>
+
+        <android.support.v7.widget.CardView
             android:layout_marginTop="10dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_user" />
+            android:layout_marginStart="5dp"
+            android:layout_marginBottom="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="4dp">
 
-        <ImageView
-            android:layout_alignRight="@+id/msg_pic"
-            android:id="@+id/msg_emoji"
-            android:layout_width="30dp"
-            android:layout_height="30dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:textSize="12sp"
+                    android:layout_gravity="start"
+                    android:id="@+id/textViewName"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <com.github.siyamed.shapeimageview.RoundedImageView
+                    android:id="@+id/msg_img"
+                    android:layout_margin="4dp"
+                    app:siBorderWidth="0dp"
+                    app:siRadius="4dp"
+                    android:src="@mipmap/ic_launcher"
+                    app:siBorderColor="#fff"
+                    android:layout_width="210dp"
+                    android:layout_height="210dp"
+                    android:scaleType="centerCrop"/>
+
+                <TextView
+                    android:id="@+id/sms_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:layout_gravity="end"
+                    android:layout_marginBottom="4dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp" />
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+        </LinearLayout>
+
+    <ImageView
+        android:layout_toEndOf="@+id/ll"
+        android:layout_marginStart="-28dp"
+        android:id="@+id/msg_emoji"
+        android:layout_width="30dp"
+        android:layout_height="30dp" />
 
 
-    </RelativeLayout>
 
 </RelativeLayout>

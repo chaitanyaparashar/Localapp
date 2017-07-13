@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:emojicon="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
-    android:paddingRight="10dp"
-    android:paddingLeft="5dp"
+    android:paddingEnd="10dp"
+    android:paddingStart="5dp"
     android:paddingTop="10dp"
     android:gravity="end"
     android:layout_margin="2dp"
@@ -11,73 +11,73 @@
     android:layout_height="wrap_content">
 
 
-
-        <android.support.v7.widget.CardView
+        <LinearLayout
+            android:orientation="horizontal"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            emojicon:cardCornerRadius="5dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginBottom="10dp"
-            android:layout_marginRight="5dp">
+            android:layout_height="wrap_content">
+
+            <android.support.v7.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="10dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginEnd="5dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                        <TextView
-                            android:textSize="12sp"
-                            android:fontFamily="@string/font_family_regular"
-                            android:layout_gravity="end"
-                            android:id="@+id/textViewName"
-                            android:layout_marginTop="4dp"
-                            android:text="~vijay kumar"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginEnd="8dp"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
+                    <TextView
+                        android:textSize="12sp"
+                        android:fontFamily="@string/font_family_regular"
+                        android:layout_gravity="end"
+                        android:id="@+id/textViewName"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
-                        <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
-                            android:layout_gravity="end"
-                            android:id="@+id/textViewMsg"
-                            android:layout_width="wrap_content"
-                            emojicon:emojiconSize="25sp"
-                            android:textSize="14sp"
-                            android:minWidth="180dp"
-                            android:maxWidth="250dp"
-                            android:text="Hi how are you"
-                            android:fontFamily="@string/font_family_regular"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="8dp"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="4dp"
-                            android:layout_marginBottom="2dp"
-                            android:textColor="#000" />
+                    <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+                        android:layout_gravity="end"
+                        android:id="@+id/textViewMsg"
+                        android:layout_width="wrap_content"
+                        emojicon:emojiconSize="25sp"
+                        android:textSize="14sp"
+                        android:minWidth="180dp"
+                        android:maxWidth="250dp"
+                        android:fontFamily="@string/font_family_regular"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="2dp"
+                        android:textColor="#000" />
 
-                        <TextView
-                            android:id="@+id/sms_time"
-                            android:fontFamily="@string/font_family_regular"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:textSize="12sp"
-                            android:text="Today, 12:52 AM"
-                            android:layout_gravity="start"
-                            android:layout_marginBottom="4dp"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginEnd="8dp" />
+                    <TextView
+                        android:id="@+id/sms_time"
+                        android:fontFamily="@string/font_family_regular"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:layout_gravity="start"
+                        android:layout_marginBottom="4dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp" />
 
                 </LinearLayout>
 
 
-        </android.support.v7.widget.CardView>
+            </android.support.v7.widget.CardView>
 
 
 
-        <RelativeLayout
-            android:layout_margin="5dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:layout_margin="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
 
                 <com.localapp.ui.CircularNetworkImageView
                     android:layout_centerHorizontal="true"
@@ -88,15 +88,13 @@
                     android:scaleType="centerCrop"
                     android:src="@drawable/ic_user" />
 
-                <ImageView
-                    android:layout_alignRight="@+id/msg_pic"
-                    android:id="@+id/msg_emoji"
-                    android:src="@drawable/emoji_mumble"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp" />
+            </RelativeLayout>
 
+        </LinearLayout>
 
-        </RelativeLayout>
+        <ImageView
+            android:id="@+id/msg_emoji"
+            android:layout_width="30dp"
+            android:layout_height="30dp" />
 
-
-</LinearLayout>
+</RelativeLayout>

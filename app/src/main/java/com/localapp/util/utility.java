@@ -48,7 +48,7 @@ public class utility {
 
     }
 
-    static  String getDayOfMonthSuffix(final int n) {
+    private static String getDayOfMonthSuffix(final int n) {
         checkArgument(n >= 1 && n <= 31, "illegal day of month: " + n);
         if (n >= 11 && n <= 13) {
             return n+"th";
@@ -84,7 +84,7 @@ public class utility {
 
             DateFormat sdfTime = new SimpleDateFormat("h:mm aa", Locale.ENGLISH);
             DateFormat sdf = new SimpleDateFormat("d MMMM,  h:mm aa", Locale.ENGLISH);
-            DateFormat sdfY = new SimpleDateFormat("d MMMM YYYY,  h:mm aa", Locale.ENGLISH);
+            DateFormat sdfY = new SimpleDateFormat("d MMMM yyyy,  h:mm aa", Locale.ENGLISH);
 
             if (now.get(Calendar.DATE) == smsTime.get(Calendar.DATE) ) {
                 return "Today, " + sdfTime.format(smsTime.getTime());
@@ -146,7 +146,11 @@ public class utility {
      */
     public static String calcDistance(LatLng from, LatLng to, String unit, boolean showUnit) {
         double distance = SphericalUtil.computeDistanceBetween(from, to);
-        return formatNumber(distance,unit,showUnit);
+        if (unit != null){
+            return formatNumber(distance,unit,showUnit);
+        }else {
+            return formatNumber(distance);
+        }
     }
 
     private static String formatNumber(double distance,String unit,boolean showUnit) {
@@ -176,39 +180,21 @@ public class utility {
             unit = "";
         }
 
-        return String.format("%4.2f%s", distance, unit);
+        return String.format("%4.3f%s", distance, unit);
     }
 
 
-    /*private static String formatNumber(double distance,String unit) {
-        *//*String unit = "m";
-        if (distance < 1) {
-            distance *= 1000;
-            unit = "mm";
-        } else if (distance > 1000) {
+    private static String formatNumber(double distance) {
+        String unit = " metre";
+        if (distance > 1000) {
             distance /= 1000;
-            unit = "km";
-        }*//*
+            unit = " km";
 
-        switch (unit) {
-            case "km":
-                distance /= 1000;
-                unit = "km";
-                break;
-            case "mm":
-                distance *= 1000;
-                unit = "mm";
-                break;
-            default:
-                unit = "m";
+            return String.format("%4.1f%s", distance, unit);
         }
 
-        if (!true) {
-            unit = "";
-        }
-
-        return String.format("%4.2f%s", distance, unit);
-    }*/
+        return String.format("%4.0f%s", distance, unit);
+    }
 
 
     public static void openPublicProfile(Context mContext, String userId){

@@ -1,18 +1,12 @@
 package com.localapp.ui.public_profile;
 
-import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.PictureDrawable;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
@@ -24,9 +18,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.android.volley.toolbox.StringRequest;
 import com.google.android.gms.maps.model.LatLng;
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
@@ -37,8 +29,7 @@ import com.localapp.ui.HomeActivity;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -48,6 +39,7 @@ import static com.localapp.util.utility.calcDistance;
 
 public class PublicProfileActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener, GetProfileByIdRequest.GetProfileByIdRequestCallback, Target{
     private static String TAG = "PublicProfileActivity";
+    public static String UNKNOWN_PROFILE_ID = "594cfef7c44dc502bb16dbe9"; //fake profile for random message
 
     @Bind(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
@@ -124,9 +116,6 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
         if (uid != null)
         profileRequest(uid);
 
-//        collapsingToolbarLayout.setContentScrimColor(getResources().getColor(R.color.colorAccent));
-
-
     }
 
     private void initUi() {
@@ -173,19 +162,26 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
         String uPrivacy = mProfile.getuPrivacy();
         String profession = mProfile.getProfession();
         LatLng mLatLng = mProfile.getuLatLng();
-        String distance = calcDistance(HomeActivity.mLastKnownLocation,mLatLng,"km",false);
+        String distance = calcDistance(HomeActivity.mLastKnownLocation,mLatLng,null,false);
 
         Picasso.with(AppController.getAppContext()).load(uPictureURL).placeholder(R.drawable.ic_user).into(mProfileImageView);
         Picasso.with(AppController.getAppContext()).load(uPictureURL).placeholder(R.drawable.ic_user).into(this);
 
 
-
-        if (distance != null) {
-            toolbarHeaderView.bindTo(uName, distance + " km");
-            floatHeaderView.bindTo(uName, distance + " km");
+        if (!mProfile.getuId().equals(UNKNOWN_PROFILE_ID)) {
+            if (distance != null) {
+                toolbarHeaderView.bindTo(uName, distance);
+                floatHeaderView.bindTo(uName, distance);
+            } else {
+                toolbarHeaderView.bindTo(uName, "");
+                floatHeaderView.bindTo(uName, "");
+            }
         }else {
-            toolbarHeaderView.bindTo(uName, "");
-            floatHeaderView.bindTo(uName, "");
+            Random rand = new Random();
+            int i1 = rand.nextInt(4 - 3) + 3;
+            int i2 = rand.nextInt(9) + 1;
+            toolbarHeaderView.bindTo(uName, "" + i1 + "." + i2 + " km");
+            floatHeaderView.bindTo(uName, "" + i1 + "." + i2 + " km");
         }
 
         if (uSpeciality != null && !uSpeciality.equals("null") && !uSpeciality.isEmpty()) {
@@ -281,21 +277,6 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
 
 
     private class DoInBackground extends AsyncTask<Bitmap,Void,Integer> {
-
-        /**
-         * Override this method to perform a computation on a background thread. The
-         * specified parameters are the parameters passed to {@link #execute}
-         * by the caller of this task.
-         * <p>
-         * This method can call {@link #publishProgress} to publish updates
-         * on the UI thread.
-         *
-         * @param params The parameters of the task.
-         * @return A result, defined by the subclass of this task.
-         * @see #onPreExecute()
-         * @see #onPostExecute
-         * @see #publishProgress
-         */
         @Override
         protected Integer doInBackground(Bitmap... params) {
 

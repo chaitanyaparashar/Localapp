@@ -50,6 +50,7 @@ import com.localapp.util.utility;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.localapp.util.utility.isLocationAvailable;
 import static com.localapp.util.utility.openPublicProfile;
 
 /**
@@ -99,9 +100,12 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
     @Override
     public void onResume() {
         super.onResume();
-        getView().setFocusableInTouchMode(true);
-        getView().requestFocus();
-        getView().setOnKeyListener(onKeyListener);
+        View view = getView();
+        if (view != null) {
+            view.setFocusableInTouchMode(true);
+            view.requestFocus();
+            view.setOnKeyListener(onKeyListener);
+        }
     }
 
     /**
@@ -137,10 +141,8 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
             @Override
             public void onClick(View v) {
 
-                if (HomeActivity.mUserId !=null && !HomeActivity.mUserId.equals("")) {
+                if (isLocationAvailable(getContext())) {
                     startActivityForResult(new Intent(getContext(), CreateNoticeActivity.class),CREATE_NOTICE_BOARD_REQUEST_CODE);
-                }else {
-                    Toast.makeText(getContext(), "Please login first...", Toast.LENGTH_SHORT).show();
                 }
 
 

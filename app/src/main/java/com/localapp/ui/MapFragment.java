@@ -11,7 +11,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -23,7 +22,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -41,8 +39,6 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -97,15 +93,13 @@ import com.localapp.login_session.SessionManager;
 import com.localapp.request.CommonRequest;
 import com.localapp.request.GetNearestNoticeBoardRequest;
 import com.localapp.request.GetNoticeBoardMessageRequest;
+import com.localapp.request.GetProfileByIdRequest;
 import com.localapp.request.GetUsersRequest;
 import com.localapp.request.ImageSearchRequest;
 import com.localapp.request.SubscribeUnsubscribeNoticeBoardRequest;
-import com.localapp.request.GetProfileByIdRequest;
-import com.localapp.request.UpdateEmailRequest;
 import com.localapp.request.helper.UpdatePostBackRequest;
 import com.localapp.util.utility;
 import com.mobiruck.Mobiruck;
-import com.mobiruck.ReferrerReceiver;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
@@ -321,6 +315,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         searchBoxView.addTextChangedListener(textWatcherForSearchBox);
         searchBoxView.setOnKeyListener(onKeyListener);
         searchBoxView.setAdapter(autoCompleteAdapter);
+        searchBoxView.setThreshold(1);
         searchBtn.setOnClickListener(searchOnClickListener);
         searchCameraBtn.setOnClickListener(searchOnClickListener);
         studentBtn.setOnClickListener(filterClickListener);
@@ -1224,7 +1219,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             String pName = profile.getuName();
             String pNotes = profile.getuNotes();
             String pSpeciality = profile.getuSpeciality();
-            String pProfession = profile.getProfession();
+            String[] pProfessionStrings = profile.getProfession().split(",");
+            StringBuilder pProfession = new StringBuilder();
 
             if (pName.equals("null")) {
                 pName = "";
@@ -1237,24 +1233,60 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             if (pSpeciality == "null") {
                 pSpeciality = "";
             }
-            if (pProfession == "null") {
-                pProfession = "";
+
+            for (String s : pProfessionStrings){
+                if (pProfession.length() != 0) {
+                    pProfession.append(", ").append(s);
+                }else {
+                    pProfession.append(s);
+                }
             }
 
 
-            dataString = pName + " " + pNotes + " " + pSpeciality + " " + pProfession;
+
+
+
+            dataString = pName + " " + pNotes + " " + pSpeciality + " " + pProfession.toString();
             dataString = dataString.toLowerCase();
 
-            StringTokenizer st = new StringTokenizer(dataString, ", \n");
+            StringTokenizer st = new StringTokenizer(dataString, ",");
             boolean isFound = false;
-            while (st.hasMoreTokens()) {
-                if (st.nextToken().equals(searchString)) {
+            /*while (st.hasMoreTokens()) {
+                String ss = st.nextToken();
+                Log.d("search st ",ss);
+                if (ss.equals(searchString)) {
                     isFound = true;
                 }
             }
 
+            if (!isFound) {
+                StringTokenizer st1 = new StringTokenizer(dataString, " ");
+                while (st1.hasMoreTokens()) {
+                    String ss = st1.nextToken();
+                    Log.d("search st1 ",ss);
+                    if (ss.equals(searchString)) {
+                        isFound = true;
+                    }
+                }
+            }*/
+
             if (pName.toLowerCase().equals(searchString)) {  //for full name
                 isFound = true;
+            }
+
+            if (dataString.matches(".*\\b"+searchString+"\\b.*")){
+                isFound = true;
+            }
+
+            if (!isFound) {
+                String[] search = searchString.split("[\\s,;]+");
+
+                for (String s : search) {
+                    if (dataString.matches(".*\\b"+s+"\\b.*")) {
+                        isFound = true;
+                        break;
+                    }
+                }
             }
 
             if (isFound) {
@@ -1709,10 +1741,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
             }
         }
-
+        float zoom;
         @Override
         protected boolean shouldRenderAsCluster(Cluster<Profile> cluster) {
-            boolean shouldRender = true;
+           /* boolean shouldRender = true;
             // Always render clusters.
             if (cluster.getSize()>1 && cluster.getSize() <5) {
                 Collection<Profile> profileList = cluster.getItems();
@@ -1734,7 +1766,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             }else {
                 shouldRender = cluster.getSize() > 1;
             }
-            return shouldRender;
+            return shouldRender;*/
+
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    zoom = mMap.getCameraPosition().zoom;
+                }
+            });
+
+            if (zoom > 20.9f) {
+                return false;
+            }
+
+            return cluster.getSize() > 1;
         }
 
 

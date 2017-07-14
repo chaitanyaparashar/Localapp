@@ -197,7 +197,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         String userName = (message.getName() != null) ? message.getName() : "";
         String timeStamp = message.getTimeStamp();
         final String user_id = message.getmUserID();
-        String userPicUrl = message.getPicUrl();//"https://s3-us-west-1.amazonaws.com/com.fourway.localapp.profileimage/vijay@gmail.com";
+        final String userPicUrl = message.getPicUrl();//"https://s3-us-west-1.amazonaws.com/com.fourway.localapp.profileimage/vijay@gmail.com";
 
         if (holder.nameTextView != null) {
             holder.nameTextView.setText("~" + userName);
@@ -219,7 +219,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
             @Override
             public void onClick(View v) {
                 if (user_id != null){
-                    openPublicProfile(context,user_id);
+                    openPublicProfile(context, user_id, userPicUrl);
                 }
             }
         });

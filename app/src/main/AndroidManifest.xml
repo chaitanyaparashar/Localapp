@@ -50,7 +50,7 @@
         </activity>
         <activity
             android:name=".ui.HomeActivity"
-            android:label="@string/app_name"
+            android:label=""
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity" />
@@ -70,7 +70,7 @@
             android:name=".camera.Camera2Activity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeFullScreen" />
-        <activity android:name=".VideoPlay" />
+        <activity android:name=".ui.VideoPlay" />
         <activity android:name=".ui.SignUpActivity" />
         <activity android:name=".ui.UpdateActivity" />
 

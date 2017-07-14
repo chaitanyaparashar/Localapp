@@ -44,14 +44,12 @@ import com.localapp.request.GetNoticeBoardMessageRequest;
 import com.localapp.request.MyNoticeBoardRequest;
 import com.localapp.request.PostNoticeBoardMessageRequest;
 import com.localapp.request.SubscribeUnsubscribeNoticeBoardRequest;
-import com.localapp.ui.public_profile.PublicProfileActivity;
 import com.localapp.util.utility;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.localapp.util.utility.isLocationAvailable;
-import static com.localapp.util.utility.openPublicProfile;
 
 /**
  * A simple {@link Fragment} subclass.

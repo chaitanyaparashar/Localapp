@@ -151,11 +151,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     public static String TAG = "MapFragment";
 
     private static final int REQUEST_CAMERA_PERMISSION_CODE = 201;
-    private static final int REQUEST_CALL_PHONE_PERMISSION_CODE = 202;
+    public static final int REQUEST_CALL_PHONE_PERMISSION_CODE = 202;
     private static final int REQUEST_LOCATION_PERMISSION_CODE = 200;
     private static final int REQUEST_READ_PHONE_STATE_CODE = 225;
     final static String[] CAMERA_PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO};
-    final static String[] CALL_PHONE_PERMISSIONS = {Manifest.permission.CALL_PHONE};
+    public final static String[] CALL_PHONE_PERMISSIONS = {Manifest.permission.CALL_PHONE};
     final static String[] LOCATION_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
     final static String[] READ_PHONE_STATE_PERMISSIONS = {Manifest.permission.READ_PHONE_STATE};
 
@@ -173,7 +173,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             repairBtn, emergencyBtn,
             notice_boardBtn, hobbiesBtn;
 
-    private ImageView searchBtn, searchCameraBtn;
+    private ImageButton searchBtn, searchCameraBtn;
     private RelativeLayout uDetailLayout;
     private AutoCompleteTextView searchBoxView;
 
@@ -289,8 +289,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         repairBtn = (ImageView) view.findViewById(R.id.repair_iv);
         emergencyBtn = (ImageView) view.findViewById(R.id.emergency_iv);
         notice_boardBtn = (ImageView) view.findViewById(R.id.notice_board_iv);
-        searchBtn = (ImageView) view.findViewById(R.id.search_btn);
-        searchCameraBtn = (ImageView) view.findViewById(R.id.search_camera_btn);
+        searchBtn = (ImageButton) view.findViewById(R.id.search_btn);
+        searchCameraBtn = (ImageButton) view.findViewById(R.id.search_camera_btn);
         searchBoxView = (AutoCompleteTextView) view.findViewById(R.id.autoCompleteTextView);
         uDetailLayout = (RelativeLayout) view.findViewById(R.id.user_detail_rl);
         botomFilter = (LinearLayout) view.findViewById(R.id.bottom_filter_lt);
@@ -1546,14 +1546,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         String pTitle = profile.getProfession();
         String pPrivacy = profile.getuPrivacy();
         String mMobile = profile.getuMobile();
+        final  String pic_url = profile.getuPictureURL();
         final String pEmail = profile.getuEmail();
         final String user_id = profile.getuId();
 
+        View view = getView();
+        if (view == null) return;
 
-        TextView textView = (TextView) getView().findViewById(R.id.user_name);
-        TextView titleView = (TextView) getView().findViewById(R.id.user_title);
-        ImageView actionEmail = (ImageView) getView().findViewById(R.id.action_email);
-        ImageView actionCall = (ImageView) getView().findViewById(R.id.action_call);
+        TextView textView = (TextView) view.findViewById(R.id.user_name);
+        TextView titleView = (TextView) view.findViewById(R.id.user_title);
+        ImageView actionEmail = (ImageView) view.findViewById(R.id.action_email);
+        ImageView actionCall = (ImageView) view.findViewById(R.id.action_call);
         if (mMobile != null && !mMobile.equals("null")) {
             actionCall.setVisibility(View.VISIBLE);
         }else {
@@ -1561,12 +1564,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         }
 
         CircularImageView proPicNetworkImageView = (CircularImageView) getView().findViewById(R.id.user_pic);
-        Picasso.with(AppController.getAppContext()).load(profile.getuPictureURL()).into(proPicNetworkImageView);
+        Picasso.with(AppController.getAppContext()).load(pic_url).into(proPicNetworkImageView);
         proPicNetworkImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (user_id != null) {
-                    openPublicProfile(getContext(),user_id);
+                    openPublicProfile(getContext(),user_id, pic_url);
                 }
             }
         });

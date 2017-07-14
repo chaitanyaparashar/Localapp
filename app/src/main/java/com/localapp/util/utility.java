@@ -3,6 +3,7 @@ package com.localapp.util;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -74,6 +75,10 @@ public class utility {
         return true;
     }
 
+    private static DateFormat sdfTime = new SimpleDateFormat("h:mm aa", Locale.ENGLISH);
+    private static DateFormat sdfTimeDay = new SimpleDateFormat("EEEE,  h:mm aa", Locale.ENGLISH);
+    private static DateFormat sdf = new SimpleDateFormat("d MMMM,  h:mm aa", Locale.ENGLISH);
+    private static DateFormat sdfY = new SimpleDateFormat("d MMMM yyyy,  h:mm aa", Locale.ENGLISH);
     public static String getSmsTime(String milliseconds) {
 
         try {
@@ -82,14 +87,14 @@ public class utility {
 
             Calendar now = Calendar.getInstance();
 
-            DateFormat sdfTime = new SimpleDateFormat("h:mm aa", Locale.ENGLISH);
-            DateFormat sdf = new SimpleDateFormat("d MMMM,  h:mm aa", Locale.ENGLISH);
-            DateFormat sdfY = new SimpleDateFormat("d MMMM yyyy,  h:mm aa", Locale.ENGLISH);
+
 
             if (now.get(Calendar.DATE) == smsTime.get(Calendar.DATE) ) {
                 return "Today, " + sdfTime.format(smsTime.getTime());
             } else if (now.get(Calendar.DATE) - smsTime.get(Calendar.DATE) == 1  ){
                 return "Yesterday, " + sdfTime.format(smsTime.getTime());
+            }else if(now.get(Calendar.DATE) - smsTime.get(Calendar.DATE) < 7  ){
+                return sdfTimeDay.format(smsTime.getTime());
             } else if (now.get(Calendar.YEAR) == smsTime.get(Calendar.YEAR)) {
                 return sdf.format(smsTime.getTime());
             } else {
@@ -197,8 +202,9 @@ public class utility {
     }
 
 
-    public static void openPublicProfile(Context mContext, String userId){
+    public static void openPublicProfile(Context mContext, String userId, @Nullable String pic_url){
         Intent intent = new Intent(mContext,PublicProfileActivity.class);
+        intent.putExtra(PublicProfileActivity.PIC_URL, pic_url);
         intent.putExtra("action_id",userId);
         mContext.startActivity(intent);
 

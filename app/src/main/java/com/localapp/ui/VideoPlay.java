@@ -1,4 +1,4 @@
-package com.localapp;
+package com.localapp.ui;
 
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -10,6 +10,8 @@ import android.view.WindowManager;
 import android.widget.MediaController;
 import android.widget.ProgressBar;
 import android.widget.VideoView;
+
+import com.localapp.R;
 
 public class VideoPlay extends AppCompatActivity {
     String url;

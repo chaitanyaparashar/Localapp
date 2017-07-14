@@ -1,12 +1,18 @@
 package com.localapp.ui.public_profile;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
@@ -16,8 +22,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.localapp.R;
@@ -34,12 +42,18 @@ import java.util.Random;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import static com.localapp.ui.MapFragment.CALL_PHONE_PERMISSIONS;
+import static com.localapp.ui.MapFragment.REQUEST_CALL_PHONE_PERMISSION_CODE;
 import static com.localapp.util.ColorUtils.getDominantColor1;
 import static com.localapp.util.utility.calcDistance;
 
-public class PublicProfileActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener, GetProfileByIdRequest.GetProfileByIdRequestCallback, Target{
+public class PublicProfileActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener, GetProfileByIdRequest.GetProfileByIdRequestCallback, Target {
     private static String TAG = "PublicProfileActivity";
+    public static String PIC_URL = "pic_url";
     public static String UNKNOWN_PROFILE_ID = "594cfef7c44dc502bb16dbe9"; //fake profile for random message
+    private Intent callIntent;
+
+    String pic_url = null;
 
     @Bind(R.id.collapsing_toolbar)
     CollapsingToolbarLayout collapsingToolbarLayout;
@@ -86,6 +100,12 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
     @Bind(R.id.mobile_card)
     protected CardView mobileCardView;
 
+    @Bind(R.id.action_call)
+    protected ImageButton callButton;
+
+    @Bind(R.id.action_email)
+    protected ImageButton emailButton;
+
     private boolean isHideToolbarView = false;
 
     @Override
@@ -110,11 +130,17 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
         }
 
         initUi();
+        Intent intent = getIntent();
+        String uid = intent.getStringExtra("action_id");
+        pic_url = intent.getStringExtra(PIC_URL);
 
-        String uid = getIntent().getStringExtra("action_id");
+        if (pic_url != null) {
+            Picasso.with(AppController.getAppContext()).load(pic_url).placeholder(R.drawable.ic_user).into(mProfileImageView);
+            Picasso.with(AppController.getAppContext()).load(pic_url).placeholder(R.drawable.ic_user).into(this);
+        }
 
         if (uid != null)
-        profileRequest(uid);
+            profileRequest(uid);
 
     }
 
@@ -152,20 +178,22 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
     }
 
 
-    private void setProfileData(Profile mProfile){
+    private void setProfileData(Profile mProfile) {
         String uName = mProfile.getuName();
-        String uEmail = mProfile.getuEmail();
-        String uMobile = mProfile.getuMobile();
+        final String uEmail = mProfile.getuEmail();
+        final String[] uMobile = {mProfile.getuMobile()};
         String uPictureURL = mProfile.getuPictureURL();
         String uSpeciality = mProfile.getuSpeciality();
         String uNotes = mProfile.getuNotes();
         String uPrivacy = mProfile.getuPrivacy();
         String profession = mProfile.getProfession();
         LatLng mLatLng = mProfile.getuLatLng();
-        String distance = calcDistance(HomeActivity.mLastKnownLocation,mLatLng,null,false);
+        String distance = calcDistance(HomeActivity.mLastKnownLocation, mLatLng, null, false);
 
-        Picasso.with(AppController.getAppContext()).load(uPictureURL).placeholder(R.drawable.ic_user).into(mProfileImageView);
-        Picasso.with(AppController.getAppContext()).load(uPictureURL).placeholder(R.drawable.ic_user).into(this);
+        if (pic_url == null) {
+            Picasso.with(AppController.getAppContext()).load(uPictureURL).placeholder(R.drawable.ic_user).into(mProfileImageView);
+            Picasso.with(AppController.getAppContext()).load(uPictureURL).placeholder(R.drawable.ic_user).into(this);
+        }
 
 
         if (!mProfile.getuId().equals(UNKNOWN_PROFILE_ID)) {
@@ -176,7 +204,7 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
                 toolbarHeaderView.bindTo(uName, "");
                 floatHeaderView.bindTo(uName, "");
             }
-        }else {
+        } else {
             Random rand = new Random();
             int i1 = rand.nextInt(4 - 3) + 3;
             int i2 = rand.nextInt(9) + 1;
@@ -186,29 +214,53 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
 
         if (uSpeciality != null && !uSpeciality.equals("null") && !uSpeciality.isEmpty()) {
             mSpeciality.setText(uSpeciality);
-        }else {
+        } else {
             cardIntro.setVisibility(View.GONE);
         }
 
         if (uNotes != null && !uNotes.equals("null") && !uNotes.isEmpty()) {
             mNotes.setText(uNotes);
-        }else {
+        } else {
             cardDetails.setVisibility(View.GONE);
         }
 
-        if (profession != null && !profession.equals("null") && !profession.isEmpty()){
+        if (profession != null && !profession.equals("null") && !profession.isEmpty()) {
             mProfession.setText(profession);
-        }else {
+        } else {
             cardProfession.setVisibility(View.GONE);
         }
 
-        if (uMobile != null && !uMobile.equals("null" ) && !uMobile.isEmpty() && !uPrivacy.equals("1")) {
-            mMobile.setText(uMobile);
+        if (uMobile[0] != null && !uMobile[0].equals("null") && !uMobile[0].isEmpty() && !uPrivacy.equals("1")) {
+            mMobile.setText(uMobile[0]);
+            callButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    uMobile[0] = "+91" + uMobile[0];
+                    callIntent = new Intent(Intent.ACTION_CALL, Uri.fromParts("tel", uMobile[0], null));
+                    if (ActivityCompat.checkSelfPermission(PublicProfileActivity.this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            requestPermissions(CALL_PHONE_PERMISSIONS,REQUEST_CALL_PHONE_PERMISSION_CODE);
+                        }
+                        return;
+                    }
+                    startActivity(callIntent);
+                }
+            });
         }else {
             mobileCardView.setVisibility(View.GONE);
         }
 
         mEmail.setText(uEmail);
+
+        emailButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent EmailIntent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts(
+                        "mailto", uEmail, null));
+
+                startActivity(Intent.createChooser(EmailIntent, "Send Email:"));
+            }
+        });
 
 
 
@@ -291,5 +343,17 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
     }
 
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
+        if (requestCode == REQUEST_CALL_PHONE_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (callIntent != null)
+                startActivity(callIntent);
+            }else {
+                Toast.makeText(this, R.string.permission_denied, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 }

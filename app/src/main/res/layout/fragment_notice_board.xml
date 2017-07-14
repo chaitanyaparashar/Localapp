@@ -31,7 +31,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:textAllCaps="true"
-                    android:textColor="#2196f3"
+                    android:textColor="@color/titleColor"
                     android:textStyle="bold"
                     android:text="My Board"
                     android:textSize="22sp"
@@ -73,7 +73,7 @@
             <TextView
                 android:layout_margin="8dp"
                 android:gravity="center_horizontal"
-                android:textColor="#2196f3"
+                android:textColor="@color/titleColor"
                 android:text="NOTICE BOARDS NEAR YOU"
                 android:textStyle="bold"
                 android:layout_width="match_parent"

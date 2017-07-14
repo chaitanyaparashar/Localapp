@@ -47,7 +47,6 @@ import android.widget.Toast;
 import com.github.siyamed.shapeimageview.CircularImageView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.localapp.compressor.Compressor;
-import com.localapp.VideoPlay;
 import com.localapp.appcontroller.AppController;
 import com.localapp.audio.ViewProxy;
 import com.localapp.camera.Camera2Activity;
@@ -65,7 +64,6 @@ import com.localapp.util.utility;
 import com.squareup.picasso.Picasso;
 import com.localapp.util.RecyclerTouchListener;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.maps.android.SphericalUtil;
 import com.localapp.R;
 
 import org.fusesource.mqtt.client.Callback;

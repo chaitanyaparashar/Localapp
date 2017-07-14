@@ -6,6 +6,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.net.Uri;
@@ -16,6 +17,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -69,7 +71,6 @@ public class HomeActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitleTextColor(getResources().getColor(R.color.titleColor));
         setSupportActionBar(toolbar);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
@@ -93,23 +94,23 @@ public class HomeActivity extends AppCompatActivity{
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-        tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#2196f3"));
+//        tabLayout.setSelectedTabIndicatorColor(Color.parseColor("#2196f3"));
         setupTabIcons();
 
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                try {
-                    tab.getIcon().setColorFilter(Color.parseColor("#2196f3"), PorterDuff.Mode.SRC_IN);
-                }catch (NullPointerException e){
-                    e.printStackTrace();
+                if (tab.getIcon() != null) {
+                    tab.getIcon().setColorFilter(ContextCompat.getColor(HomeActivity.this,R.color.titleColor), PorterDuff.Mode.SRC_IN);
                 }
 
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
-                tab.getIcon().setColorFilter(Color.parseColor("#FF000000"), PorterDuff.Mode.SRC_IN);
+                if (tab.getIcon() != null) {
+                    tab.getIcon().setColorFilter(ContextCompat.getColor(HomeActivity.this, R.color.iconColor), PorterDuff.Mode.SRC_IN);
+                }
             }
 
             @Override
@@ -154,7 +155,7 @@ public class HomeActivity extends AppCompatActivity{
             tabLayout.getTabAt(2).setIcon(tabIcons[2]);
             tabLayout.getTabAt(3).setIcon(tabIcons[3]);
 
-            tabLayout.getTabAt(0).getIcon().setColorFilter(Color.parseColor("#2196f3"), PorterDuff.Mode.SRC_IN);
+            tabLayout.getTabAt(0).getIcon().setColorFilter(ContextCompat.getColor(this,R.color.titleColor), PorterDuff.Mode.SRC_IN);
         }catch (NullPointerException e){
             e.printStackTrace();
         }

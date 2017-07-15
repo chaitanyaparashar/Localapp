@@ -23,6 +23,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -39,7 +40,9 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -98,7 +101,7 @@ import com.localapp.request.GetUsersRequest;
 import com.localapp.request.ImageSearchRequest;
 import com.localapp.request.SubscribeUnsubscribeNoticeBoardRequest;
 import com.localapp.request.helper.UpdatePostBackRequest;
-import com.localapp.util.utility;
+import com.localapp.util.Utility;
 import com.mobiruck.Mobiruck;
 import com.squareup.picasso.Picasso;
 
@@ -106,7 +109,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -114,9 +116,10 @@ import java.util.Random;
 import java.util.StringTokenizer;
 
 import static android.app.Activity.RESULT_OK;
-import static com.localapp.util.utility.getProfessionList;
-import static com.localapp.util.utility.isServiceRunning;
-import static com.localapp.util.utility.openPublicProfile;
+import static com.localapp.util.Utility.getProfessionList;
+import static com.localapp.util.Utility.hideSoftKeyboard;
+import static com.localapp.util.Utility.isServiceRunning;
+import static com.localapp.util.Utility.openPublicProfile;
 
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GetUsersRequest.GetUsersResponseCallback,
@@ -316,6 +319,27 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         searchBoxView.setOnKeyListener(onKeyListener);
         searchBoxView.setAdapter(autoCompleteAdapter);
         searchBoxView.setThreshold(1);
+        searchBoxView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                    performSearch(null);
+                    return true;
+                }
+                return false;
+
+            }
+        });
+
+
+        searchBoxView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                performSearch(autoCompleteAdapter.getItem(position));
+            }
+        });
+
+
         searchBtn.setOnClickListener(searchOnClickListener);
         searchCameraBtn.setOnClickListener(searchOnClickListener);
         studentBtn.setOnClickListener(filterClickListener);
@@ -336,7 +360,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
 
     }
-
 
 
 
@@ -384,7 +407,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             request(HomeActivity.mLastKnownLocation);
 //            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(HomeActivity.mLastKnownLocation, 16.2f));
             CameraPosition cameraPosition = new CameraPosition.Builder().target(
-                    HomeActivity.mLastKnownLocation).zoom(16.3f).build();
+                    HomeActivity.mLastKnownLocation).zoom(14f).build();
 
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         } else {
@@ -1179,6 +1202,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             if (filterIndexSize == 1) {
                 markerClickWindow(profileList.get(filterIndex.get(0)));
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(profileList.get(filterIndex.get(0)).getuLatLng(), 16.8f));
+            }else {
+                if (isFilter) {
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(HomeActivity.mLastKnownLocation, 12.5f));
+                }
             }
         }
     }
@@ -1434,6 +1461,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     };
 
 
+
     /**
      * search listener
      */
@@ -1441,13 +1469,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         @Override
         public void onClick(View v) {
             if (v.getId() == R.id.search_btn) {
-                String searchQuery = searchBoxView.getText().toString().trim();
-                if (!TextUtils.isEmpty(searchQuery)) {
-                    ArrayList<Integer> indexs = search(profileList, searchQuery);
-                    if (indexs != null && indexs.size() > 0) {
-                        addMarkerByProfile(true, indexs);
-                    }
-                }
+                performSearch(null);
             } else {
                 if (isCameraPermissionGrated()) {
                     openCamera();
@@ -1457,10 +1479,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
             }
 
-            searchBoxView.clearFocus();
-
         }
     };
+
+
+    private void performSearch(@Nullable String searchString) {
+
+        hideSoftKeyboard(getActivity());
+        searchBoxView.clearFocus();
+
+        String searchQuery = searchString != null ? searchString.trim() : searchBoxView.getText().toString().trim();
+        if (!TextUtils.isEmpty(searchQuery)) {
+            ArrayList<Integer> indexs = search(profileList, searchQuery);
+            if (indexs != null && indexs.size() > 0) {
+                addMarkerByProfile(true, indexs);
+            }else {
+                Toast.makeText(getActivity(), "No result found, try different keywords", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+    }
 
     void openCamera() {
         Intent i = new Intent(getContext(), Camera2Activity.class);
@@ -1754,7 +1792,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
                 int sameDistanceCount = 0;
                 for (Profile profile : profileList) {
-                    double distance = Double.parseDouble(utility.calcDistance(cluster.getPosition(),profile.getPosition(),"mm",false));
+                    double distance = Double.parseDouble(Utility.calcDistance(cluster.getPosition(),profile.getPosition(),"mm",false));
 
                     if (distance < 20) {
                         sameDistanceCount ++;
@@ -1770,13 +1808,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 shouldRender = cluster.getSize() > 1;
             }
             return shouldRender;*/
+           try {
+               getActivity().runOnUiThread(new Runnable() {
+                   @Override
+                   public void run() {
+                       zoom = mMap.getCameraPosition().zoom;
+                   }
+               });
+           }catch (NullPointerException nep) {
+               nep.printStackTrace();
+           }
 
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    zoom = mMap.getCameraPosition().zoom;
-                }
-            });
 
             if (zoom > 20.9f) {
                 return false;
@@ -2080,7 +2122,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         public void onBindViewHolder(DialogNoticeBoardMessageAdapter.ViewHolder holder, final int position) {
             final NoticeBoardMessage noticeBoardMessage = mNoticeBoard.getMessagesList().get(position);
             holder.noticeMessage.setText(noticeBoardMessage.getMsg());
-            holder.timestamp.setText(utility.getTimeAndDate(noticeBoardMessage.getTimestamp()));
+            holder.timestamp.setText(Utility.getTimeAndDate(noticeBoardMessage.getTimestamp()));
 
             if (HomeActivity.mUserId != null && HomeActivity.mUserId.equals(mNoticeBoard.getAdminId())) {
                 holder.deleteImageView.setVisibility(View.VISIBLE);
@@ -2143,7 +2185,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                     request(HomeActivity.mLastKnownLocation);
 //                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(HomeActivity.mLastKnownLocation, 16.3f));
                     CameraPosition cameraPosition = new CameraPosition.Builder().target(
-                            HomeActivity.mLastKnownLocation).zoom(16.3f).build();
+                            HomeActivity.mLastKnownLocation).zoom(14f).build();
 
                     mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                 } else {

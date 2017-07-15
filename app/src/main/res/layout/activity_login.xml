@@ -69,7 +69,11 @@
                 android:layout_height="wrap_content"
                 android:textColor="#fff"
                 android:textColorHint="#fff"
+                android:imeActionId="@+id/login"
+                android:imeActionLabel="Login"
                 android:inputType="textPassword"
+                android:maxLines="1"
+                android:singleLine="true"
                 android:drawablePadding="10dp"
                 android:drawableStart="@drawable/ic_lock"
                 android:hint="Password" />

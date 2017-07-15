@@ -3,12 +3,11 @@ package com.localapp.background;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.provider.Settings;
 import android.util.Log;
 
 import com.localapp.fcm.FcmMessagingService;
 
-import static com.localapp.util.utility.isServiceRunning;
+import static com.localapp.util.Utility.isServiceRunning;
 
 /**
  * Created by 4 way on 12-06-2017.

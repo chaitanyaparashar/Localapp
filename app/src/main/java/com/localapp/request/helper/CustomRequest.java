@@ -60,6 +60,7 @@ public class CustomRequest extends Request<JSONObject> {
 
     @Override
     protected Response<JSONObject> parseNetworkResponse(NetworkResponse response) {
+        if (response.data.length > 10000) setShouldCache(false);//Volley out of memory error, weird allocation attempt
 
         try {
             String jsonString = new String(response.data,
@@ -72,6 +73,7 @@ public class CustomRequest extends Request<JSONObject> {
             return Response.error(new ParseError(je));
         }
     }
+
 
     @Override
     protected void deliverResponse(JSONObject response) {

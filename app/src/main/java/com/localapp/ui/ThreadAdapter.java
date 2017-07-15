@@ -32,8 +32,8 @@ import java.util.HashMap;
 
 import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
 
-import static com.localapp.util.utility.getSmsTime;
-import static com.localapp.util.utility.openPublicProfile;
+import static com.localapp.util.Utility.getSmsTime;
+import static com.localapp.util.Utility.openPublicProfile;
 
 /**
  * Created by 4 way on 21-02-2017.

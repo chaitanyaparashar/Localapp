@@ -15,6 +15,7 @@ public class AppPreferences {
     private static final String PREF_LAUNCH_TOUR = "pref_launch_tour";
     private static final String PREF_LAUNCH_MAP_TOOLTIP = "pref_launch_map_toll_tip";
     private static final String PREF_LAUNCH_BROADCAST_TOOLTIP = "pref_launch_broadcast_toll_tip";
+    private static final String PREF_LAUNCH_MSG_MODE_TOOLTIP = "pref_launch_msg_mode_toll_tip";
     private static final String PREF_LAUNCH_NOTICEBOARD_TOOLTIP = "pref_launch_notice_toll_tip";
     private static final String PREF_BROADCAST_NOTIFICATION_SETTING = "pref_broadcast_setting";
     private static final String PREF_MOBIRUCK_SIGNUP_POSTBACK = "pref_mobiruck_postback";
@@ -87,6 +88,17 @@ public class AppPreferences {
         SharedPreferences.Editor localEditor = this.mPrefs.edit();
         localEditor.putBoolean(PREF_LAUNCH_BROADCAST_TOOLTIP, true);
         localEditor.commit();
+    }
+
+
+    public boolean isLaunchedSmsModeToolTip () {
+        return this.mPrefs.getBoolean(PREF_LAUNCH_MSG_MODE_TOOLTIP, false);
+    }
+
+    public void smsToolTipLaunched () {
+        SharedPreferences.Editor localEditor = this.mPrefs.edit();
+        localEditor.putBoolean(PREF_LAUNCH_MSG_MODE_TOOLTIP, true);
+        localEditor.apply();
     }
 
     public boolean isLaunchedNoticeboardToolTip () {

@@ -2,7 +2,6 @@ package com.localapp.ui;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -17,6 +16,8 @@ import com.localapp.request.CreateNoticeBoardRequest;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.localapp.util.Utility.hideSoftKeyboard;
 
 public class CreateNoticeActivity extends AppCompatActivity implements CreateNoticeBoardRequest.CreateNoticeBoardResponseCallback{
 
@@ -41,6 +42,7 @@ public class CreateNoticeActivity extends AppCompatActivity implements CreateNot
 
     public void onBack(View view) {
         setResult(Activity.RESULT_CANCELED);
+        hideSoftKeyboard(this);
         onBackPressed();
     }
 

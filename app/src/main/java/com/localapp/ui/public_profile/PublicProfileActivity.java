@@ -45,7 +45,7 @@ import butterknife.ButterKnife;
 import static com.localapp.ui.MapFragment.CALL_PHONE_PERMISSIONS;
 import static com.localapp.ui.MapFragment.REQUEST_CALL_PHONE_PERMISSION_CODE;
 import static com.localapp.util.ColorUtils.getDominantColor1;
-import static com.localapp.util.utility.calcDistance;
+import static com.localapp.util.Utility.calcDistance;
 
 public class PublicProfileActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener, GetProfileByIdRequest.GetProfileByIdRequestCallback, Target {
     private static String TAG = "PublicProfileActivity";
@@ -106,6 +106,9 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
     @Bind(R.id.action_email)
     protected ImageButton emailButton;
 
+    @Bind(R.id.card_about)
+    CardView aboutCardView;
+
     private boolean isHideToolbarView = false;
 
     @Override
@@ -139,8 +142,9 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
             Picasso.with(AppController.getAppContext()).load(pic_url).placeholder(R.drawable.ic_user).into(this);
         }
 
-        if (uid != null)
+        if (uid != null) {
             profileRequest(uid);
+        }
 
     }
 
@@ -190,6 +194,8 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
         LatLng mLatLng = mProfile.getuLatLng();
         String distance = calcDistance(HomeActivity.mLastKnownLocation, mLatLng, null, false);
 
+        boolean availableAbout = false;
+
         if (pic_url == null) {
             Picasso.with(AppController.getAppContext()).load(uPictureURL).placeholder(R.drawable.ic_user).into(mProfileImageView);
             Picasso.with(AppController.getAppContext()).load(uPictureURL).placeholder(R.drawable.ic_user).into(this);
@@ -214,20 +220,28 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
 
         if (uSpeciality != null && !uSpeciality.equals("null") && !uSpeciality.isEmpty()) {
             mSpeciality.setText(uSpeciality);
+            availableAbout = true;
         } else {
             cardIntro.setVisibility(View.GONE);
         }
 
         if (uNotes != null && !uNotes.equals("null") && !uNotes.isEmpty()) {
             mNotes.setText(uNotes);
+            availableAbout = true;
         } else {
             cardDetails.setVisibility(View.GONE);
         }
 
         if (profession != null && !profession.equals("null") && !profession.isEmpty()) {
             mProfession.setText(profession);
+            availableAbout = true;
         } else {
             cardProfession.setVisibility(View.GONE);
+        }
+
+
+        if (availableAbout) {
+            aboutCardView.setVisibility(View.VISIBLE);
         }
 
         if (uMobile[0] != null && !uMobile[0].equals("null") && !uMobile[0].isEmpty() && !uPrivacy.equals("1")) {
@@ -265,7 +279,6 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
 
 
     }
-
 
 
 
@@ -356,4 +369,5 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
             }
         }
     }
+
 }

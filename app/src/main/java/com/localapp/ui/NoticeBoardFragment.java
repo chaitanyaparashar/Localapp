@@ -44,12 +44,12 @@ import com.localapp.request.GetNoticeBoardMessageRequest;
 import com.localapp.request.MyNoticeBoardRequest;
 import com.localapp.request.PostNoticeBoardMessageRequest;
 import com.localapp.request.SubscribeUnsubscribeNoticeBoardRequest;
-import com.localapp.util.utility;
+import com.localapp.util.Utility;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.localapp.util.utility.isLocationAvailable;
+import static com.localapp.util.Utility.isLocationAvailable;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -492,7 +492,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
                 NoticeBoardMessage message = noticeBoard.getMessagesList().get(size-1);
                 if (message.getId() != null) {
                     holder.noticeLastMsg.setText(message.getMsg());
-                    holder.noticeTime.setText(utility.getTimeAndDate(message.getTimestamp()));
+                    holder.noticeTime.setText(Utility.getTimeAndDate(message.getTimestamp()));
                 }else {
                     holder.noticeLastMsg.setText("");
                     holder.noticeTime.setText("");
@@ -669,7 +669,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
         public void onBindViewHolder(ViewHolder holder, final int position) {
             final NoticeBoardMessage noticeBoardMessage = mNoticeBoard.getMessagesList().get(position);
             holder.noticeMessage.setText(noticeBoardMessage.getMsg());
-            holder.timestamp.setText(utility.getTimeAndDate(noticeBoardMessage.getTimestamp()));
+            holder.timestamp.setText(Utility.getTimeAndDate(noticeBoardMessage.getTimestamp()));
 
             if (HomeActivity.mUserId!=null && HomeActivity.mUserId.equals(mNoticeBoard.getAdminId())) {
                 holder.deleteImageView.setVisibility(View.VISIBLE);

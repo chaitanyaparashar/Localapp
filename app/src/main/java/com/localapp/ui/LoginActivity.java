@@ -20,8 +20,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Patterns;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -124,15 +126,11 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        ActionBar actionBar = getActionBar();
 
-
-        try {
-            getSupportActionBar().hide();
-        }catch (NullPointerException e){
-            e.printStackTrace();
+        if (actionBar != null) {
+            actionBar.hide();
         }
-
-
 
         session = new SessionManager(this);
 
@@ -192,6 +190,17 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         _fbLoginButton = (LoginButton) findViewById(R.id.fb_login_button);
 //        _fbLoginButton.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.com_facebook_button_login_logo_blue,0,0,0);
 
+        _password.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
+                if (id == R.id.login || id == EditorInfo.IME_NULL) {
+                    attemptLogin();
+                    return true;
+                }
+                return false;
+            }
+        });
+
         _loginBtn.setOnClickListener(onClickListener);
         _signupBtn.setOnClickListener(onClickListener);
         _forgotPass.setOnClickListener(onClickListener);
@@ -236,7 +245,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         public void onClick(View v) {
             int id = v.getId();
             switch (id) {
-                case R.id.btn_login: onLogin();
+                case R.id.btn_login: attemptLogin();
                     break;
                 case R.id.link_signup: startActivityForResult(new Intent(LoginActivity.this,SignUpActivity.class),SIGN_UP_REQUEST_CODE);
                     break;
@@ -276,7 +285,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
     };
 
 
-    private void onLogin() {
+    private void attemptLogin() {
         String mEmail = _email.getText().toString();
         String mPassword = _password.getText().toString();
 

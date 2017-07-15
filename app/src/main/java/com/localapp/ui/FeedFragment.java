@@ -60,7 +60,7 @@ import com.localapp.request.CommonRequest;
 import com.localapp.request.EmergencyMsgAcceptRequest;
 import com.localapp.request.GetFeedRequest;
 import com.localapp.request.PicUrlRequest;
-import com.localapp.util.utility;
+import com.localapp.util.Utility;
 import com.squareup.picasso.Picasso;
 import com.localapp.util.RecyclerTouchListener;
 import com.google.android.gms.maps.model.LatLng;
@@ -100,7 +100,9 @@ import static com.localapp.ui.FeedFragment.MediaType.MEDIA_AUDIO;
 import static com.localapp.ui.FeedFragment.MediaType.MEDIA_IMAGE;
 import static com.localapp.ui.FeedFragment.MediaType.MEDIA_VIDEO;
 import static com.localapp.ui.ThreadAdapter.getEmojiResourceIdByMsgType;
-import static com.localapp.util.utility.isLocationAvailable;
+import static com.localapp.util.Utility.hideSoftKeyboard;
+import static com.localapp.util.Utility.isLocationAvailable;
+import static com.localapp.util.Utility.showSoftKeyboard;
 
 
 /**
@@ -146,7 +148,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
 
     //******************************** tool tips *******************//
 
-    private RelativeLayout overlayRL;
+    private RelativeLayout overlayRL,overlaySmsMode;
     private LinearLayout overlayVoiceLL, overlayCamMediaLL;
     private TextView textHelp;
 
@@ -322,6 +324,9 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
 
         if (!AppPreferences.getInstance(AppController.getAppContext()).isLaunchedBroadcastToolTip()) {
             toolTips(view);
+        }
+        if (!AppPreferences.getInstance(AppController.getAppContext()).isLaunchedSmsModeToolTip()) {
+            smsModeToolTip(view);
         }
 //
 //
@@ -659,6 +664,10 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
             messageData.setmUserID("");
         }
 
+        if (HomeActivity.mUserName != null){
+            messageData.setName(HomeActivity.mUserName);
+        }
+
         if (HomeActivity.mPicUrl !=null) {
             messageData.setPicUrl(HomeActivity.mPicUrl);
         }
@@ -685,6 +694,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
             mParams.put("token",messageData.getToken());
             mParams.put("userId",messageData.getmUserID());
             mParams.put("picUrl",messageData.getPicUrl());
+            mParams.put("userName", messageData.getName());
             mParams.put("emergencyId","");
             mParams.put("mediaUrl",messageData.getMsgIdOnlyForFrontEnd());
             mParams.put("msg","");
@@ -717,6 +727,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
             selectedEmojiResourceID = emojiResourceID[position];
             camShoutImgBtn.setImageResource(selectedEmojiResourceID);
             emojiGridView.setVisibility(View.GONE);
+            showSoftKeyboard(chatText);
         }
     };
 
@@ -733,7 +744,9 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
         public void onClick(View v) {
             if (emojiGridView.getVisibility() == View.VISIBLE) {
                 emojiGridView.setVisibility(View.GONE);
+                showSoftKeyboard(chatText);
             }else {
+                hideSoftKeyboard(getActivity());
                 emojiGridView.setVisibility(View.VISIBLE);
             }
         }
@@ -791,6 +804,11 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
                 sendImageViewBtn.setImageResource(R.drawable.ic_send);
                 camShoutImgBtn.setImageResource(selectedEmojiResourceID);
                 camShoutImgBtn.setOnClickListener(dropDownClickListener);
+
+                if (smsTipAvailable) {
+                    overlaySmsMode.setVisibility(View.VISIBLE);
+                    tipCount = 22;
+                }
             }
 
         }
@@ -931,7 +949,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
     private boolean isMessageForMe(MessageType messageType, LatLng latLng) {
         if (latLng == null) return false;
 
-        double distance = Double.valueOf(utility.calcDistance(HomeActivity.mLastKnownLocation,latLng,"km",false));
+        double distance = Double.valueOf(Utility.calcDistance(HomeActivity.mLastKnownLocation,latLng,"km",false));
         switch (messageType) {
             case STRAIGHT:
                 if (distance <= 2)
@@ -1556,6 +1574,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
     }
 
     private int tipCount = 0;
+    private boolean smsTipAvailable = false;
     private void toolTips (View view) {
         overlayRL = (RelativeLayout) view.findViewById(R.id.rlOverlay);
         overlayVoiceLL = (LinearLayout) view.findViewById(R.id.rlVoice);
@@ -1568,6 +1587,11 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
         overlayRL.setOnClickListener(toolTipClickListener);
     }
 
+    private void smsModeToolTip(View view) {
+        smsTipAvailable = true;
+        overlaySmsMode = (RelativeLayout) view.findViewById(R.id.rlMsgMode);
+        overlaySmsMode.setOnClickListener(toolTipClickListener);
+    }
     private View.OnClickListener toolTipClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -1578,6 +1602,21 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
                     textHelp.setText("Got It");
                     tipCount++;
                     break;
+
+                case 22:
+                    overlaySmsMode.setVisibility(View.GONE);
+
+                    if (emojiGridView.getVisibility() == View.VISIBLE) {
+                        emojiGridView.setVisibility(View.GONE);
+                    }else {
+                        emojiGridView.setVisibility(View.VISIBLE);
+                    }
+
+                    smsTipAvailable = false;
+                    AppPreferences.getInstance(AppController.getAppContext()).smsToolTipLaunched();
+                    tipCount = 0;
+                    break;
+
                 default:
                     overlayRL.setVisibility(View.GONE);
                     AppPreferences.getInstance(AppController.getAppContext()).broadcastToolTipLaunched();

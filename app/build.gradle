@@ -3,10 +3,10 @@ apply plugin: 'com.android.application'
 android {
     signingConfigs {
         config {
-            keyAlias 'localapp'
-            keyPassword 'abcd#1234'
+            keyAlias KEYSTORE_ALIAS
+            keyPassword KEY_PASSWORD
             storeFile file('C:/Users/4 way/Desktop/localappkeystore.jks')
-            storePassword 'abcd#1234'
+            storePassword KEYSTORE_PASSWORD
         }
     }
     compileSdkVersion 25
@@ -25,6 +25,9 @@ android {
         signingConfig signingConfigs.config
     }
     buildTypes {
+        debug {
+            minifyEnabled false
+        }
         release {
             shrinkResources true
             minifyEnabled true

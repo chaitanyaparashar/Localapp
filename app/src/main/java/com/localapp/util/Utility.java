@@ -1,14 +1,18 @@
 package com.localapp.util;
 
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.SphericalUtil;
+import com.localapp.data.Profile;
 import com.localapp.ui.ExpandableListAdapter;
 import com.localapp.ui.HomeActivity;
 import com.localapp.ui.public_profile.PublicProfileActivity;
@@ -27,7 +31,7 @@ import static android.support.test.espresso.core.deps.guava.base.Preconditions.c
  * Created by 4 way on 17-04-2017.
  */
 
-public class utility {
+public class Utility {
 
 
     public static String getTimeAndDate(String milliseconds) {
@@ -208,6 +212,30 @@ public class utility {
         intent.putExtra("action_id",userId);
         mContext.startActivity(intent);
 
+    }
+
+
+    /**
+     * Hides the soft keyboard
+     */
+    public static void hideSoftKeyboard(Activity activity){
+        // Check if no view has focus:
+        View view = activity.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    /**
+     * Shows the soft keyboard
+     */
+    public static void showSoftKeyboard(View view) {
+        if (view != null && view.requestFocus()) {
+            InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            view.requestFocus();
+            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+        }
     }
 
 

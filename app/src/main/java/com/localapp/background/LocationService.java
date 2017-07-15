@@ -12,10 +12,9 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.localapp.appcontroller.AppController;
-import com.localapp.feedback.AppPreferences;
 import com.localapp.login_session.SessionManager;
-import com.localapp.request.LocationUpdateBackgroundRequest;
-import com.localapp.util.NotificationUtils;
+import com.localapp.network.LocationUpdateBackgroundRequest;
+import com.localapp.utils.NotificationUtils;
 
 import java.util.HashMap;
 

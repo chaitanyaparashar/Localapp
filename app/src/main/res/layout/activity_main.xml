@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="false"
-    tools:context="com.localapp.ui.MainActivity">
+    tools:context="com.localapp.ui.activities.MainActivity">
 
     <FrameLayout
         android:layout_width="match_parent"

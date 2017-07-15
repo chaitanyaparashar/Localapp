@@ -1,13 +1,11 @@
 package com.localapp.fcm;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
-import com.android.volley.AuthFailureError;
 import com.localapp.R;
-import com.localapp.data.NotificationData;
-import com.localapp.ui.HomeActivity;
+import com.localapp.models.NotificationData;
+import com.localapp.ui.activities.HomeActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;

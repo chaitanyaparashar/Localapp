@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.localapp.fcm.FcmMessagingService;
 
-import static com.localapp.util.Utility.isServiceRunning;
+import static com.localapp.utils.Utility.isServiceRunning;
 
 /**
  * Created by 4 way on 12-06-2017.

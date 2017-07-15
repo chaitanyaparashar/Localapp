@@ -1,6 +1,5 @@
 package com.localapp.camera;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -38,14 +37,12 @@ import android.util.SparseIntArray;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.Toast;
 
 import com.localapp.R;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -59,8 +56,8 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import static com.localapp.camera.CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE;
-import static com.localapp.ui.FeedFragment.VIDEO_REQUEST;
-import static com.localapp.ui.SignUpActivity.PICK_IMAGE_REQUEST;
+import static com.localapp.ui.fragments.FeedFragment.VIDEO_REQUEST;
+import static com.localapp.ui.activities.SignUpActivity.PICK_IMAGE_REQUEST;
 
 public class Camera2Activity extends AppCompatActivity implements View.OnClickListener , GalleryRecyclerViewAdapter.OnItemClickListener{
 

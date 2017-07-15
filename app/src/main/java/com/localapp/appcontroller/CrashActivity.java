@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.localapp.request.CrashReportRequest;
+import com.localapp.network.CrashReportRequest;
 
 /**
  * Created by 4 way on 14-06-2017.

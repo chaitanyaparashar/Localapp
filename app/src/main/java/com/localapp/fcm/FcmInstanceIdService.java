@@ -4,12 +4,10 @@ import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
-import com.localapp.data.Profile;
+import com.localapp.models.Profile;
 import com.localapp.login_session.SessionManager;
-import com.localapp.request.CommonRequest;
-import com.localapp.request.UpdateFcmTokenRequest;
-import com.localapp.request.UpdateProfileRequest;
-import com.localapp.ui.HomeActivity;
+import com.localapp.network.UpdateFcmTokenRequest;
+import com.localapp.ui.activities.HomeActivity;
 
 /**
  * Created by 4 way on 24-04-2017.

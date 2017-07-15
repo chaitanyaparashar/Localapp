@@ -39,7 +39,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.activities.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeFullScreen">
             <intent-filter>
@@ -49,7 +49,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.HomeActivity"
+            android:name=".ui.activities.HomeActivity"
             android:label=""
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -63,16 +63,16 @@
             android:value="@string/facebook_app_id" />
 
         <activity
-            android:name=".ui.CreateNoticeActivity"
+            android:name=".ui.activities.CreateNoticeActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".camera.CameraActivity" />
         <activity
             android:name=".camera.Camera2Activity"
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeFullScreen" />
-        <activity android:name=".ui.VideoPlay" />
-        <activity android:name=".ui.SignUpActivity" />
-        <activity android:name=".ui.UpdateActivity" />
+        <activity android:name=".ui.activities.VideoPlay" />
+        <activity android:name=".ui.activities.SignUpActivity" />
+        <activity android:name=".ui.activities.UpdateActivity" />
 
         <service android:name=".fcm.FcmInstanceIdService">
             <intent-filter>
@@ -86,14 +86,14 @@
         </service>
 
         <activity
-            android:name=".ui.LoginActivity"
+            android:name=".ui.activities.LoginActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".camera.CropImageActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Base.Theme.AppCompat" />
         <activity
-            android:name=".ui.InviteActivity"
+            android:name=".ui.activities.InviteActivity"
             android:label="@string/title_activity_invite"
             android:theme="@style/AppTheme.NoActionBar" />
 
@@ -150,7 +150,7 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.public_profile.PublicProfileActivity"
+            android:name=".ui.activities.PublicProfileActivity"
             android:label=""
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.StatusBarTransparent"></activity>

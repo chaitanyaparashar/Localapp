@@ -3,37 +3,33 @@ package com.localapp.fcm;
 
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
-import android.os.CountDownTimer;
-import android.os.Handler;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.NotificationCompat;
-import android.util.Log;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
-import com.localapp.data.MessageNotificationData;
+import com.localapp.models.MessageNotificationData;
 
 import com.localapp.feedback.AppPreferences;
 import com.localapp.login_session.SessionManager;
-import com.localapp.ui.HomeActivity;
+import com.localapp.ui.activities.HomeActivity;
 
 import java.util.concurrent.ExecutionException;
 
-import static com.localapp.util.NotificationUtils.clearNotificationTimer;
-import static com.localapp.util.NotificationUtils.getCroppedBitmap;
-import static com.localapp.util.NotificationUtils.isAppIsInBackground;
-import static com.localapp.util.NotificationUtils.notificationList;
-import static com.localapp.util.NotificationUtils.numMessage;
+import static com.localapp.utils.NotificationUtils.clearNotificationTimer;
+import static com.localapp.utils.NotificationUtils.getCroppedBitmap;
+import static com.localapp.utils.NotificationUtils.isAppIsInBackground;
+import static com.localapp.utils.NotificationUtils.notificationList;
+import static com.localapp.utils.NotificationUtils.numMessage;
 
 /**
  * Created by 4 way on 24-04-2017.

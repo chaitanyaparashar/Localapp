@@ -59,7 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/scrollView"
-            app:layout_behavior="com.localapp.ui.public_profile.HeaderBehavior" />
+            app:layout_behavior="com.localapp.ui.custom_views.HeaderBehavior" />
 
         <android.support.v4.widget.NestedScrollView
             android:id="@+id/scrollView"

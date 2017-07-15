@@ -83,7 +83,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <com.localapp.ui.CircularNetworkImageView
+            <com.localapp.ui.custom_views.CircularNetworkImageView
                 android:layout_centerHorizontal="true"
                 android:id="@+id/msg_pic"
                 android:layout_width="60dp"

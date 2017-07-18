@@ -28,6 +28,7 @@ import android.widget.RatingBar;
 
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
+import com.localapp.background.ConnectivityReceiver;
 import com.localapp.models.MessageNotificationData;
 import com.localapp.feedback.AppPreferences;
 import com.localapp.login_session.SessionManager;
@@ -36,6 +37,8 @@ import com.localapp.ui.fragments.FeedFragment;
 import com.localapp.ui.fragments.MapFragment;
 import com.localapp.ui.fragments.NoticeBoardFragment;
 import com.localapp.ui.fragments.ProfileFragment;
+import com.localapp.utils.NetworkUtil;
+import com.localapp.utils.Utility;
 
 import java.util.HashMap;
 
@@ -43,7 +46,7 @@ import static com.localapp.ui.fragments.MapFragment.REQUEST_CHECK_SETTINGS;
 import static com.localapp.utils.NotificationUtils.notificationList;
 import static com.localapp.utils.NotificationUtils.numMessage;
 
-public class HomeActivity extends AppCompatActivity{
+public class HomeActivity extends AppCompatActivity implements ConnectivityReceiver.ConnectivityReceiverListener{
 
     private static final String TAG = "HomeActivity";
     SessionManager session;
@@ -77,6 +80,10 @@ public class HomeActivity extends AppCompatActivity{
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
 
+        if (!NetworkUtil.isConnected()) {
+            NetworkUtil.ErrorAppDialog(this);
+        }
+
         AppPreferences.getInstance(AppController.getAppContext()).incrementLaunchCount();
         showRateAppDialogIfNeeded();
 
@@ -105,6 +112,8 @@ public class HomeActivity extends AppCompatActivity{
                 if (tab.getIcon() != null) {
                     tab.getIcon().setColorFilter(ContextCompat.getColor(HomeActivity.this,R.color.titleColor), PorterDuff.Mode.SRC_IN);
                 }
+
+                Utility.hideSoftKeyboard(HomeActivity.this);
 
             }
 
@@ -142,6 +151,19 @@ public class HomeActivity extends AppCompatActivity{
 
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // register connection status listener
+        AppController.getInstance().addConnectivityListener(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        AppController.getInstance().clearConnectivityListener();
+    }
+
     private void actionNotification(String notification) {
         switch (notification) {
             case "new_message":
@@ -152,17 +174,28 @@ public class HomeActivity extends AppCompatActivity{
 
     private void setupTabIcons() {
         try {
-            tabLayout.getTabAt(0).setIcon(tabIcons[0]);
-            tabLayout.getTabAt(1).setIcon(tabIcons[1]);
-            tabLayout.getTabAt(2).setIcon(tabIcons[2]);
-            tabLayout.getTabAt(3).setIcon(tabIcons[3]);
+            for (int i=0; i<tabIcons.length ;i++) {
+                TabLayout.Tab tab = tabLayout.getTabAt(i);
+                if (tab != null) {
+                    tab.setIcon(tabIcons[i]);
+                }
+            }
 
-            tabLayout.getTabAt(0).getIcon().setColorFilter(ContextCompat.getColor(this,R.color.titleColor), PorterDuff.Mode.SRC_IN);
+            TabLayout.Tab tab = tabLayout.getTabAt(0);
+            if (tab != null && tab.getIcon() != null) {
+                tab.getIcon().setColorFilter(ContextCompat.getColor(this,R.color.titleColor), PorterDuff.Mode.SRC_IN);
+            }
         }catch (NullPointerException e){
             e.printStackTrace();
         }
     }
 
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        if (!isConnected) {
+            NetworkUtil.ErrorAppDialog(this);
+        }
+    }
 
 
     /**
@@ -202,18 +235,6 @@ public class HomeActivity extends AppCompatActivity{
             return 4;
         }
 
-       /* @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0:
-                    return "S1";
-                case 1:
-                    return "S2";
-                case 2:
-                    return "S3";
-            }
-            return null;
-        }*/
 
     }
 

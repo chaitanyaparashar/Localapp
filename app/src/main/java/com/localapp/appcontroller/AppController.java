@@ -3,7 +3,11 @@ package com.localapp.appcontroller;
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Build;
+import android.support.annotation.NonNull;
+import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.google.android.gms.analytics.GoogleAnalytics;
@@ -11,6 +15,10 @@ import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.StandardExceptionParser;
 import com.google.android.gms.analytics.Tracker;
 import com.localapp.analytics.AnalyticsTrackers;
+import com.localapp.background.ConnectivityReceiver;
+
+import static com.localapp.background.ConnectivityReceiver.connectivityReceiverListener;
+import static com.localapp.background.ConnectivityReceiver.connectivityReceiverListeners;
 
 /**
  * Created by 4 way on 12-04-2017.
@@ -33,8 +41,28 @@ public class AppController extends Application {
 
         this.setAppContext(getApplicationContext());
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            registerReceiver(new ConnectivityReceiver(),
+                    new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        }
+
         Thread.setDefaultUncaughtExceptionHandler(new AppExceptionHandler(getAppContext()));
     }
+
+    /**
+     * Set the base context for this ContextWrapper.  All calls will then be
+     * delegated to the base context.  Throws
+     * IllegalStateException if a base context has already been set.
+     *
+     * @param base The new base context for this wrapper.
+     */
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
+
+
     public static synchronized AppController getInstance(){
         return mInstance;
     }
@@ -43,6 +71,37 @@ public class AppController extends Application {
         AnalyticsTrackers analyticsTrackers = AnalyticsTrackers.getInstance();
         return analyticsTrackers.get(AnalyticsTrackers.Target.APP);
     }
+
+
+
+    @Deprecated
+    public void setConnectivityListener(ConnectivityReceiver.ConnectivityReceiverListener listener) {
+        connectivityReceiverListener = listener;
+    }
+
+    public void addConnectivityListener(@NonNull ConnectivityReceiver.ConnectivityReceiverListener listener) {
+        if (!connectivityReceiverListeners.contains(listener)) {
+            connectivityReceiverListeners.add(listener);
+            Log.d("AppController","addConnectivityListener " + listener.getClass().getName());
+        }
+    }
+
+    /**
+     *
+     * @param listener listener to remove
+     */
+    public void removeConnectivityListener(@NonNull ConnectivityReceiver.ConnectivityReceiverListener listener){
+        connectivityReceiverListeners.remove(listener);
+    }
+
+    public void clearConnectivityListener(){
+        connectivityReceiverListeners.clear();
+        Log.d("AppController","clearConnectivityListener");
+    }
+
+
+
+
 
     /***
      * Tracking screen view

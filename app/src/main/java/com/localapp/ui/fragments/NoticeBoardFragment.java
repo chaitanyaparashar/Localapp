@@ -33,6 +33,7 @@ import android.widget.Toast;
 
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
+import com.localapp.background.ConnectivityReceiver;
 import com.localapp.models.NoticeBoard;
 import com.localapp.models.NoticeBoardMessage;
 import com.localapp.feedback.AppPreferences;
@@ -51,7 +52,6 @@ import com.localapp.utils.Utility;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.localapp.utils.Utility.isLocationAvailable;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -59,7 +59,7 @@ import static com.localapp.utils.Utility.isLocationAvailable;
 public class NoticeBoardFragment extends Fragment implements MyNoticeBoardRequest.MyNoticeBoardRequestCallback,
         GetNearestNoticeBoardRequest.GetNearestNoticeBoardRequestCallback, GetNoticeBoardMessageRequest.GetNoticeBoardMessageRequestCallback,
         PostNoticeBoardMessageRequest.PostNoticeBoardMessageResponseCallback,SubscribeUnsubscribeNoticeBoardRequest.SubscribeUnsubscribeNoticeBoardCallback,
-        DeleteNoticeBoardRequest.DeleteNoticeBoardResponseCallback, DeleteNoticeBoardMessageRequest.DeleteNoticeBoardMessageResponseCallback{
+        DeleteNoticeBoardRequest.DeleteNoticeBoardResponseCallback, DeleteNoticeBoardMessageRequest.DeleteNoticeBoardMessageResponseCallback,ConnectivityReceiver.ConnectivityReceiverListener{
 
     private static final int CREATE_NOTICE_BOARD_REQUEST_CODE = 101;
     private RecyclerView recyclerView, recyclerViewNearYou;
@@ -100,6 +100,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
     @Override
     public void onResume() {
         super.onResume();
+        AppController.getInstance().addConnectivityListener(this);
         View view = getView();
         if (view != null) {
             view.setFocusableInTouchMode(true);
@@ -141,7 +142,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
             @Override
             public void onClick(View v) {
 
-                if (isLocationAvailable(getContext())) {
+                if (Utility.isLocationAvailable(getContext())) {
                     startActivityForResult(new Intent(getContext(), CreateNoticeActivity.class),CREATE_NOTICE_BOARD_REQUEST_CODE);
                 }
 
@@ -465,6 +466,11 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
             swipeRefreshLayout.setRefreshing(true);
             requestForMyNoticeBoard();
         }
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        if (isConnected) requestForMyNoticeBoard();
     }
 
     /**

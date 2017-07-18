@@ -15,7 +15,7 @@ android {
         applicationId "com.localapp"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 54
+        versionCode 55
         versionName "1.1.04"
         multiDexEnabled true
 
@@ -79,6 +79,8 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.android.support:palette-v7:25.3.1'
+    compile 'com.android.support:multidex:1.0.1'
+
     testCompile 'junit:junit:4.12'
 }
 apply plugin: 'com.google.gms.google-services'

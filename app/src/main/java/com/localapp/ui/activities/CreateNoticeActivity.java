@@ -13,11 +13,11 @@ import com.localapp.models.NoticeBoard;
 import com.localapp.models.NoticeBoardMessage;
 import com.localapp.network.helper.CommonRequest;
 import com.localapp.network.CreateNoticeBoardRequest;
+import com.localapp.utils.Utility;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.localapp.utils.Utility.hideSoftKeyboard;
 
 public class CreateNoticeActivity extends AppCompatActivity implements CreateNoticeBoardRequest.CreateNoticeBoardResponseCallback{
 
@@ -42,7 +42,7 @@ public class CreateNoticeActivity extends AppCompatActivity implements CreateNot
 
     public void onBack(View view) {
         setResult(Activity.RESULT_CANCELED);
-        hideSoftKeyboard(this);
+        Utility.hideSoftKeyboard(this);
         onBackPressed();
     }
 

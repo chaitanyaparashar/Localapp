@@ -6,8 +6,8 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.localapp.fcm.FcmMessagingService;
+import com.localapp.utils.Utility;
 
-import static com.localapp.utils.Utility.isServiceRunning;
 
 /**
  * Created by 4 way on 12-06-2017.
@@ -20,7 +20,7 @@ public class BroadcastReceiverOnBootComplete extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Log.d("onReceive","Called");
 
-        if (!isServiceRunning(context,LocationService.class)){
+        if (!Utility.isServiceRunning(context,LocationService.class)){
             context.startService(new Intent(context, LocationService.class));
         }
 

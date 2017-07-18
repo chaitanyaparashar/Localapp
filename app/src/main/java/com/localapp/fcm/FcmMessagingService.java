@@ -22,14 +22,12 @@ import com.localapp.models.MessageNotificationData;
 import com.localapp.feedback.AppPreferences;
 import com.localapp.login_session.SessionManager;
 import com.localapp.ui.activities.HomeActivity;
+import com.localapp.utils.NotificationUtils;
 
 import java.util.concurrent.ExecutionException;
 
-import static com.localapp.utils.NotificationUtils.clearNotificationTimer;
-import static com.localapp.utils.NotificationUtils.getCroppedBitmap;
-import static com.localapp.utils.NotificationUtils.isAppIsInBackground;
 import static com.localapp.utils.NotificationUtils.notificationList;
-import static com.localapp.utils.NotificationUtils.numMessage;
+
 
 /**
  * Created by 4 way on 24-04-2017.
@@ -116,14 +114,14 @@ public class FcmMessagingService extends FirebaseMessagingService {
 
                 NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 notificationManager.notify(0, builder.build());
-                clearNotificationTimer(0,30*1000*60);//remove automatically after 30 min
+                NotificationUtils.clearNotificationTimer(0,30*1000*60);//remove automatically after 30 min
 
 
 
-            }else if (notificationType == NotiBroadcast && AppPreferences.getInstance(AppController.getAppContext()).isBroadcastNotificationOn() && isAppIsInBackground(this)){
+            }else if (notificationType == NotiBroadcast && AppPreferences.getInstance(AppController.getAppContext()).isBroadcastNotificationOn() && NotificationUtils.isAppIsInBackground(this)){
                 boolean isContains = false;
                 int index = 0;
-                for (MessageNotificationData data:notificationList) {
+                for (MessageNotificationData data: notificationList) {
                     if (data.getUserId().equals(userId)){
                         data.getMessageList().add(message);
                         index = notificationList.indexOf(data);
@@ -151,9 +149,9 @@ public class FcmMessagingService extends FirebaseMessagingService {
                         .setSmallIcon(R.mipmap.ic_localapp)
                         .setColor(Color.parseColor("#2196f3"));
 
-                if (numMessage == 0 && Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
+                if (NotificationUtils.numMessage == 0 && Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
                     NotificationManagerCompat.from(this).notify(1, builder0.build());
-                    numMessage++;
+                    NotificationUtils.numMessage++;
                 }
 
 
@@ -168,7 +166,7 @@ public class FcmMessagingService extends FirebaseMessagingService {
                 builder.setContentIntent(pendingIntent);
                 builder.setSmallIcon(R.mipmap.ic_localapp);
                 try {
-                    builder.setLargeIcon(getCroppedBitmap(Glide.with(AppController.getAppContext()).load(img_url).asBitmap().into(300,300).get()));
+                    builder.setLargeIcon(NotificationUtils.getCroppedBitmap(Glide.with(AppController.getAppContext()).load(img_url).asBitmap().into(300,300).get()));
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } catch (ExecutionException e) {

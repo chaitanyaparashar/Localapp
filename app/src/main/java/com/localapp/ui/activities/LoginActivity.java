@@ -41,6 +41,7 @@ import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.localapp.background.ConnectivityReceiver;
 import com.localapp.camera.Camera2Activity;
 import com.localapp.compressor.Compressor;
 import com.localapp.R;
@@ -75,7 +76,7 @@ import java.util.List;
 import static com.localapp.ui.fragments.ProfileFragment.SIGN_UP_REQUEST_CODE;
 
 public class LoginActivity extends AppCompatActivity implements LoginRequest.LoginResponseCallback,ForgetPasswordRequest.ForgetPasswordRequestCallback,
-        com.facebook.GraphRequest.GraphJSONObjectCallback,FbLoginRequest.FbLoginResponseCallback,FbSignUpRequest.FbSignUpResponseCallback {
+        com.facebook.GraphRequest.GraphJSONObjectCallback,FbLoginRequest.FbLoginResponseCallback,FbSignUpRequest.FbSignUpResponseCallback,ConnectivityReceiver.ConnectivityReceiverListener {
     private static final int REQUEST_STORAGE_CODE = 333;
     private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_AND_CAMERA = 111;
     private static final int REQUEST_IMPORTANT_PERMISSIONS_CODE = 777;
@@ -491,7 +492,6 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
                 toast("Connection timeout");
                 break;
             case COMMON_RES_FAILED_TO_CONNECT:
-                toast("No internet connection");
                 break;
             case COMMON_RES_INTERNAL_ERROR:
                 break;
@@ -515,7 +515,6 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
 //                mProgressDialog.dismiss();
                 break;
             case COMMON_RES_FAILED_TO_CONNECT:
-                toast("No internet connection");
 //                mProgressDialog.dismiss();
                 break;
             case COMMON_RES_INTERNAL_ERROR:
@@ -718,6 +717,11 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
 
 
         }
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+
     }
 
     /**

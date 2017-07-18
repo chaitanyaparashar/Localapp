@@ -153,7 +153,15 @@
             android:name=".ui.activities.PublicProfileActivity"
             android:label=""
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.StatusBarTransparent"></activity>
+            android:theme="@style/AppTheme.StatusBarTransparent" />
+
+        <receiver
+            android:name=".background.ConnectivityReceiver"
+            android:label="ConnectivityReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

@@ -46,6 +46,7 @@ import android.widget.Toast;
 
 import com.github.siyamed.shapeimageview.CircularImageView;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.localapp.background.ConnectivityReceiver;
 import com.localapp.compressor.Compressor;
 import com.localapp.appcontroller.AppController;
 import com.localapp.audio.ViewProxy;
@@ -63,6 +64,7 @@ import com.localapp.network.PicUrlRequest;
 import com.localapp.ui.activities.HomeActivity;
 import com.localapp.ui.activities.VideoPlay;
 import com.localapp.ui.adapters.ThreadAdapter;
+import com.localapp.utils.NetworkUtil;
 import com.localapp.utils.Utility;
 import com.squareup.picasso.Picasso;
 import com.localapp.utils.RecyclerTouchListener;
@@ -103,9 +105,7 @@ import static com.localapp.ui.fragments.FeedFragment.MediaType.MEDIA_AUDIO;
 import static com.localapp.ui.fragments.FeedFragment.MediaType.MEDIA_IMAGE;
 import static com.localapp.ui.fragments.FeedFragment.MediaType.MEDIA_VIDEO;
 import static com.localapp.ui.adapters.ThreadAdapter.getEmojiResourceIdByMsgType;
-import static com.localapp.utils.Utility.hideSoftKeyboard;
-import static com.localapp.utils.Utility.isLocationAvailable;
-import static com.localapp.utils.Utility.showSoftKeyboard;
+
 
 
 /**
@@ -114,7 +114,8 @@ import static com.localapp.utils.Utility.showSoftKeyboard;
  * to handle interaction events.
  * create an instance of this fragment.
  */
-public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequestCallback,PicUrlRequest.PicUrlResponseCallback,EmergencyMsgAcceptRequest.EmergencyMsgAcceptResponseCallback {
+public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequestCallback,PicUrlRequest.PicUrlResponseCallback,
+        EmergencyMsgAcceptRequest.EmergencyMsgAcceptResponseCallback, ConnectivityReceiver.ConnectivityReceiverListener {
 
     private final String TAG = "FeedFragment";
     private static final String sAddress = "tcp://13.56.50.98:1883";
@@ -170,6 +171,11 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
         }
     }
 
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        if (isConnected) request();
+    }
+
     public enum MediaType {
         MEDIA_TEXT(0),
         MEDIA_IMAGE(1),
@@ -219,6 +225,8 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
         super.onCreate(savedInstanceState);
 
     }
+
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -521,7 +529,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
 
 
     void request() {
-        if (HomeActivity.mLastKnownLocation !=null ) {
+        if (NetworkUtil.isConnected() && HomeActivity.mLastKnownLocation !=null ) {
 //            LatLng latLng = new LatLng(28.545544, 77.331020);
             GetFeedRequest feedRequest = new GetFeedRequest(getContext(), HomeActivity.mLastKnownLocation, this);
             feedRequest.executeRequest();
@@ -566,7 +574,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
         @Override
         public void onClick(View v) {
             String text = chatText.getText().toString().trim();
-            if (!text.matches("") && isLocationAvailable(getContext())) {
+            if (!text.matches("") && Utility.isLocationAvailable(getContext())) {
 
                 Message messageData = new Message();
 //                messageData.setToken("58c93b21f81fde4c11fe02e1");
@@ -730,7 +738,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
             selectedEmojiResourceID = emojiResourceID[position];
             camShoutImgBtn.setImageResource(selectedEmojiResourceID);
             emojiGridView.setVisibility(View.GONE);
-            showSoftKeyboard(chatText);
+            Utility.showSoftKeyboard(chatText);
         }
     };
 
@@ -747,9 +755,9 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
         public void onClick(View v) {
             if (emojiGridView.getVisibility() == View.VISIBLE) {
                 emojiGridView.setVisibility(View.GONE);
-                showSoftKeyboard(chatText);
+                Utility.showSoftKeyboard(chatText);
             }else {
-                hideSoftKeyboard(getActivity());
+                Utility.hideSoftKeyboard(getActivity());
                 emojiGridView.setVisibility(View.VISIBLE);
             }
         }
@@ -887,7 +895,6 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
             case COMMON_RES_CONNECTION_TIMEOUT:
                 break;
             case COMMON_RES_FAILED_TO_CONNECT:
-                Toast.makeText(getContext(), "No internet connection", Toast.LENGTH_SHORT).show();
                 break;
             case COMMON_RES_INTERNAL_ERROR:
                 break;
@@ -900,7 +907,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
     }
 
 
-    class EmojiGridAdapter extends ArrayAdapter {
+    private class EmojiGridAdapter extends ArrayAdapter {
         Context mContext;
         String[] emojiName;
 
@@ -1502,9 +1509,14 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
     @Override
     public void onResume() {
         super.onResume();
-        getView().setFocusableInTouchMode(true);
-        getView().requestFocus();
-        getView().setOnKeyListener(onKeyListener);
+        AppController.getInstance().addConnectivityListener(this);
+        View view = getView();
+        if (view != null) {
+            view.setFocusableInTouchMode(true);
+            view.requestFocus();
+            view.setOnKeyListener(onKeyListener);
+        }
+
     }
 
     View.OnKeyListener onKeyListener = new View.OnKeyListener() {

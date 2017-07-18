@@ -30,6 +30,7 @@ import com.github.siyamed.shapeimageview.CircularImageView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
+import com.localapp.background.ConnectivityReceiver;
 import com.localapp.models.LoginData;
 import com.localapp.models.Profile;
 import com.localapp.feedback.AppPreferences;
@@ -56,7 +57,7 @@ import static com.localapp.ui.activities.UpdateActivity.REQUEST_PERSONAL;
  */
 
 public class ProfileFragment extends Fragment implements LoginRequest.LoginResponseCallback,GetProfileRequest.GetProfileRequestCallback,UpdateProfileRequest.UpdateProfileResponseCallback,
-        ForgetPasswordRequest.ForgetPasswordRequestCallback, Target{
+        ForgetPasswordRequest.ForgetPasswordRequestCallback, Target,ConnectivityReceiver.ConnectivityReceiverListener{
     private LinearLayout profileLayout;
     private RelativeLayout loginLayout;
     private CircularImageView userPic;
@@ -492,7 +493,6 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
                 toast("Connection timeout");
                 break;
             case COMMON_RES_FAILED_TO_CONNECT:
-                toast("No internet connection");
                 break;
             case COMMON_RES_INTERNAL_ERROR:
                 break;
@@ -538,6 +538,15 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
             view.requestFocus();
             view.setOnKeyListener(onKeyListener);
         }
+
+        AppController.getInstance().addConnectivityListener(this);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        AppController.getInstance().removeConnectivityListener(this);
     }
 
     View.OnKeyListener onKeyListener = new View.OnKeyListener() {
@@ -566,5 +575,10 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
     @Override
     public void onPrepareLoad(Drawable placeHolderDrawable) {
 
+    }
+
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        if (isConnected) profileRequest();
     }
 }

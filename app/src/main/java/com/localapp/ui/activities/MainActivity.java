@@ -2,6 +2,7 @@ package com.localapp.ui.activities;
 
 import android.content.Intent;
 import android.os.Build;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -47,11 +48,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         super.onCreate(savedInstanceState);
 
-        /*try {
-            getSupportActionBar().hide();
-        }catch (NullPointerException e){
-            e.printStackTrace();
-        }*/
+
         View decorView = getWindow().getDecorView();
         // Hide the status bar.
         int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
@@ -116,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
         intro_images.setPageTransformer(true,new FadePageTransformer());
         intro_images.setAdapter(mAdapter);
         intro_images.setCurrentItem(0,true);
-        intro_images.setOnPageChangeListener(this);
+        intro_images.addOnPageChangeListener(this);
         setUiPageViewController();
 
 
@@ -130,7 +127,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
 
         for (int i = 0; i < dotsCount; i++) {
             dots[i] = new ImageView(this);
-            dots[i].setImageDrawable(getResources().getDrawable(R.drawable.nonselecteditem_dot));
+            dots[i].setImageDrawable(ContextCompat.getDrawable(this, R.drawable.nonselecteditem_dot));
 
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.WRAP_CONTENT,
@@ -142,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
             pager_indicator.addView(dots[i], params);
         }
 
-        dots[0].setImageDrawable(getResources().getDrawable(R.drawable.selecteditem_dot));
+        dots[0].setImageDrawable(ContextCompat.getDrawable(this, R.drawable.selecteditem_dot));
     }
 
 
@@ -169,10 +166,10 @@ public class MainActivity extends AppCompatActivity implements ViewPager.OnPageC
     @Override
     public void onPageSelected(int position) {
         for (int i = 0; i < dotsCount; i++) {
-            dots[i].setImageDrawable(getResources().getDrawable(R.drawable.nonselecteditem_dot));
+            dots[i].setImageDrawable(ContextCompat.getDrawable(this,R.drawable.nonselecteditem_dot));
         }
 
-        dots[position].setImageDrawable(getResources().getDrawable(R.drawable.selecteditem_dot));
+        dots[position].setImageDrawable(ContextCompat.getDrawable(this, R.drawable.selecteditem_dot));
 
         if (position == 4){
             btnStarted.setVisibility(View.VISIBLE);

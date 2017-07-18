@@ -25,6 +25,7 @@ import com.localapp.models.Message;
 import com.github.siyamed.shapeimageview.CircularImageView;
 import com.localapp.ui.fragments.FeedFragment;
 import com.localapp.ui.activities.HomeActivity;
+import com.localapp.utils.Utility;
 import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
@@ -34,8 +35,6 @@ import java.util.HashMap;
 
 import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
 
-import static com.localapp.utils.Utility.getSmsTime;
-import static com.localapp.utils.Utility.openPublicProfile;
 
 /**
  * Created by 4 way on 21-02-2017.
@@ -206,7 +205,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         }
 
         if (holder.timeTextView != null){
-            holder.timeTextView.setText(getSmsTime(timeStamp));
+            holder.timeTextView.setText(Utility.getSmsTime(timeStamp));
         }
         if (message.getMessageType() != null) {
             holder.messageTypeImageView.setImageResource(getEmojiResourceIdByMsgType(message.getMessageType()));
@@ -221,7 +220,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
             @Override
             public void onClick(View v) {
                 if (user_id != null){
-                    openPublicProfile(context, user_id, userPicUrl);
+                    Utility.openPublicProfile(context, user_id, userPicUrl);
                 }
             }
         });

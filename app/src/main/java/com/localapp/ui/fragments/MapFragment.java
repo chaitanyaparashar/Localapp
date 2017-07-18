@@ -84,6 +84,7 @@ import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
+import com.localapp.background.ConnectivityReceiver;
 import com.localapp.background.LocationService;
 import com.localapp.camera.Camera2Activity;
 import com.localapp.compressor.Compressor;
@@ -105,6 +106,8 @@ import com.localapp.ui.activities.HomeActivity;
 import com.localapp.ui.custom_views.MultiDrawable;
 import com.localapp.ui.activities.InviteActivity;
 import com.localapp.ui.adapters.ExpandableListAdapter;
+import com.localapp.utils.CustomStringList;
+import com.localapp.utils.NetworkUtil;
 import com.localapp.utils.Utility;
 import com.mobiruck.Mobiruck;
 import com.squareup.picasso.Picasso;
@@ -114,22 +117,21 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 import static android.app.Activity.RESULT_OK;
-import static com.localapp.utils.Utility.getProfessionList;
-import static com.localapp.utils.Utility.hideSoftKeyboard;
-import static com.localapp.utils.Utility.isServiceRunning;
-import static com.localapp.utils.Utility.openPublicProfile;
+
 
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GetUsersRequest.GetUsersResponseCallback,
         ClusterManager.OnClusterClickListener<Profile>, ClusterManager.OnClusterInfoWindowClickListener<Profile>, ClusterManager.OnClusterItemClickListener<Profile>, ClusterManager.OnClusterItemInfoWindowClickListener<Profile>,
         ImageSearchRequest.ImageSearchResponseCallback, GetNearestNoticeBoardRequest.GetNearestNoticeBoardRequestCallback, GetNoticeBoardMessageRequest.GetNoticeBoardMessageRequestCallback, SubscribeUnsubscribeNoticeBoardRequest.SubscribeUnsubscribeNoticeBoardCallback,
-        GetProfileByIdRequest.GetProfileByIdRequestCallback, LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+        GetProfileByIdRequest.GetProfileByIdRequestCallback, LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,ConnectivityReceiver.ConnectivityReceiverListener {
 
 
     //==============================================//
@@ -253,7 +255,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         session = new SessionManager(getActivity());
         profileList = new ArrayList<>();
         noticeBoardProfileList = new ArrayList<>();
-        searchContaintList = new ArrayList<>();
+        searchContaintList = new CustomStringList();
         autoCompleteAdapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_dropdown_item_1line, searchContaintList);
 
         setupView(view);    //initialization view object
@@ -335,11 +337,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             }
         });
 
-
         searchBoxView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 performSearch(autoCompleteAdapter.getItem(position));
+            }
+        });
+
+        searchBoxView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus && uDetailLayout.getVisibility() == View.VISIBLE) {
+                    uDetailLayout.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -407,7 +417,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         mClusterManager.setOnClusterItemInfoWindowClickListener(this);
 
 
-        if (HomeActivity.mLastKnownLocation != null) {
+        if (NetworkUtil.isConnected() && HomeActivity.mLastKnownLocation != null) {
             request(HomeActivity.mLastKnownLocation);
 //            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(HomeActivity.mLastKnownLocation, 16.2f));
             CameraPosition cameraPosition = new CameraPosition.Builder().target(
@@ -499,6 +509,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     public void onResume() {
         super.onResume();
         AppController.activityResumed();
+        AppController.getInstance().addConnectivityListener(this);
 
         mMapView.onResume();
         // Within {@code onPause()}, we pause location updates, but leave the
@@ -510,13 +521,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         }
         updateUI();
 
-        try {
-            getView().setFocusableInTouchMode(true);
-            getView().requestFocus();
-            getView().setOnKeyListener(onKeyListener);
-        } catch (NullPointerException e) {
-            e.printStackTrace();
+        View view = getView();
+        if (view != null) {
+            view.setFocusableInTouchMode(true);
+            view.requestFocus();
+            view.setOnKeyListener(onKeyListener);
         }
+
 
     }
 
@@ -1350,29 +1361,35 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             }
 
             if (!searchContaintList.contains(profile.getuName())) {
-                searchContaintList.add(profile.getuName());
+                searchContaintList.add(profile.getuName().toLowerCase());
             }
 
             for (String s : uSpeciality) {
-                if (!searchContaintList.contains(s)) {
+                if (s.length() > 2 && !searchContaintList.contains(s)) {
                     searchContaintList.add(s);
                 }
             }
 
             for (String s : uNotes) {
-                if (!searchContaintList.contains(s)) {
+                if (s.length() > 2 && !searchContaintList.contains(s)) {
                     searchContaintList.add(s);
                 }
             }
 
             for (String s : profession) {
-                if (!searchContaintList.contains(s)) {
+                if (s.length() > 2 && !searchContaintList.contains(s)) {
                     searchContaintList.add(s);
                 }
             }
 
 
         }
+
+
+
+        Set<String> searchListWithoutDuplicates = new LinkedHashSet<>(searchContaintList);
+        searchContaintList.clear();
+        searchContaintList.addAll(searchListWithoutDuplicates);
 
         autoCompleteAdapter.notifyDataSetChanged();
     }
@@ -1412,7 +1429,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
             for (String profession : profileProfession) {
                 try {
-                    if (getProfessionList(professionGroup).contains(profession)) {
+                    if (Utility.getProfessionList(professionGroup).contains(profession)) {
                         profileIndex.add(i);
                         break;
                     }
@@ -1489,7 +1506,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
     private void performSearch(@Nullable String searchString) {
 
-        hideSoftKeyboard(getActivity());
+        Utility.hideSoftKeyboard(getActivity());
         searchBoxView.clearFocus();
 
         String searchQuery = searchString != null ? searchString.trim() : searchBoxView.getText().toString().trim();
@@ -1530,7 +1547,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                         mMap.setMyLocationEnabled(true);
 //                        requestLocation();
                         startLocationUpdates();
-                        if (!isServiceRunning(getActivity(),LocationService.class)) {
+                        if (!Utility.isServiceRunning(getActivity(),LocationService.class)) {
                             getActivity().startService(new Intent(AppController.getAppContext(), LocationService.class));
                         }
                     }
@@ -1611,7 +1628,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             @Override
             public void onClick(View v) {
                 if (user_id != null) {
-                    openPublicProfile(getContext(),user_id, pic_url);
+                    Utility.openPublicProfile(getContext(),user_id, pic_url);
                 }
             }
         });
@@ -1681,6 +1698,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         }
     }
 
+    @Override
+    public void onNetworkConnectionChanged(boolean isConnected) {
+        if (isConnected && HomeActivity.mLastKnownLocation != null) {
+            request(HomeActivity.mLastKnownLocation);
+        }
+    }
 
 
     private class ProfileRenderer extends DefaultClusterRenderer<Profile> {
@@ -1789,29 +1812,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         float zoom;
         @Override
         protected boolean shouldRenderAsCluster(Cluster<Profile> cluster) {
-           /* boolean shouldRender = true;
-            // Always render clusters.
-            if (cluster.getSize()>1 && cluster.getSize() <5) {
-                Collection<Profile> profileList = cluster.getItems();
 
-                int sameDistanceCount = 0;
-                for (Profile profile : profileList) {
-                    double distance = Double.parseDouble(Utility.calcDistance(cluster.getPosition(),profile.getPosition(),"mm",false));
-
-                    if (distance < 20) {
-                        sameDistanceCount ++;
-                    }
-
-                }
-
-                if(sameDistanceCount > 1){
-                    shouldRender = false;
-                }
-
-            }else {
-                shouldRender = cluster.getSize() > 1;
-            }
-            return shouldRender;*/
            try {
                getActivity().runOnUiThread(new Runnable() {
                    @Override
@@ -1872,6 +1873,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     public boolean onClusterItemClick(Profile profile) {
         // Does nothing, but you could go into the user's profile page, for example.
         searchBoxView.clearFocus();
+        Utility.hideSoftKeyboard(getActivity());
+
         if (profile.getuSpeciality() != null && !profile.getuSpeciality().equals("nnnnnnnnnn")) {
             markerClickWindow(profile);
         } else {
@@ -1880,6 +1883,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             noticeBoard.setName(profile.getuName());
             requestForNoticeBoardMsg(noticeBoard, false);
         }
+
+
 
         return true;
     }
@@ -2185,7 +2190,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         @Override
         public void onFinish() {
             if (AppController.isActivityVisible()) {
-                if (HomeActivity.mLastKnownLocation != null) {
+                if (NetworkUtil.isConnected() && HomeActivity.mLastKnownLocation != null) {
                     request(HomeActivity.mLastKnownLocation);
 //                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(HomeActivity.mLastKnownLocation, 16.3f));
                     CameraPosition cameraPosition = new CameraPosition.Builder().target(

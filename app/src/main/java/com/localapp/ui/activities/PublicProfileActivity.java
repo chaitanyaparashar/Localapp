@@ -34,6 +34,8 @@ import com.localapp.models.Profile;
 import com.localapp.network.helper.CommonRequest;
 import com.localapp.network.GetProfileByIdRequest;
 import com.localapp.ui.custom_views.HeaderView;
+import com.localapp.utils.ColorUtils;
+import com.localapp.utils.Utility;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
@@ -44,8 +46,6 @@ import butterknife.ButterKnife;
 
 import static com.localapp.ui.fragments.MapFragment.CALL_PHONE_PERMISSIONS;
 import static com.localapp.ui.fragments.MapFragment.REQUEST_CALL_PHONE_PERMISSION_CODE;
-import static com.localapp.utils.ColorUtils.getDominantColor1;
-import static com.localapp.utils.Utility.calcDistance;
 
 public class PublicProfileActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener, GetProfileByIdRequest.GetProfileByIdRequestCallback, Target {
     private static String TAG = "PublicProfileActivity";
@@ -192,7 +192,7 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
         String uPrivacy = mProfile.getuPrivacy();
         String profession = mProfile.getProfession();
         LatLng mLatLng = mProfile.getuLatLng();
-        String distance = calcDistance(HomeActivity.mLastKnownLocation, mLatLng, null, false);
+        String distance = Utility.calcDistance(HomeActivity.mLastKnownLocation, mLatLng, null, false);
 
         boolean availableAbout = false;
 
@@ -345,7 +345,7 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
         @Override
         protected Integer doInBackground(Bitmap... params) {
 
-            return getDominantColor1(params[0]);
+            return ColorUtils.getDominantColor1(params[0]);
         }
 
         @Override

@@ -25,6 +25,7 @@ import com.localapp.models.Message;
 import com.github.siyamed.shapeimageview.CircularImageView;
 import com.localapp.ui.fragments.FeedFragment;
 import com.localapp.ui.activities.HomeActivity;
+import com.localapp.utils.Constants;
 import com.localapp.utils.Utility;
 import com.squareup.picasso.Picasso;
 
@@ -48,7 +49,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
     private LruCache<String,Bitmap> videoThumbnailCache;
 
     //Tag for tracking self message
-    private static final int  SELF_TEXT = 555;
+    private static final int SELF_TEXT = 555;
     private static final int OTHER_TEXT = 556;
     private static final int SELF_IMAGE = 557;
     private static final int OTHER_IMAGE = 558;
@@ -56,6 +57,10 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
     private static final int OTHER_VIDEO = 560;
     private static final int SELF_AUDIO = 561;
     private static final int OTHER_AUDIO = 562;
+
+    private static final String IMAGE = "img";
+    private static final String VIDEO = "vdo";
+    private static final String AUDIO = "ado";
 
 
     //ArrayList of messages object containing all the messages in the thread
@@ -148,17 +153,17 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
             case SELF_IMAGE:
                 itemView = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.chat_thread_image, parent, false);
-                itemView.setTag("img");
+                itemView.setTag(IMAGE);
                 break;
             case SELF_VIDEO:
                 itemView = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.chat_thread_video, parent, false);
-                itemView.setTag("vdo");
+                itemView.setTag(VIDEO);
                 break;
             case SELF_AUDIO:
                 itemView = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.chat_thread_audio, parent, false);
-                itemView.setTag("ado");
+                itemView.setTag(AUDIO);
                 break;
 
             case OTHER_TEXT:
@@ -168,17 +173,17 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
             case OTHER_IMAGE:
                 itemView = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.chat_thread_image_others, parent, false);
-                itemView.setTag("img");
+                itemView.setTag(IMAGE);
                 break;
             case OTHER_VIDEO:
                 itemView = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.chat_thread_video_others, parent, false);
-                itemView.setTag("vdo");
+                itemView.setTag(VIDEO);
                 break;
             case OTHER_AUDIO:
                 itemView = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.chat_thread_audio_others, parent, false);
-                itemView.setTag("ado");
+                itemView.setTag(AUDIO);
                 break;
 
             default: itemView = LayoutInflater.from(parent.getContext())
@@ -314,16 +319,16 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
             proPic = (CircularImageView) itemView.findViewById(R.id.msg_pic);
             messageTypeImageView = (ImageView) itemView.findViewById(R.id.msg_emoji);
 //            textViewTime = (TextView) itemView.findViewById(R.id.textViewTime);
-            if (itemView.getTag()!= null && itemView.getTag().equals("img")) {
+            if (itemView.getTag()!= null && itemView.getTag().equals(IMAGE)) {
                 imageMedia = (RoundedImageView) itemView.findViewById(R.id.msg_img);
 
             }
 
-            if (itemView.getTag()!= null && itemView.getTag().equals("vdo")) {
+            if (itemView.getTag()!= null && itemView.getTag().equals(VIDEO)) {
                 mVideoThumbnail = (ImageView) itemView.findViewById(R.id.thumbli);
             }
 
-            if (itemView.getTag()!= null && itemView.getTag().equals("ado")) {
+            if (itemView.getTag()!= null && itemView.getTag().equals(AUDIO)) {
 
                 audioPlayButton =(ImageButton) itemView.findViewById(R.id._audio_play);
                 audioPlayButton.setOnClickListener(this);
@@ -462,21 +467,21 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
     public static int getEmojiResourceIdByMsgType(FeedFragment.MessageType messageType){
         switch (messageType) {
             case STRAIGHT:
-                    return FeedFragment.emojiResourceID[0];
+                    return Constants.emojiResourceID[0];
             case SHOUT:
-                return FeedFragment.emojiResourceID[1];
+                return Constants.emojiResourceID[1];
             case WHISPER:
-                return FeedFragment.emojiResourceID[2];
+                return Constants.emojiResourceID[2];
             case GOSSIP:
-                return FeedFragment.emojiResourceID[3];
+                return Constants.emojiResourceID[3];
             case MURMUR:
-                return FeedFragment.emojiResourceID[4];
+                return Constants.emojiResourceID[4];
             case MUMBLE:
-                return FeedFragment.emojiResourceID[5];
+                return Constants.emojiResourceID[5];
             case EMERGENCY:
-                return FeedFragment.emojiResourceID[6];
+                return Constants.emojiResourceID[6];
         }
-        return FeedFragment.emojiResourceID[0];
+        return Constants.emojiResourceID[0];
     }
 
 

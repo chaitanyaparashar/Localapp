@@ -17,8 +17,8 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
 import com.localapp.background.LocationService;
-import com.localapp.feedback.AppPreferences;
-import com.localapp.login_session.SessionManager;
+import com.localapp.preferences.AppPreferences;
+import com.localapp.preferences.SessionManager;
 import com.localapp.ui.adapters.ViewPagerAdapter;
 
 public class MainActivity extends AppCompatActivity implements ViewPager.OnPageChangeListener,View.OnClickListener{

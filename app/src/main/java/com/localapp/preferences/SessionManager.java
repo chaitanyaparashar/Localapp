@@ -1,4 +1,4 @@
-package com.localapp.login_session;
+package com.localapp.preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;

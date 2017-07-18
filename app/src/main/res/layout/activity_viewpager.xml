@@ -46,7 +46,7 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="48dp"
-                android:text="skip"
+                android:text="@string/btn_skip"
                 android:textColor="#fff"
                 android:background="@drawable/ripple_transpent"
                 android:layout_marginEnd="6dp" />
@@ -60,7 +60,7 @@
                 android:layout_marginStart="6dp"
                 android:textColor="#fff"
                 android:background="@drawable/ripple_blue"
-                android:text="next"
+                android:text="@string/btn_next"
                 android:contentDescription="Let's start" />
         </LinearLayout>
 
@@ -74,7 +74,7 @@
             android:layout_marginBottom="48dp"
             android:textColor="#fff"
             android:background="@drawable/ripple_blue"
-            android:text="get startted"
+            android:text="@string/label_get_started"
             android:contentDescription="Let's start" />
 
     </RelativeLayout>

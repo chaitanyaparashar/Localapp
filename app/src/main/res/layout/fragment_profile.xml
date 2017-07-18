@@ -1,7 +1,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
 
 
     <LinearLayout
@@ -15,7 +16,7 @@
             android:id="@+id/rl_fm_profile"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:background="#2196f3"
+            android:background="@color/colorAccent"
             android:elevation="2dp">
 
 
@@ -74,9 +75,9 @@
                         android:layout_weight="1.9"
                         android:gravity="center_vertical"
                         android:maxLines="1"
-                        android:paddingLeft="2dp"
                         android:paddingStart="5dp"
-                        android:text="PERSONAL INFORMATION"
+                        android:paddingEnd="5dp"
+                        android:text="@string/label_personal_info"
                         android:textSize="14sp" />
 
                     <ImageView
@@ -199,9 +200,10 @@
                         android:layout_weight="1.9"
                         android:gravity="center_vertical"
                         android:maxLines="1"
-                        android:paddingLeft="2dp"
+                        android:textAllCaps="true"
                         android:paddingStart="5dp"
-                        android:text="ABOUT"
+                        android:paddingEnd="5dp"
+                        android:text="@string/label_about"
                         android:textSize="14sp" />
 
                     <ImageView
@@ -322,7 +324,7 @@
                         android:gravity="center_vertical"
                         android:maxLines="1"
                         android:padding="8dp"
-                        android:text="NOTIFICATION SETTING"
+                        android:text="@string/label_notification_setting"
                         android:textSize="14sp" />
                 </LinearLayout>
 
@@ -330,7 +332,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:background="#FFFFFF"
+                    android:background="@color/white"
                     android:orientation="horizontal">
 
                     <android.support.v7.widget.SwitchCompat
@@ -342,7 +344,7 @@
                         android:drawablePadding="10dp"
                         android:background="?android:attr/selectableItemBackground"
                         android:drawableStart="@drawable/ic_notifications_24px"
-                        android:text="Broadcast Notification"
+                        android:text="@string/label_broadcast_notification"
                         android:layout_width="match_parent"
                         android:layout_height="50dp" />
 
@@ -362,7 +364,7 @@
                     android:layout_gravity="center_horizontal"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/editor_states"
-                    android:drawableTint="#2196f3"
+                    android:drawableTint="@color/colorAccent"
                     android:drawableTop="@android:drawable/ic_menu_share"
                     android:text="Share App" />
 
@@ -373,8 +375,8 @@
                     android:layout_gravity="bottom"
                     android:layout_marginTop="10dp"
                     android:background="@drawable/submit_button_state"
-                    android:text="Logout"
-                    android:textColor="#FFFFFF" />
+                    android:text="@string/btn_logout"
+                    android:textColor="@color/white" />
 
 
             </LinearLayout>
@@ -422,7 +424,7 @@
                     android:drawablePadding="10dp"
                     android:inputType="textEmailAddress"
                     android:drawableStart="@drawable/ic_email"
-                    android:hint="Email"/>
+                    android:hint="@string/hint_email"/>
             </android.support.design.widget.TextInputLayout>
 
             <!-- Password Label -->
@@ -438,7 +440,7 @@
                     android:inputType="textPassword"
                     android:drawablePadding="10dp"
                     android:drawableStart="@drawable/ic_lock"
-                    android:hint="Password" />
+                    android:hint="@string/hint_password" />
             </android.support.design.widget.TextInputLayout>
 
             <Button

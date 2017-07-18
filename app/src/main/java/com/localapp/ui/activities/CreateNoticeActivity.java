@@ -50,7 +50,7 @@ public class CreateNoticeActivity extends AppCompatActivity implements CreateNot
         if (isValid()){
 
             mProgressDialog = new ProgressDialog(this);
-            mProgressDialog.setMessage("Please wait...");
+            mProgressDialog.setMessage(getString(R.string.message_please_wait));
             mProgressDialog.show();
             createNotice(nameEditText.getText().toString().trim(),noticeEditText.getText().toString().trim());
         }
@@ -62,7 +62,7 @@ public class CreateNoticeActivity extends AppCompatActivity implements CreateNot
         String mNotice = noticeEditText.getText().toString().trim();
 
         if (mName.length() < 1) {
-            nameEditText.setError("enter a valid name");
+            nameEditText.setError(getString(R.string.error_enter_valid_name));
             valid = false;
             return valid;
         }else {
@@ -70,7 +70,7 @@ public class CreateNoticeActivity extends AppCompatActivity implements CreateNot
         }
 
         if (mNotice.length() < 5) {
-            noticeEditText.setError("minimum 2 word");
+            noticeEditText.setError(getString(R.string.error_minimum_2_word));
             valid = false;
             return valid;
         }else {
@@ -97,7 +97,7 @@ public class CreateNoticeActivity extends AppCompatActivity implements CreateNot
 
         mProgressDialog.dismiss();
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
-            Toast.makeText(this, "Notice Board Created Successfully", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getText(R.string.message_noticeboard_created), Toast.LENGTH_SHORT).show();
             setResult(Activity.RESULT_OK);
             finish();
         }

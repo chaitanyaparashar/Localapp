@@ -11,6 +11,6 @@
         android:layout_height="wrap_content"
         android:textColor="#000"
         android:textSize="18sp"
-        android:text="Allowing this permission will help us improve your app experience. You can turn it off later at any time from Setting."/>
+        android:text="@string/message_request_permission"/>
 
 </LinearLayout>

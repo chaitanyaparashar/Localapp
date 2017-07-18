@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.localapp.R;
 import com.localapp.network.helper.CommonRequest;
 import com.localapp.network.LocalappInviteRequest;
+import com.localapp.utils.Constants;
 
 import java.util.ArrayList;
 
@@ -89,7 +90,7 @@ public class InviteActivity extends AppCompatActivity implements LocalappInviteR
         ContentResolver cr = getContentResolver();
         Cursor cur = cr.query(ContactsContract.Contacts.CONTENT_URI, null,
                 null, null, null);
-        if (cur.getCount() > 0) {
+        if ( cur != null && cur.getCount() > 0) {
             while (cur.moveToNext()) {
                 String id = cur.getString(cur
                         .getColumnIndex(ContactsContract.Contacts._ID));
@@ -178,15 +179,15 @@ public class InviteActivity extends AppCompatActivity implements LocalappInviteR
         try {
             Intent localIntent = new Intent(Intent.ACTION_SEND);
             localIntent.putExtra(Intent.EXTRA_TEXT,getString(R.string.invite_text));
-            localIntent.setPackage("com.whatsapp");
+            localIntent.setPackage(Constants.WHATSAPP_PACKAGE);
             localIntent.setType("text/plain");
             startActivity(localIntent);
         }catch (Exception e) {
-            Toast.makeText(this, "Please install WhatsApp", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getText(R.string.message_install_whatsapp), Toast.LENGTH_SHORT).show();
             try {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.whatsapp")));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.WHATSAPP_MARKET_URL)));
             }catch (Exception e1){
-                Toast.makeText(this, "Please install play store", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getText(R.string.message_install_play_store), Toast.LENGTH_SHORT).show();
             }
 
         }
@@ -211,10 +212,10 @@ public class InviteActivity extends AppCompatActivity implements LocalappInviteR
     public void InviteResponse(CommonRequest.ResponseCode responseCode, String errorMsg) {
         mProgressDialog.dismiss();
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
-            Toast.makeText(this, "Email send", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getText(R.string.message_email_send), Toast.LENGTH_SHORT).show();
             textView.setText("");
         }else {
-            Toast.makeText(this, "something went wrong", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getText(R.string.error_something_went_wrong), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -222,7 +223,7 @@ public class InviteActivity extends AppCompatActivity implements LocalappInviteR
         boolean valid = true;
         String email = textView.getText().toString();
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            textView.setError("enter a valid email address");
+            textView.setError(getString(R.string.error_enter_valid_email));
             valid = false;
             return valid;
         } else {
@@ -235,7 +236,7 @@ public class InviteActivity extends AppCompatActivity implements LocalappInviteR
     public void sendMail(View view) {
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setCancelable(false);
-        mProgressDialog.setMessage("Please wait");
+        mProgressDialog.setMessage(getString(R.string.message_please_wait));
 
         String email = textView.getText().toString();
 

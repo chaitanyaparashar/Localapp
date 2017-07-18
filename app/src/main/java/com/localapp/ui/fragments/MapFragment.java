@@ -92,8 +92,8 @@ import com.localapp.models.GetUsersRequestData;
 import com.localapp.models.NoticeBoard;
 import com.localapp.models.NoticeBoardMessage;
 import com.localapp.models.Profile;
-import com.localapp.feedback.AppPreferences;
-import com.localapp.login_session.SessionManager;
+import com.localapp.preferences.AppPreferences;
+import com.localapp.preferences.SessionManager;
 import com.localapp.network.helper.CommonRequest;
 import com.localapp.network.GetNearestNoticeBoardRequest;
 import com.localapp.network.GetNoticeBoardMessageRequest;
@@ -105,7 +105,7 @@ import com.localapp.network.helper.UpdatePostBackRequest;
 import com.localapp.ui.activities.HomeActivity;
 import com.localapp.ui.custom_views.MultiDrawable;
 import com.localapp.ui.activities.InviteActivity;
-import com.localapp.ui.adapters.ExpandableListAdapter;
+import com.localapp.utils.Constants;
 import com.localapp.utils.CustomStringList;
 import com.localapp.utils.NetworkUtil;
 import com.localapp.utils.Utility;
@@ -135,10 +135,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
 
     //==============================================//
-    public static final int REQUEST_CHECK_SETTINGS = 0x1;
-    public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 1000*60*2;
-    public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
-            UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
     // Keys for storing activity state in the Bundle.
     protected final static String KEY_REQUESTING_LOCATION_UPDATES = "requesting-location-updates";
@@ -157,7 +153,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     //==============================================//
 
 
-    public static String TAG = "MapFragment";
+    public static String TAG = MapFragment.class.getSimpleName();
 
     private static final int REQUEST_CAMERA_PERMISSION_CODE = 201;
     public static final int REQUEST_CALL_PHONE_PERMISSION_CODE = 202;
@@ -584,7 +580,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 switch (v.getId()) {
                     case R.id.emergency_iv:
                         emergencyBtn.setImageResource(R.drawable.ic_health_selected);
-                        indexs = filterIndexByProfession(profileList, ExpandableListAdapter.PROFESSION_GROUP_HEALTH);
+                        indexs = filterIndexByProfession(profileList, Constants.PROFESSION_GROUP_HEALTH);
                         if (indexs != null && indexs.size() > 0) {
                             addMarkerByProfile(true, indexs);
                         }
@@ -592,21 +588,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                         break;
                     case R.id.student_iv:
                         studentBtn.setImageResource(R.drawable.ic_student_selected);
-                        indexs = filterIndexByProfession(profileList, ExpandableListAdapter.PROFESSION_GROUP_STUDENT);
+                        indexs = filterIndexByProfession(profileList, Constants.PROFESSION_GROUP_STUDENT);
                         if (indexs != null && indexs.size() > 0) {
                             addMarkerByProfile(true, indexs);
                         }
                         break;
                     case R.id.professionals_iv:
                         professionalBtn.setImageResource(R.drawable.ic_professionals_selected);
-                        indexs = filterIndexByProfession(profileList, ExpandableListAdapter.PROFESSION_GROUP_PROFESSIONALS);
+                        indexs = filterIndexByProfession(profileList, Constants.PROFESSION_GROUP_PROFESSIONALS);
                         if (indexs != null && indexs.size() > 0) {
                             addMarkerByProfile(true, indexs);
                         }
                         break;
                     case R.id.repair_iv:
                         repairBtn.setImageResource(R.drawable.ic_repair_selected);
-                        indexs = filterIndexByProfession(profileList, ExpandableListAdapter.PROFESSION_GROUP_REPAIR);
+                        indexs = filterIndexByProfession(profileList, Constants.PROFESSION_GROUP_REPAIR);
                         if (indexs != null && indexs.size() > 0) {
                             addMarkerByProfile(true, indexs);
                         }
@@ -618,7 +614,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
                     case R.id.hobbies_iv:
                         hobbiesBtn.setImageResource(R.drawable.ic_hobby_selected);
-                        indexs = filterIndexByProfession(profileList, ExpandableListAdapter.PROFESSION_GROUP_SKILLS);
+                        indexs = filterIndexByProfession(profileList, Constants.PROFESSION_GROUP_SKILLS);
                         if (indexs != null && indexs.size() > 0) {
                             addMarkerByProfile(true, indexs);
                         }
@@ -1515,7 +1511,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             if (indexs != null && indexs.size() > 0) {
                 addMarkerByProfile(true, indexs);
             }else {
-                Toast.makeText(getActivity(), "No result found, try different keywords", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), getText(R.string.message_no_result_found_try_diffrent), Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -1917,13 +1913,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                     ImageSearchRequest searchRequest = new ImageSearchRequest(getContext(), imgFile , this);
                     searchRequest.executeRequest();
                     mProgressDialog = new ProgressDialog(getContext());
-                    mProgressDialog.setMessage("Please wait we are getting results");
+                    mProgressDialog.setMessage(getString(R.string.message_please_wait_getting_result));
                     mProgressDialog.setCancelable(false);
                     mProgressDialog.show();
                 }
                 break;
 
-            case REQUEST_CHECK_SETTINGS:
+            case Constants.REQUEST_CHECK_SETTINGS:
                 switch (resultCode) {
                     case RESULT_OK:
                         Log.i(TAG, "User agreed to make required location settings changes.");
@@ -2025,11 +2021,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                     addMarkerByProfile(true, indexs);
 //
                 }*/else {
-                    Toast.makeText(getContext(), "No search result found", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getText(R.string.message_no_result_found), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:
-                Toast.makeText(getContext(), "Something went wrong please try again", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getText(R.string.error_something_went_wrong_try_again), Toast.LENGTH_SHORT).show();
                 break;
             case COMMON_RES_FAILED_TO_CONNECT:
                 Toast.makeText(getContext(), R.string.no_internet_msg, Toast.LENGTH_SHORT).show();
@@ -2037,7 +2033,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             case COMMON_RES_INTERNAL_ERROR:
                 break;
             case COMMON_RES_SERVER_ERROR_WITH_MESSAGE:
-                Toast.makeText(getContext(), "No search result found", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getText(R.string.message_no_result_found), Toast.LENGTH_SHORT).show();
                 addMarkerByProfile(false, null);
                 break;
         }
@@ -2255,11 +2251,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         // inexact. You may not receive updates at all if no location sources are available, or
         // you may receive them slower than requested. You may also receive updates faster than
         // requested if other applications are requesting location at a faster interval.
-        mLocationRequest.setInterval(UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setInterval(Constants.UPDATE_INTERVAL_IN_MILLISECONDS);
 
         // Sets the fastest rate for active location updates. This interval is exact, and your
         // application will never receive updates faster than this value.
-        mLocationRequest.setFastestInterval(FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
+        mLocationRequest.setFastestInterval(Constants.FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS);
 
         mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
     }
@@ -2309,7 +2305,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                         try {
                             // Show the dialog by calling startResolutionForResult(), and check the
                             // result in onActivityResult().
-                            status.startResolutionForResult(getActivity(), REQUEST_CHECK_SETTINGS);
+                            status.startResolutionForResult(getActivity(), Constants.REQUEST_CHECK_SETTINGS);
                         } catch (IntentSender.SendIntentException e) {
                             Log.i(TAG, "PendingIntent unable to execute request.");
                         }
@@ -2517,7 +2513,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 case 0:
                     overlaySerachLL.setVisibility(View.GONE);
                     overlayCamSerachLL.setVisibility(View.VISIBLE);
-                    textHelp.setText("Got It");
+                    textHelp.setText(R.string.btn_got_it);
                     tipCount++;
                     break;
                 default:

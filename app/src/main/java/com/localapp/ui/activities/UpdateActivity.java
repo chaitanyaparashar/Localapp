@@ -240,9 +240,9 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(layout);
-        builder.setTitle("Select Profession");
+        builder.setTitle(R.string.title_select_profession);
         builder.setIcon(R.drawable.ic_profession);
-        builder.setPositiveButton("DONE", null);
+        builder.setPositiveButton(R.string.btn_done, null);
 
         builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
@@ -274,7 +274,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String txt = updateEditText.getText().toString();
                 if (txt.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(txt).matches()) {
-                    updateEditText.setError("enter a valid email address");
+                    updateEditText.setError(getString(R.string.error_enter_valid_email));
                 }
             }
 
@@ -285,20 +285,20 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
         });
 
 
-        return new AlertDialog.Builder(this).setTitle("Update Email").setView(view)
-                .setPositiveButton("Update", new DialogInterface.OnClickListener() {
+        return new AlertDialog.Builder(this).setTitle(R.string.title_update_email).setView(view)
+                .setPositiveButton(R.string.btn_update, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String txt = updateEditText.getText().toString();
                         if (txt.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(txt).matches()) {
-                            Toast.makeText(UpdateActivity.this, "enter a valid email address", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(UpdateActivity.this, getText(R.string.error_enter_valid_email), Toast.LENGTH_SHORT).show();
                         }else {
                             emailUpdateRequest(txt);
                         }
 
                     }
                 })
-                .setNegativeButton("Cancel",null).setCancelable(false).create();
+                .setNegativeButton(R.string.btn_cancel,null).setCancelable(false).create();
     }
 
 
@@ -431,7 +431,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
     public void onUpdateProfileResponse(CommonRequest.ResponseCode responseCode) {
         mProgressBar.setVisibility(View.GONE);
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
-            Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getText(R.string.message_profile_update_successfully), Toast.LENGTH_SHORT).show();
             Intent returnIntent = new Intent();
             returnIntent.putExtra("result",true);
             setResult(10,returnIntent);
@@ -480,7 +480,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
 
         if (whichUpdate == REQUEST_PERSONAL || whichUpdate == REQUEST_ALL) {
             if (name.isEmpty() || name.length() < 3) {
-                mNameView.setError("enter a valid name");
+                mNameView.setError(getString(R.string.error_enter_valid_name));
                 valid = false;
                 return valid;
             } else {
@@ -506,7 +506,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
                 mNumberView.setError(null);
             }
             else {
-                mNumberView.setError("Enter a valid Mobile Number");
+                mNumberView.setError(getString(R.string.error_enter_valid_mobile));
                 valid =false;
             }
             valid_num = isValidMobile(number);
@@ -514,14 +514,14 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
                 mNumberView.setError(null);
             }
             else {
-                mNumberView.setError("Enter a valid Mobile Number");
+                mNumberView.setError(getString(R.string.error_enter_valid_mobile));
                 valid =false;
             }
 
 
 
             if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                mEmailView.setError("enter a valid email address");
+                mEmailView.setError(getString(R.string.error_enter_valid_email));
                 valid = false;
                 return valid;
             } else {
@@ -530,7 +530,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
 
             if (whichUpdate == REQUEST_ALL) {
                 if (profession.isEmpty()) {
-                    mProfessionView.setError("Please select your profession");
+                    mProfessionView.setError(getString(R.string.error_select_profession));
                     valid =  false;
                     return valid;
                 }else {
@@ -538,7 +538,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
                 }
 
                 if (brifIntro.isEmpty() || brifIntro.length() < 1) {
-                    mInfoView.setError("Field Required");
+                    mInfoView.setError(getString(R.string.error_field_required));
                     valid = false;
                     return valid;
                 } else {
@@ -548,7 +548,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
         }else {
 
             if (profession.isEmpty()) {
-                mProfessionView.setError("Please select your profession");
+                mProfessionView.setError(getString(R.string.error_select_profession));
                 valid =  false;
                 return valid;
             }else {
@@ -556,7 +556,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
             }
 
             if (brifIntro.isEmpty() || brifIntro.length() < 1) {
-                mInfoView.setError("Field Required");
+                mInfoView.setError(getString(R.string.error_field_required));
                 valid = false;
                 return valid;
             } else {
@@ -596,16 +596,16 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
     public void UpdateEmailResponse(CommonRequest.ResponseCode responseCode, String statusCode) {
         mProgressBar.setVisibility(View.GONE);
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
-            Toast.makeText(this, "Email update success", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getText(R.string.message_email_update_success), Toast.LENGTH_SHORT).show();
             profileRequest();
         }else if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SERVER_ERROR_WITH_MESSAGE) {
             if (statusCode != null && statusCode.equals("0")) {
-                Toast.makeText(this, "This email already exist", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this,getText(R.string.error_email_already_exist), Toast.LENGTH_SHORT).show();
             } else {
-                Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getText(R.string.error_something_went_wrong), Toast.LENGTH_SHORT).show();
             }
         }else {
-            Toast.makeText(this, "Something went wrong", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getText(R.string.error_something_went_wrong), Toast.LENGTH_SHORT).show();
         }
 
         profileRequest();

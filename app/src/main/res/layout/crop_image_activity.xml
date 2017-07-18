@@ -30,8 +30,8 @@
             android:layout_height="wrap_content"
             android:background="#000000"
             android:onClick="onCancel"
-            android:textColor="#FFFFFF"
-            android:text="CANCEL"/>
+            android:textColor="@color/white"
+            android:text="@string/btn_cancel"/>
 
         <ImageButton
             android:layout_centerVertical="true"
@@ -40,7 +40,7 @@
             android:layout_height="30dp"
             android:onClick="onRotation"
             android:background="@drawable/crop_image_menu_rotate_right"
-            android:textColor="#FFFFFF" />
+            android:textColor="@color/white" />
 
 
         <Button
@@ -51,7 +51,7 @@
             android:background="#000000"
             android:onClick="onCrop"
             android:textColor="#FFFFFF"
-            android:text="DONE"/>
+            android:text="@string/btn_done"/>
 
     </RelativeLayout>
 

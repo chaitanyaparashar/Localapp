@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.localapp.R;
+import com.localapp.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -297,14 +298,14 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         listDrawableChild = new HashMap<>();
 
         // Adding child data
-        listDataHeader.add(PROFESSION_GROUP_STUDENT);
-        listDataHeader.add(PROFESSION_GROUP_PROFESSIONALS);
-        listDataHeader.add(PROFESSION_GROUP_SKILLS);
-        listDataHeader.add(PROFESSION_GROUP_HEALTH);
-        listDataHeader.add(PROFESSION_GROUP_REPAIR);
-        listDataHeader.add(PROFESSION_GROUP_WEDDING);
-        listDataHeader.add(PROFESSION_GROUP_BEAUTY);
-        listDataHeader.add(PROFESSION_GROUP_HOUSEWIFE);
+        listDataHeader.add(Constants.PROFESSION_GROUP_STUDENT);
+        listDataHeader.add(Constants.PROFESSION_GROUP_PROFESSIONALS);
+        listDataHeader.add(Constants.PROFESSION_GROUP_SKILLS);
+        listDataHeader.add(Constants.PROFESSION_GROUP_HEALTH);
+        listDataHeader.add(Constants.PROFESSION_GROUP_REPAIR);
+        listDataHeader.add(Constants.PROFESSION_GROUP_WEDDING);
+        listDataHeader.add(Constants.PROFESSION_GROUP_BEAUTY);
+        listDataHeader.add(Constants.PROFESSION_GROUP_HOUSEWIFE);
 
 
 
@@ -385,14 +386,14 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         beautyIcon.add(R.drawable.ic_makeupartist);
         beautyIcon.add(R.drawable.ic_spa);
 
-        listDataChild.put(listDataHeader.get(0), PROFESSION_GROUP_STUDENT_LIST); // Header, Child data
-        listDataChild.put(listDataHeader.get(1), PROFESSION_GROUP_PROFESSIONALS_LIST);
-        listDataChild.put(listDataHeader.get(2), PROFESSION_GROUP_SKILLS_LIST);
-        listDataChild.put(listDataHeader.get(3), PROFESSION_GROUP_HEALTH_LIST);
-        listDataChild.put(listDataHeader.get(4), PROFESSION_GROUP_REPAIR_LIST);
-        listDataChild.put(listDataHeader.get(5), PROFESSION_GROUP_WEDDING_LIST);
-        listDataChild.put(listDataHeader.get(6), PROFESSION_GROUP_BEAUTY_LIST);
-        listDataChild.put(listDataHeader.get(7), PROFESSION_GROUP_HOUSEWIFE_LIST);
+        listDataChild.put(listDataHeader.get(0), Constants.PROFESSION_GROUP_STUDENT_LIST); // Header, Child data
+        listDataChild.put(listDataHeader.get(1), Constants.PROFESSION_GROUP_PROFESSIONALS_LIST);
+        listDataChild.put(listDataHeader.get(2), Constants.PROFESSION_GROUP_SKILLS_LIST);
+        listDataChild.put(listDataHeader.get(3), Constants.PROFESSION_GROUP_HEALTH_LIST);
+        listDataChild.put(listDataHeader.get(4), Constants.PROFESSION_GROUP_REPAIR_LIST);
+        listDataChild.put(listDataHeader.get(5), Constants.PROFESSION_GROUP_WEDDING_LIST);
+        listDataChild.put(listDataHeader.get(6), Constants.PROFESSION_GROUP_BEAUTY_LIST);
+        listDataChild.put(listDataHeader.get(7), Constants.PROFESSION_GROUP_HOUSEWIFE_LIST);
 
         listDrawableChild.put(listDataHeader.get(0), studentIcon);
         listDrawableChild.put(listDataHeader.get(1), professionalsIcons);
@@ -405,87 +406,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
 
-    /*************** THIS IS STATIC DATA WHICH IS USE IN EXPENDABLE_LIST_VIEW AND IT IS ALSO USE FILTER USER PROFILE BY PROFESSIONS ********/
 
-    public static final String PROFESSION_GROUP_STUDENT = "STUDENT";
-    public static final String PROFESSION_GROUP_PROFESSIONALS = "PROFESSIONALS";
-    public static final String PROFESSION_GROUP_SKILLS = "SKILLS";
-    public static final String PROFESSION_GROUP_HEALTH = "HEALTH AND WELLNESS";
-    public static final String PROFESSION_GROUP_REPAIR = "REPAIR AND MAINTENANCE";
-    public static final String PROFESSION_GROUP_WEDDING = "WEDDING & EVENTS";
-    public static final String PROFESSION_GROUP_BEAUTY = "BEAUTY";
-    public static final String PROFESSION_GROUP_HOUSEWIFE = "HOUSEWIFE";
-
-    public static final List<String> PROFESSION_GROUP_STUDENT_LIST = new ArrayList<String>();
-    public static final List<String> PROFESSION_GROUP_PROFESSIONALS_LIST = new ArrayList<String>();
-    public static final List<String> PROFESSION_GROUP_SKILLS_LIST = new ArrayList<String>();
-    public static final List<String> PROFESSION_GROUP_HEALTH_LIST = new ArrayList<String>();
-    public static final List<String> PROFESSION_GROUP_REPAIR_LIST = new ArrayList<String>();
-    public static final List<String> PROFESSION_GROUP_WEDDING_LIST = new ArrayList<String>();
-    public static final List<String> PROFESSION_GROUP_BEAUTY_LIST = new ArrayList<String>();
-    public static final List<String> PROFESSION_GROUP_HOUSEWIFE_LIST = new ArrayList<String>();
-
-
-    static {
-        PROFESSION_GROUP_STUDENT_LIST.add("Student");
-
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Web Designer");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Social Marketing");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Lawyer");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Real Estate");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Insurance Agent");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("CCTV Camera Installation");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("CA");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Finance");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Operations");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Software Engineer");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Engineer");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Sales Professionals");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Writer");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Interior Designer");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Graphic Designer");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Administrator");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Human Resource");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Security Guard");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Driver");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Doctor");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Adviser");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Architect");
-        PROFESSION_GROUP_PROFESSIONALS_LIST.add("Marketeer");
-
-        PROFESSION_GROUP_SKILLS_LIST.add("Salsa");
-        PROFESSION_GROUP_SKILLS_LIST.add("Drum");
-        PROFESSION_GROUP_SKILLS_LIST.add("Keyboard Lesson");
-        PROFESSION_GROUP_SKILLS_LIST.add("Guitar");
-        PROFESSION_GROUP_SKILLS_LIST.add("Zumba");
-
-        PROFESSION_GROUP_HEALTH_LIST.add("Dietician");
-        PROFESSION_GROUP_HEALTH_LIST.add("Fitness Trainer");
-        PROFESSION_GROUP_HEALTH_LIST.add("Nurse");
-        PROFESSION_GROUP_HEALTH_LIST.add("Physiotherapy");
-        PROFESSION_GROUP_HEALTH_LIST.add("Yoga Trainer");
-        PROFESSION_GROUP_REPAIR_LIST.add("AC Repair");
-        PROFESSION_GROUP_REPAIR_LIST.add("Carpenter");
-        PROFESSION_GROUP_REPAIR_LIST.add("Construction & Repair");
-        PROFESSION_GROUP_REPAIR_LIST.add("Electrician");
-        PROFESSION_GROUP_REPAIR_LIST.add("House Painter");
-        PROFESSION_GROUP_REPAIR_LIST.add("Laptop Repair");
-        PROFESSION_GROUP_REPAIR_LIST.add("Loundry");
-        PROFESSION_GROUP_REPAIR_LIST.add("Plumber");
-
-        PROFESSION_GROUP_WEDDING_LIST.add("Decor");
-        PROFESSION_GROUP_WEDDING_LIST.add("DJ");
-        PROFESSION_GROUP_WEDDING_LIST.add("Corporate Event Planer");
-        PROFESSION_GROUP_WEDDING_LIST.add("Bartender");
-        PROFESSION_GROUP_WEDDING_LIST.add("Photograph");
-        PROFESSION_GROUP_WEDDING_LIST.add("Musician");
-
-        PROFESSION_GROUP_BEAUTY_LIST.add("Saloon");
-        PROFESSION_GROUP_BEAUTY_LIST.add("Makeup Artist");
-        PROFESSION_GROUP_BEAUTY_LIST.add("Spa");
-
-        PROFESSION_GROUP_HOUSEWIFE_LIST.add("Housewife");
-    }
 
 
 

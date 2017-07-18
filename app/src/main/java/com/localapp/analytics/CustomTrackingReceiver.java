@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.analytics.CampaignTrackingReceiver;
-import com.localapp.feedback.AppPreferences;
+import com.localapp.preferences.AppPreferences;
 import com.mobiruck.ReferrerReceiver;
 
 import java.io.UnsupportedEncodingException;

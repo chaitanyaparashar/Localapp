@@ -50,14 +50,15 @@ import com.localapp.models.FbLoginError;
 import com.localapp.models.LoginData;
 import com.localapp.models.Profile;
 import com.localapp.models.SignUpData;
-import com.localapp.feedback.AppPreferences;
-import com.localapp.login_session.SessionManager;
+import com.localapp.preferences.AppPreferences;
+import com.localapp.preferences.SessionManager;
 import com.localapp.network.helper.CommonRequest;
 import com.localapp.network.FbLoginRequest;
 import com.localapp.network.FbSignUpRequest;
 import com.localapp.network.ForgetPasswordRequest;
 import com.localapp.network.LoginRequest;
 import com.localapp.network.UpdateFcmTokenRequest;
+import com.localapp.utils.Constants;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -86,7 +87,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
     final static String[] IMPORTANT_PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.READ_PHONE_STATE};
 
-    private static final String TAG = "LoginActivity";
+    private static final String TAG = LoginActivity.class.getSimpleName();
     private EditText _email, _password;
     private Button _loginBtn, _signupBtn;
     private TextView _forgotPass;
@@ -150,7 +151,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(R.layout.permission_popup);
 
-        builder.setPositiveButton("Allow", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.btn_allow, new DialogInterface.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.M)
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -158,7 +159,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
             }
         });
 
-        builder.setNegativeButton("Skip",null);
+        builder.setNegativeButton(R.string.btn_skip,null);
 
         builder.show();
     }
@@ -208,13 +209,13 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
 
         /***************** fb login *****************/
         List<String> fbPermissions = new ArrayList<>();
-        fbPermissions.add("public_profile");
-        fbPermissions.add("email");
-//        fbPermissions.add("user_about_me");
-//        fbPermissions.add("user_birthday");
-//        fbPermissions.add("user_location");
-//        fbPermissions.add("user_relationships");
-        fbPermissions.add("user_work_history");
+        fbPermissions.add(Constants.FB_PERMISSION_PROFILE);
+        fbPermissions.add(Constants.FB_PERMISSION_EMAIL);
+        /*fbPermissions.add(Constants.FB_PERMISSION_ABOUT);
+        fbPermissions.add(Constants.FB_PERMISSION_BIRTHDAY);
+        fbPermissions.add(Constants.FB_PERMISSION_LOCATION);
+        fbPermissions.add(Constants.FB_PERMISSION_RELATIONSHIP);*/
+        fbPermissions.add(Constants.FB_PERMISSION_WORK_HISTORY);
         _fbLoginButton.setReadPermissions(fbPermissions);
 
         fbCallbackManager = CallbackManager.Factory.create();
@@ -290,11 +291,11 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         String mPassword = _password.getText().toString();
 
         if (mEmail.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(mEmail).matches()) {
-            _email.setError("enter a valid email address");
+            _email.setError(getString(R.string.error_enter_valid_email));
             _email.requestFocus();
             return;
         }else if (mPassword.isEmpty() || mPassword.length() <6 || mPassword.length() >16) {
-            _password.setError("enter a valid password");
+            _password.setError(getString(R.string.error_enter_valid_password));
             _password.requestFocus();
             return;
         }
@@ -305,7 +306,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         request.executeRequest();
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setCancelable(false);
-        mProgressDialog.setMessage("Verifying credentials... ");
+        mProgressDialog.setMessage(getString(R.string.message_verifying_credentials));
         mProgressDialog.show();
     }
 
@@ -316,14 +317,14 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         fbLoginRequest.executeRequest();
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setCancelable(false);
-        mProgressDialog.setMessage("Verifying credentials...");
+        mProgressDialog.setMessage(getString(R.string.message_verifying_credentials));
         mProgressDialog.show();
     }
 
     private void onForgetPassword() {
         String mEmail = _email.getText().toString();
         if (mEmail.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(mEmail).matches()) {
-            _email.setError("enter a valid email address");
+            _email.setError(getString(R.string.error_enter_valid_password));
             return;
         }
 
@@ -331,7 +332,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         request.executeRequest();
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setCancelable(false);
-        mProgressDialog.setMessage("Please wait...");
+        mProgressDialog.setMessage(getString(R.string.message_please_wait));
         mProgressDialog.show();
     }
 
@@ -385,14 +386,14 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         request.executeRequest();
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setCancelable(false);
-        mProgressDialog.setMessage("Verifying credentials... ");
+        mProgressDialog.setMessage(getString(R.string.message_verifying_credentials));
         mProgressDialog.show();
     }
 
 
     private void fbSignUpErrorDialog (){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setPositiveButton("UPLOAD", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.btn_upload, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (isStorageAndCameraPermissionGranted()) {
@@ -406,7 +407,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
 
         builder.setCancelable(false);
 
-        builder.setNegativeButton("Cancel",null);
+        builder.setNegativeButton(R.string.btn_cancel,null);
         builder.setView(R.layout.fb_signup_error_alert);
         builder.show();
     }
@@ -417,7 +418,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         // Always show the chooser (if there are multiple options available)
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), SignUpActivity.PICK_IMAGE_REQUEST);
+        startActivityForResult(Intent.createChooser(intent, getString(R.string.title_select_picture)), SignUpActivity.PICK_IMAGE_REQUEST);
     }
 
     void openCamera(){
@@ -486,7 +487,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         mProgressDialog.dismiss();
         switch (responseCode) {
             case COMMON_RES_SUCCESS:
-                toast("Please check your email to reset password");
+                toast(getString(R.string.message_check_your_email_to_rest_pass));
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:
                 toast("Connection timeout");
@@ -551,7 +552,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
             {
                 fbProfile = com.facebook.Profile.getCurrentProfile();
                 if (fbProfile == null){
-                    Toast.makeText(LoginActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, getText(R.string.error_something_went_wrong), Toast.LENGTH_SHORT).show();
                     return;
                 }
             }catch (Exception e){
@@ -649,7 +650,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
                     tempSignUpData = data;
                     fbSignUpErrorDialog();
                 }else if (FbLoginError.ERROR_FB_FACE_SERVER_PROBLEM == data.getFbLoginError().getStatusCode()){
-                    toast("something went wrong");
+                    toast(getString(R.string.error_something_went_wrong));
                 }
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:
@@ -690,7 +691,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
                     new DownloadFileFromURL(tempSignUpData).execute(tempPicUrl);
                     tempPicUrl = null;
                 }else {
-                    toast("Permission denied");
+                    toast(getString(R.string.error_permission_denied));
                     LoginManager.getInstance().logOut();
                 }
 
@@ -710,7 +711,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
 
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getText(R.string.error_permission_denied), Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
@@ -745,7 +746,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
             super.onPreExecute();
             mProgressDialog = new ProgressDialog(LoginActivity.this);
             mProgressDialog.setCancelable(false);
-            mProgressDialog.setMessage("Getting data...");
+            mProgressDialog.setMessage(getString(R.string.message_getting_data));
             mProgressDialog.show();
             LoginManager.getInstance().logOut();
         }

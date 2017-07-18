@@ -11,15 +11,15 @@
         android:layout_centerHorizontal="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#2196f3">
+        android:background="@color/colorAccent">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAllCaps="true"
             android:gravity="center"
-            android:textColor="#fff"
+            android:textColor="@color/white"
             android:textStyle="bold"
-            android:text="Upload another pic"/>
+            android:text="@string/label_upload_another_pic"/>
 
     </LinearLayout>
 
@@ -32,6 +32,6 @@
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="We let people search using face search. Request you to upload face photo for sign up."/>
+        android:text="@string/label_face_not_found_message"/>
 
 </RelativeLayout>

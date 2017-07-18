@@ -58,7 +58,7 @@
                 android:scrollbars="vertical"
                 android:fadeScrollbars="false"
                 android:maxLines="4"
-                android:hint="Type a message"
+                android:hint="@string/hint_type_a_message"
                 android:textColorHint="#cdcdcd"
                 android:paddingTop="5dp"
                 android:paddingBottom="5dp"

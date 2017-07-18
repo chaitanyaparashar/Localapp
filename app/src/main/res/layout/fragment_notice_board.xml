@@ -23,7 +23,7 @@
 
             <LinearLayout
                 android:elevation="5dp"
-                android:background="#FFFFFF"
+                android:background="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="50dp">
 
@@ -33,7 +33,7 @@
                     android:textAllCaps="true"
                     android:textColor="@color/titleColor"
                     android:textStyle="bold"
-                    android:text="My Board"
+                    android:text="@string/label_my_board"
                     android:textSize="22sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
@@ -62,7 +62,7 @@
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp"
             android:elevation="5dp"
-            android:background="#FFFFFF"
+            android:background="@color/white"
             android:orientation="vertical"
             android:id="@+id/layout_notice_near_you"
             android:layout_width="match_parent"
@@ -74,7 +74,7 @@
                 android:layout_margin="8dp"
                 android:gravity="center_horizontal"
                 android:textColor="@color/titleColor"
-                android:text="NOTICE BOARDS NEAR YOU"
+                android:text="@string/label_notice_board_near_you"
                 android:textStyle="bold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -98,7 +98,7 @@
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         app:elevation="15dp"
-        android:tint="#FFFFFF"
+        android:tint="@color/white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:srcCompat="@android:drawable/ic_input_add"
@@ -135,7 +135,7 @@
                 android:gravity="end"
                 android:layout_marginEnd="16dp"
                 android:fontFamily="cursive"
-                android:text="Create Notice Board"/>
+                android:text="@string/label_create_notice_board"/>
 
             <ImageView
                 android:layout_gravity="end"

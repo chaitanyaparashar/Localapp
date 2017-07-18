@@ -115,14 +115,14 @@ public class Utility {
     public static List<String> getProfessionList (String professionGroup) {
 
         switch (professionGroup) {
-            case ExpandableListAdapter.PROFESSION_GROUP_STUDENT: return ExpandableListAdapter.PROFESSION_GROUP_STUDENT_LIST;
-            case ExpandableListAdapter.PROFESSION_GROUP_PROFESSIONALS: return ExpandableListAdapter.PROFESSION_GROUP_PROFESSIONALS_LIST;
-            case ExpandableListAdapter.PROFESSION_GROUP_SKILLS: return ExpandableListAdapter.PROFESSION_GROUP_SKILLS_LIST;
-            case ExpandableListAdapter.PROFESSION_GROUP_HEALTH: return ExpandableListAdapter.PROFESSION_GROUP_HEALTH_LIST;
-            case ExpandableListAdapter.PROFESSION_GROUP_REPAIR: return ExpandableListAdapter.PROFESSION_GROUP_REPAIR_LIST;
-            case ExpandableListAdapter.PROFESSION_GROUP_WEDDING: return ExpandableListAdapter.PROFESSION_GROUP_WEDDING_LIST;
-            case ExpandableListAdapter.PROFESSION_GROUP_BEAUTY: return ExpandableListAdapter.PROFESSION_GROUP_BEAUTY_LIST;
-            case ExpandableListAdapter.PROFESSION_GROUP_HOUSEWIFE: return ExpandableListAdapter.PROFESSION_GROUP_HOUSEWIFE_LIST;
+            case Constants.PROFESSION_GROUP_STUDENT: return Constants.PROFESSION_GROUP_STUDENT_LIST;
+            case Constants.PROFESSION_GROUP_PROFESSIONALS: return Constants.PROFESSION_GROUP_PROFESSIONALS_LIST;
+            case Constants.PROFESSION_GROUP_SKILLS: return Constants.PROFESSION_GROUP_SKILLS_LIST;
+            case Constants.PROFESSION_GROUP_HEALTH: return Constants.PROFESSION_GROUP_HEALTH_LIST;
+            case Constants.PROFESSION_GROUP_REPAIR: return Constants.PROFESSION_GROUP_REPAIR_LIST;
+            case Constants.PROFESSION_GROUP_WEDDING: return Constants.PROFESSION_GROUP_WEDDING_LIST;
+            case Constants.PROFESSION_GROUP_BEAUTY: return Constants.PROFESSION_GROUP_BEAUTY_LIST;
+            case Constants.PROFESSION_GROUP_HOUSEWIFE: return Constants.PROFESSION_GROUP_HOUSEWIFE_LIST;
             default: return null;
         }
     }
@@ -207,7 +207,7 @@ public class Utility {
 
     public static void openPublicProfile(Context mContext, String userId, @Nullable String pic_url){
         Intent intent = new Intent(mContext,PublicProfileActivity.class);
-        intent.putExtra(PublicProfileActivity.PIC_URL, pic_url);
+        intent.putExtra(Constants.PIC_URL, pic_url);
         intent.putExtra("action_id",userId);
         mContext.startActivity(intent);
 

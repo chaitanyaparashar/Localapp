@@ -35,6 +35,7 @@ import com.localapp.network.helper.CommonRequest;
 import com.localapp.network.GetProfileByIdRequest;
 import com.localapp.ui.custom_views.HeaderView;
 import com.localapp.utils.ColorUtils;
+import com.localapp.utils.Constants;
 import com.localapp.utils.Utility;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -48,9 +49,7 @@ import static com.localapp.ui.fragments.MapFragment.CALL_PHONE_PERMISSIONS;
 import static com.localapp.ui.fragments.MapFragment.REQUEST_CALL_PHONE_PERMISSION_CODE;
 
 public class PublicProfileActivity extends AppCompatActivity implements AppBarLayout.OnOffsetChangedListener, GetProfileByIdRequest.GetProfileByIdRequestCallback, Target {
-    private static String TAG = "PublicProfileActivity";
-    public static String PIC_URL = "pic_url";
-    public static String UNKNOWN_PROFILE_ID = "594cfef7c44dc502bb16dbe9"; //fake profile for random message
+    private static String TAG = PublicProfileActivity.class.getSimpleName();
     private Intent callIntent;
 
     String pic_url = null;
@@ -135,7 +134,7 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
         initUi();
         Intent intent = getIntent();
         String uid = intent.getStringExtra("action_id");
-        pic_url = intent.getStringExtra(PIC_URL);
+        pic_url = intent.getStringExtra(Constants.PIC_URL);
 
         if (pic_url != null) {
             Picasso.with(AppController.getAppContext()).load(pic_url).placeholder(R.drawable.ic_user).into(mProfileImageView);
@@ -202,7 +201,7 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
         }
 
 
-        if (!mProfile.getuId().equals(UNKNOWN_PROFILE_ID)) {
+        if (!mProfile.getuId().equals(Constants.UNKNOWN_PROFILE_ID)) {
             if (distance != null) {
                 toolbarHeaderView.bindTo(uName, distance);
                 floatHeaderView.bindTo(uName, distance);

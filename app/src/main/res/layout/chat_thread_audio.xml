@@ -47,7 +47,7 @@
                     <ImageButton
                         android:id="@+id/_audio_play"
                         android:layout_margin="10dp"
-                        android:backgroundTint="#2196f3"
+                        android:backgroundTint="@color/colorAccent"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"

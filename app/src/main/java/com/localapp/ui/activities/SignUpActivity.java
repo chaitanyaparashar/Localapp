@@ -47,12 +47,13 @@ import com.localapp.camera.Camera2Activity;
 import com.localapp.compressor.Compressor;
 import com.localapp.R;
 import com.localapp.models.SignUpData;
-import com.localapp.feedback.AppPreferences;
-import com.localapp.login_session.SessionManager;
+import com.localapp.preferences.AppPreferences;
+import com.localapp.preferences.SessionManager;
 import com.localapp.network.helper.CommonRequest;
 import com.localapp.network.SignUpRequest;
 import com.localapp.ui.custom_views.CircularNetworkImageView;
 import com.localapp.ui.adapters.ExpandableListAdapter;
+import com.localapp.utils.Constants;
 import com.squareup.picasso.Picasso;
 
 
@@ -124,13 +125,13 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         session = new SessionManager(this);
         /*************** fb login *****************/
         List<String> fbPermissions = new ArrayList<>();
-        fbPermissions.add("public_profile");
-        fbPermissions.add("email");
-        /*fbPermissions.add("user_about_me");
-        fbPermissions.add("user_birthday");
-        fbPermissions.add("user_location");
-        fbPermissions.add("user_relationships");*/
-        fbPermissions.add("user_work_history");
+        fbPermissions.add(Constants.FB_PERMISSION_PROFILE);
+        fbPermissions.add(Constants.FB_PERMISSION_EMAIL);
+        /*fbPermissions.add(Constants.FB_PERMISSION_ABOUT);
+        fbPermissions.add(Constants.FB_PERMISSION_BIRTHDAY);
+        fbPermissions.add(Constants.FB_PERMISSION_LOCATION);
+        fbPermissions.add(Constants.FB_PERMISSION_RELATIONSHIP);*/
+        fbPermissions.add(Constants.FB_PERMISSION_WORK_HISTORY);
 
 
         fb_LoginButton = (LoginButton) findViewById(R.id.fb_login_button);
@@ -235,7 +236,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
                     signUp();
                 }else {
                     session.logoutUser();
-                    signUpBtn.setText("SignUp");
+                    signUpBtn.setText(R.string.btn_sign_up);
                     mNameView.setEnabled(true);
                     mNumberView.setEnabled(true);
                     mEmailView.setEnabled(true);
@@ -308,9 +309,9 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(layout);
-        builder.setTitle("Select Profession");
+        builder.setTitle(R.string.title_select_profession);
         builder.setIcon(R.drawable.ic_profession);
-        builder.setPositiveButton("DONE", null);
+        builder.setPositiveButton(R.string.btn_done, null);
 
         builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
@@ -398,7 +399,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, getText(R.string.error_permission_denied), Toast.LENGTH_SHORT).show();
                 }
                 return;
             }
@@ -449,7 +450,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         number = "+91"+number;
 
         if (name.isEmpty() || name.length() < 3) {
-            mNameView.setError("enter a valid name");
+            mNameView.setError(getString(R.string.error_enter_valid_name));
             mNameView.requestFocus();
             valid = false;
             return valid;
@@ -477,7 +478,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
             mNumberView.setError(null);
         }
         else {
-            mNumberView.setError("Enter a valid Mobile Number");
+            mNumberView.setError(getString(R.string.error_enter_valid_mobile));
             mNumberView.requestFocus();
             valid =false;
             return valid;
@@ -487,7 +488,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
             mNumberView.setError(null);
         }
         else {
-            mNumberView.setError("Enter a valid Mobile Number");
+            mNumberView.setError(getString(R.string.error_enter_valid_mobile));
             mNumberView.requestFocus();
             valid =false;
             return valid;
@@ -496,7 +497,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
 
         if (email.isEmpty() || !android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            mEmailView.setError("enter a valid email address");
+            mEmailView.setError(getString(R.string.error_enter_valid_email));
             mEmailView.requestFocus();
             valid = false;
             return valid;
@@ -505,7 +506,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         }
 
         if (profession.isEmpty() || profession.length() <1) {
-            mProfessionView.setError("Please select your profession");
+            mProfessionView.setError(getString(R.string.error_select_profession));
             mProfessionView.requestFocus();
             valid =  false;
             return valid;
@@ -515,7 +516,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
 
         if (password.isEmpty() || password.length() < 6 || password.length() > 16) {
-            mPasswordView.setError("between 6 and 16 alphanumeric characters");
+            mPasswordView.setError(getString(R.string.error_password_between));
             mPasswordView.requestFocus();
             valid = false;
             return valid;
@@ -524,7 +525,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         }
 
         if (!cPassword.equals(password)) {
-            cPasswordView.setError("Password not matched");
+            cPasswordView.setError(getString(R.string.error_password_not_match));
             cPasswordView.requestFocus();
             valid = false;
             return valid;
@@ -533,7 +534,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         }
 
         if (brifIntro.isEmpty() || brifIntro.length() < 1) {
-            mInfoView.setError("Field Required");
+            mInfoView.setError(getString(R.string.error_field_required));
             mInfoView.requestFocus();
             valid = false;
             return valid;
@@ -550,12 +551,12 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         }
 
         if (imgFile == null) {
-            Toast.makeText(this, "Please select a pic", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getText(R.string.error_select_pic), Toast.LENGTH_SHORT).show();
             return;
         }
 
         mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setMessage("Please wait...");
+        mProgressDialog.setMessage(getString(R.string.message_please_wait));
         mProgressDialog.setCancelable(false);
         mProgressDialog.show();
 
@@ -592,7 +593,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         mProgressDialog.dismiss();
         switch (res) {
             case COMMON_RES_SUCCESS:
-                Toast.makeText(this, "Registration successfully", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, getText(R.string.message_registration_successfully), Toast.LENGTH_SHORT).show();
                 onSignUpSuccess(data);
                 break;
             case COMMON_RES_CONNECTION_TIMEOUT:
@@ -607,7 +608,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
                 try {
                     JSONObject errorObject = new JSONObject(data.getmErrorMessage());
                     if (errorObject.getInt("status") == 2) {
-                        onSignUpFailed("Please try again or provide a different face image");
+                        onSignUpFailed(getString(R.string.error_face_image));
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -688,7 +689,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
                         com.facebook.Profile fbProfile = Profile.getCurrentProfile();
                         if (fbProfile == null){
-                            Toast.makeText(SignUpActivity.this, "Something went wrong, Please try again", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(SignUpActivity.this, getText(R.string.error_something_went_wrong_try_again), Toast.LENGTH_SHORT).show();
                             return;
                         }
 
@@ -767,7 +768,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
         protected void onPreExecute() {
             super.onPreExecute();
             mProgressDialog = new ProgressDialog(SignUpActivity.this);
-            mProgressDialog.setMessage("Getting data...");
+            mProgressDialog.setMessage(getString(R.string.message_please_wait));
             mProgressDialog.show();
             LoginManager.getInstance().logOut();
         }

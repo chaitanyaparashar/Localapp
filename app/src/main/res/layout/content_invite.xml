@@ -115,8 +115,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:hint="Enter email address"
-
+            android:hint="@string/hint_enter_email"
             android:inputType="textEmailAddress|textMultiLine"
             android:lines="8"
             android:minLines="2" />
@@ -125,7 +124,7 @@
             android:layout_width="wrap_content"
             android:layout_height="40dp"
             android:background="@drawable/submit_button_state"
-            android:text="Send"
+            android:text="@string/btn_send"
             android:onClick="sendMail"
             android:textAllCaps="false"
             android:textColor="#FFF" />

@@ -60,8 +60,7 @@
                     android:layout_margin="4dp"
                     app:siBorderWidth="0dp"
                     app:siRadius="4dp"
-                    android:src="@mipmap/ic_launcher"
-                    app:siBorderColor="#fff"
+                    app:siBorderColor="@color/white"
                     android:layout_width="210dp"
                     android:layout_height="210dp"
                     android:scaleType="centerCrop"/>

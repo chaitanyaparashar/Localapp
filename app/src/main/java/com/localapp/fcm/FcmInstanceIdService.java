@@ -5,7 +5,7 @@ import android.util.Log;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 import com.localapp.models.Profile;
-import com.localapp.login_session.SessionManager;
+import com.localapp.preferences.SessionManager;
 import com.localapp.network.UpdateFcmTokenRequest;
 import com.localapp.ui.activities.HomeActivity;
 

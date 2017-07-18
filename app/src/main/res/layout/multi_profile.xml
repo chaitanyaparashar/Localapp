@@ -15,7 +15,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@style/amu_Bubble.TextAppearance.Light"
-            android:background="@android:color/black"
+            android:background="#ce000000"
             android:paddingLeft="@dimen/custom_profile_padding"
             android:paddingRight="@dimen/custom_profile_padding"
             android:layout_gravity="center"

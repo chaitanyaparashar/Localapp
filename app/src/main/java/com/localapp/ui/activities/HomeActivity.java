@@ -30,19 +30,19 @@ import com.localapp.R;
 import com.localapp.appcontroller.AppController;
 import com.localapp.background.ConnectivityReceiver;
 import com.localapp.models.MessageNotificationData;
-import com.localapp.feedback.AppPreferences;
-import com.localapp.login_session.SessionManager;
+import com.localapp.preferences.AppPreferences;
+import com.localapp.preferences.SessionManager;
 import com.google.android.gms.maps.model.LatLng;
 import com.localapp.ui.fragments.FeedFragment;
 import com.localapp.ui.fragments.MapFragment;
 import com.localapp.ui.fragments.NoticeBoardFragment;
 import com.localapp.ui.fragments.ProfileFragment;
+import com.localapp.utils.Constants;
 import com.localapp.utils.NetworkUtil;
 import com.localapp.utils.Utility;
 
 import java.util.HashMap;
 
-import static com.localapp.ui.fragments.MapFragment.REQUEST_CHECK_SETTINGS;
 import static com.localapp.utils.NotificationUtils.notificationList;
 import static com.localapp.utils.NotificationUtils.numMessage;
 
@@ -271,7 +271,7 @@ public class HomeActivity extends AppCompatActivity implements ConnectivityRecei
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
-            case REQUEST_CHECK_SETTINGS:
+            case Constants.REQUEST_CHECK_SETTINGS:
                 MapFragment mapFragment = MapFragment.getInstance();
                 mapFragment.onActivityResult(requestCode,resultCode,data);
                 /*switch (resultCode) {
@@ -363,22 +363,22 @@ public class HomeActivity extends AppCompatActivity implements ConnectivityRecei
 
     public static void openAppInPlayStore(Context paramContext) {
         try {
-            paramContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.localapp")));
+            paramContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.LOCAL_APP_MARKET_URL)));
         }catch (ActivityNotFoundException e){
-            paramContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.localapp")));
+            paramContext.startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(Constants.LOCAL_APP_PLAY_STORE_URL)));
         }
     }
 
     public static void openFeedback(Context paramContext) {
         Intent localIntent = new Intent(Intent.ACTION_SEND);
-        localIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{"connect@localapp.org"});
+        localIntent.putExtra(Intent.EXTRA_EMAIL, new String[]{Constants.CONNECT_LOCAL_APP_EMAIL});
         localIntent.putExtra(Intent.EXTRA_CC, "");
         String str = null;
         int versionCode;
         try {
             str = paramContext.getPackageManager().getPackageInfo(paramContext.getPackageName(), 0).versionName;
             versionCode = paramContext.getPackageManager().getPackageInfo(paramContext.getPackageName(), 0).versionCode;
-            localIntent.setPackage("com.google.android.gm");
+            localIntent.setPackage(Constants.GMAIL_PACKAGE);
             localIntent.putExtra(Intent.EXTRA_SUBJECT, "Feedback for Localapp");
             localIntent.putExtra(Intent.EXTRA_TEXT, "\n\n----------------------------------\n Device OS: Android \n Device OS version: " +
                     Build.VERSION.RELEASE + "\n App Version: " + str + "\n App Version Code: " + versionCode + "\n Device Brand: " + Build.BRAND +

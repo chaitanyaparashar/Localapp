@@ -3,6 +3,119 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="facebook_app_id">235015976963905</string>
+    
+    
+    <string name="message_please_wait">Please wait…</string>
+    <string name="message_noticeboard_created">Notice Board Created Successfully</string>
+    <string name="message_install_whatsapp">Please install WhatsApp</string>
+    <string name="message_install_play_store">Please install play store</string>
+    <string name="message_email_send">Email send</string>
+    <string name="message_verifying_credentials">Verifying credentials… </string>
+    <string name="message_check_your_email_to_rest_pass">Please check your email to reset password</string>
+    <string name="message_getting_data">Getting data…</string>
+    <string name="message_registration_successfully">Registration successfully</string>
+    <string name="message_profile_update_successfully">Profile updated successfully</string>
+    <string name="message_email_update_success">Email update success</string>
+    <string name="message_login_first">Please login first…</string>
+    <string name="message_click_again">Please click again…</string>
+    <string name="message_slide_to_cancel">Slide to cancel"</string>
+    <string name="message_no_result_found_try_diffrent">No result found, try different keywords</string>
+    <string name="message_please_wait_getting_result">Please wait we are getting results</string>
+    <string name="message_no_result_found">No search result found</string>
+
+    <string name="error_enter_valid_name">enter a valid name</string>
+    <string name="error_enter_valid_email">enter a valid email address</string>
+    <string name="error_enter_valid_password">enter a valid password</string>
+    <string name="error_enter_valid_mobile">enter a valid Mobile Number</string>
+    <string name="error_select_profession">please select your profession</string>
+    <string name="error_minimum_2_word">minimum 2 word</string>
+    <string name="error_something_went_wrong">something went wrong</string>
+    <string name="error_something_went_wrong_try_again">Something went wrong, Please try again</string>
+    <string name="error_permission_denied">Permission denied</string>
+    <string name="error_password_between">between 6 and 16 alphanumeric characters</string>
+    <string name="error_password_not_match">password not matched</string>
+    <string name="error_field_required">field required</string>
+    <string name="error_select_pic">Please select a pic</string>
+    <string name="error_face_image">Please try again or provide a different face image</string>
+    <string name="error_email_already_exist">This email already exist</string>
+
+
+    <string name="btn_allow">Allow</string>
+    <string name="btn_skip">Skip</string>
+    <string name="btn_upload">UPLOAD</string>
+    <string name="btn_cancel">Cancel</string>
+    <string name="btn_sign_up">SignUp</string>
+    <string name="btn_done">DONE</string>
+    <string name="btn_update">Update</string>
+    <string name="btn_got_it">Got It</string>
+    <string name="btn_unsubscribe">Unsubscribe</string>
+    <string name="btn_subscribe">Subscribe</string>
+    <string name="btn_submit">Submit</string>
+    <string name="btn_send">Send</string>
+    <string name="btn_login">Login</string>
+    <string name="btn_sign_up_email">Sign up with Email</string>
+    <string name="btn_upload_pic">Upload a Picture</string>
+    <string name="btn_use_fb_info">Use Facebook Info</string>
+    <string name="btn_next">Next</string>
+    <string name="btn_accept">Accept</string>
+    <string name="btn_invite">Invite Neighbors &amp; Have more fun</string>
+    <string name="btn_logout">Logout</string>
+
+
+    <string name="title_select_picture">Select Picture</string>
+    <string name="title_select_profession">Select Profession</string>
+    <string name="title_update_email">Update Email</string>
+
+    <string name="label_create_new_board">Create New Board</string>
+    <string name="label_name">Name</string>
+    <string name="label_notice">Notice</string>
+    <string name="label_forgot_password">FORGOT PASSWORD ?</string>
+    <string name="label_or">OR</string>
+    <string name="label_sign_up">SignUp</string>
+    <string name="label_sign_up_message">It\'s free and takes less then 30 second</string>
+    <string name="label_maximum_10_words">Maximum 10 words</string>
+    <string name="label_optional">Optional</string>
+    <string name="label_already_have_an_account">Already have an account?</string>
+    <string name="label_sign_in">SignIn</string>
+    <string name="label_edit_profile">Edit Profile</string>
+    <string name="label_need_number">We need your number for one cool feature</string>
+    <string name="label_get_started">get started</string>
+    <string name="label_about">About</string>
+    <string name="label_brief_intro">Brief Intro</string>
+    <string name="label_detail_description">Details Description</string>
+    <string name="label_profession">Profession</string>
+    <string name="label_contact">Contact</string>
+    <string name="label_face_not_found_message">We let people search using face search. Request you to upload face photo for sign up.</string>
+    <string name="label_upload_another_pic">Upload another pic</string>
+    <string name="label_try_different_mode">Try different mode</string>
+    <string name="label_send_voice_message">Tap and hold to send Voice message</string>
+    <string name="label_send_media_file">Send media files</string>
+    <string name="label_next">Next</string>
+    <string name="label_text_search">Text Search</string>
+    <string name="label_face_search">Face Search</string>
+    <string name="label_my_board">My Board</string>
+    <string name="label_notice_board_near_you">NOTICE BOARDS NEAR YOU</string>
+    <string name="label_create_notice_board">Create Notice Board</string>
+    <string name="label_personal_info">PERSONAL INFORMATION</string>
+    <string name="label_notification_setting">NOTIFICATION SETTING</string>
+    <string name="label_broadcast_notification">Broadcast Notification</string>
+    <string name="label_permission_denied">Permission Denied</string>
+    <string name="label_permission_denied_message">Hey, your experience would be medicare without the permission we need.</string>
+
+
+    <string name="hint_write_your_notice">write your notice</string>
+    <string name="hint_enter_email">Enter email address</string>
+    <string name="hint_email">Email</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_confirm_password">Confirm Password</string>
+    <string name="hint_name">Name</string>
+    <string name="hint_phone_number">Phone Number</string>
+    <string name="hint_select_profession">Select Profession</string>
+    <string name="hint_brief_intro">Brief Intro</string>
+    <string name="hint_detail_description">Detail Description</string>
+    <string name="hint_new_email">New email</string>
+    <string name="hint_search">Search here…</string>
+    <string name="hint_type_a_message">Type a message</string>
 
 
     <!-- Map Fragment -->
@@ -38,6 +151,10 @@
 
     <string name="invite_text">"Join localapp, the neighbors Community app to know, search and interact with neighborhoods.\nhttps://play.google.com/store/apps/details?id=com.localapp"</string>
     <string name="title_activity_public_profile">PublicProfileActivity</string>
+    <string name="label_please_say_yes">Please say yes</string>
+    <string name="label_click_button">Click the button below to try this again</string>
+    <string name="btn_yes">Yes, Give me a better experince</string>
+    <string name="message_request_permission">Allowing this permission will help us improve your app experience. You can turn it off later at any time from Setting.</string>
 
 
 </resources>

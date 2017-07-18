@@ -14,11 +14,11 @@
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#FFFFFF">
+            android:background="@color/white">
 
             <LinearLayout
                 android:orientation="vertical"
-                android:background="#2196f3"
+                android:background="@color/colorAccent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
@@ -27,9 +27,9 @@
                     android:padding="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="SignUp"
+                    android:text="@string/label_sign_up"
                     android:textSize="25sp"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/white"
                     android:textStyle="bold"
                     android:layout_gravity="center"/>
 
@@ -38,9 +38,9 @@
                     android:padding="5dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="It's free and takes less then 30 second"
+                    android:text="@string/label_sign_up_message"
                     android:textSize="17sp"
-                    android:textColor="#FFFFFF"
+                    android:textColor="@color/white"
                     android:gravity="center"
                     android:layout_gravity="center"/>
 
@@ -52,7 +52,7 @@
                     android:src="@drawable/ic_user"
                     android:layout_gravity="center"
                     app:siBorderWidth="0dp"
-                    app:siBorderColor="#FFFFFF"
+                    app:siBorderColor="@color/white"
                     android:id="@+id/image_pic" />
 
                 <Button
@@ -63,7 +63,7 @@
                     android:layout_width="160dp"
                     android:layout_height="40dp"
                     android:layout_gravity="center"
-                    android:text="Upload a Picture"
+                    android:text="@string/btn_upload_pic"
                     android:textColor="#ffffff"
                     android:textAllCaps="false"
                     android:background="@drawable/signup_upload_pic_btn_shap" />
@@ -93,7 +93,7 @@
                         android:drawablePadding="10dp"
                         android:inputType="textPersonName"
                         android:drawableStart="@drawable/ic_name"
-                        android:hint="Name" />
+                        android:hint="@string/hint_name" />
                 </android.support.design.widget.TextInputLayout>
 
                 <!--  Phone Number Label -->
@@ -111,7 +111,7 @@
                         android:drawablePadding="10dp"
                         android:drawableStart="@drawable/ic_phone"
                         android:drawableEnd="@drawable/ic_password_visible"
-                        android:hint="Phone Number" />
+                        android:hint="@string/hint_phone_number" />
                 </android.support.design.widget.TextInputLayout>
 
 
@@ -128,7 +128,7 @@
                         android:drawablePadding="10dp"
                         android:inputType="textEmailAddress"
                         android:drawableStart="@drawable/ic_email"
-                        android:hint="Email" />
+                        android:hint="@string/hint_email" />
                 </android.support.design.widget.TextInputLayout>
 
 
@@ -147,7 +147,7 @@
                         android:editable="false"
                         android:drawableStart="@drawable/ic_profession"
                         android:drawableEnd="@android:drawable/arrow_down_float"
-                        android:hint="Select Profession" />
+                        android:hint="@string/hint_select_profession" />
                 </android.support.design.widget.TextInputLayout>
 
                 <!--  Password Label -->
@@ -164,7 +164,7 @@
                         android:inputType="textPassword"
                         android:drawablePadding="10dp"
                         android:drawableStart="@drawable/ic_lock"
-                        android:hint="Password" />
+                        android:hint="@string/hint_password" />
                 </android.support.design.widget.TextInputLayout>
 
 
@@ -182,7 +182,7 @@
                         android:inputType="textPassword"
                         android:drawableStart="@drawable/ic_lock"
                         android:drawablePadding="10dp"
-                        android:hint="Confirm Password" />
+                        android:hint="@string/hint_confirm_password" />
                 </android.support.design.widget.TextInputLayout>
 
 
@@ -200,16 +200,16 @@
                         android:maxLines="2"
                         android:drawablePadding="10dp"
                         android:drawableStart="@drawable/ic_brief_intro"
-                        android:hint="Brief Intro" />
+                        android:hint="@string/hint_brief_intro" />
                 </android.support.design.widget.TextInputLayout>
                 <TextView
                     android:fontFamily="@string/font_family_regular"
-                    android:layout_gravity="right"
-                    android:textColor="#2196f3"
+                    android:layout_gravity="end"
+                    android:textColor="@color/colorAccent"
                     android:layout_marginBottom="8dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Maximum 10 words"/>
+                    android:text="@string/label_maximum_10_words"/>
 
 
                 <!--  Details Label -->
@@ -225,17 +225,17 @@
                         android:inputType="textMultiLine"
                         android:drawablePadding="10dp"
                         android:drawableStart="@drawable/ic_detail_description"
-                        android:hint="Detail Description" />
+                        android:hint="@string/hint_detail_description" />
                 </android.support.design.widget.TextInputLayout>
 
                 <TextView
                     android:fontFamily="@string/font_family_regular"
-                    android:layout_gravity="right"
-                    android:textColor="#2196f3"
+                    android:layout_gravity="end"
+                    android:textColor="@color/colorAccent"
                     android:layout_marginBottom="8dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Optional"/>
+                    android:text="@string/label_optional"/>
 
 
 
@@ -271,10 +271,10 @@
                     android:layout_marginTop="30dp"
                     android:layout_marginBottom="30dp"
                     android:background="@drawable/fb_btn_shap"
-                    android:drawableLeft="@drawable/com_facebook_button_icon_white"
+                    android:drawableStart="@drawable/com_facebook_button_icon_white"
                     android:layout_gravity="center_horizontal"
-                    android:text="Use Facebook Info"
-                    android:textColor="#ffffff"
+                    android:text="@string/btn_use_fb_info"
+                    android:textColor="@color/white"
                     android:textStyle="bold" />
 
 
@@ -290,24 +290,24 @@
                     android:textSize="18sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Already have an account?"/>
+                    android:text="@string/label_already_have_an_account"/>
 
                 <TextView
-                    android:layout_marginLeft="2dp"
-                    android:textColor="#2196f3"
+                    android:layout_marginStart="2dp"
+                    android:textColor="@color/colorAccent"
                     android:id="@+id/sign_in_text"
                     android:textSize="18sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="SignIn"/>
+                    android:text="@string/label_sign_in"/>
             </LinearLayout>
 
             <Button
                 android:id="@+id/_signUp"
                 android:layout_gravity="bottom"
-                android:text="signup"
-                android:textColor="#FFFFFF"
-                android:background="#2196f3"
+                android:text="@string/btn_sign_up"
+                android:textColor="@color/white"
+                android:background="@color/colorAccent"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" />
 

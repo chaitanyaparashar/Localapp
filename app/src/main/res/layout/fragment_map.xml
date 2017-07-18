@@ -14,7 +14,7 @@
         android:layout_height="match_parent">
         <RelativeLayout
             android:id="@+id/rl"
-            android:background="#FFF"
+            android:background="@color/white"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
@@ -83,9 +83,9 @@
                 android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
-                android:textColor="#fff"
+                android:textColor="@color/white"
                 android:background="@drawable/submit_button_state"
-                android:text="Invite Neighbors &amp; Have more fun"/>
+                android:text="@string/btn_invite"/>
 
 
 
@@ -95,7 +95,7 @@
                 android:clickable="true"
                 android:id="@+id/user_detail_rl"
                 android:visibility="gone"
-                android:background="#FFF"
+                android:background="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom"
@@ -184,7 +184,7 @@
                     android:maxLines="1"
                     android:selectAllOnFocus="true"
                     android:background="@android:color/transparent"
-                    android:hint="Search here..."
+                    android:hint="@string/hint_search"
                     android:id="@+id/autoCompleteTextView" />
 
                 <LinearLayout
@@ -257,7 +257,7 @@
                 android:textSize="28sp"
                 android:fontFamily="cursive"
                 android:layout_gravity="right"
-                android:text="Text Search"/>
+                android:text="@string/label_text_search"/>
         </LinearLayout>
 
         <LinearLayout
@@ -284,7 +284,7 @@
                 android:fontFamily="cursive"
                 android:textSize="28sp"
                 android:layout_gravity="start"
-                android:text="Face Search"/>
+                android:text="@string/label_face_search"/>
 
         </LinearLayout>
 
@@ -298,7 +298,7 @@
             android:layout_marginBottom="116dp"
             android:layout_marginEnd="16dp"
             android:fontFamily="cursive"
-            android:text="Next"
+            android:text="@string/label_next"
             android:textColor="@android:color/white"
             android:textSize="28sp" />
 

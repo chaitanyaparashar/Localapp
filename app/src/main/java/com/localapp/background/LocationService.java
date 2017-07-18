@@ -12,7 +12,7 @@ import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.localapp.appcontroller.AppController;
-import com.localapp.login_session.SessionManager;
+import com.localapp.preferences.SessionManager;
 import com.localapp.network.LocationUpdateBackgroundRequest;
 import com.localapp.utils.NotificationUtils;
 

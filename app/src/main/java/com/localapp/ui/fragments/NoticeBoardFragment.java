@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -36,7 +37,7 @@ import com.localapp.appcontroller.AppController;
 import com.localapp.background.ConnectivityReceiver;
 import com.localapp.models.NoticeBoard;
 import com.localapp.models.NoticeBoardMessage;
-import com.localapp.feedback.AppPreferences;
+import com.localapp.preferences.AppPreferences;
 import com.localapp.network.helper.CommonRequest;
 import com.localapp.network.DeleteNoticeBoardMessageRequest;
 import com.localapp.network.DeleteNoticeBoardRequest;
@@ -160,7 +161,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
 
         swipeRefreshLayout = (SwipeRefreshLayout) fView.findViewById(R.id.swipe_refresh_layout_notice_board);
         swipeRefreshLayout.setOnRefreshListener(onRefreshListener);
-        swipeRefreshLayout.setColorSchemeColors(Color.parseColor("#2196f3"));
+        swipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getContext(), R.color.colorAccent));
 
         swipeRefreshLayout.post(new Runnable() {
             @Override
@@ -225,9 +226,9 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
 
 
         if (hasSubscribed) {
-            subButton.setText("Unsubscribe");
+            subButton.setText(R.string.btn_unsubscribe);
         }else {
-            subButton.setText("Subscribe");
+            subButton.setText(R.string.btn_subscribe);
         }
 
         subButton.setOnClickListener(new View.OnClickListener() {
@@ -244,7 +245,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
 
                     requestSubscribeAndUnsub(noticeBoard, type);
                 }else {
-                    Toast.makeText(getContext(), "Please login first...", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getText(R.string.login_first), Toast.LENGTH_SHORT).show();
                 }
 
                 if (dialog!=null)
@@ -431,7 +432,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
         }else if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SERVER_ERROR_WITH_MESSAGE) {
             Toast.makeText(getContext(), errorMsg, Toast.LENGTH_SHORT).show();
         }else {
-            Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getText(R.string.something_went_wrong), Toast.LENGTH_SHORT).show();
         }
     }
 

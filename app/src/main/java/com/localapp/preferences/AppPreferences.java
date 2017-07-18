@@ -1,4 +1,4 @@
-package com.localapp.feedback;
+package com.localapp.preferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -39,7 +39,7 @@ public class AppPreferences {
     public void setAppRate(boolean paramBoolean) {
         SharedPreferences.Editor localEditor = this.mPrefs.edit();
         localEditor.putBoolean(PREF_APP_RATE, paramBoolean);
-        localEditor.commit();
+        localEditor.apply();
     }
 
     public int getLaunchCount() {
@@ -50,13 +50,13 @@ public class AppPreferences {
         int i = getLaunchCount();
         SharedPreferences.Editor localEditor = this.mPrefs.edit();
         localEditor.putInt(PREF_LAUNCH_COUNT, i + 1);
-        localEditor.commit();
+        localEditor.apply();
     }
 
     public void resetLaunchCount() {
         SharedPreferences.Editor localEditor = this.mPrefs.edit();
         localEditor.remove(PREF_LAUNCH_COUNT);
-        localEditor.commit();
+        localEditor.apply();
     }
 
     public boolean isTourLaunched() {
@@ -66,7 +66,7 @@ public class AppPreferences {
     public void tourLaunched () {
         SharedPreferences.Editor localEditor = this.mPrefs.edit();
         localEditor.putBoolean(PREF_LAUNCH_TOUR, true);
-        localEditor.commit();
+        localEditor.apply();
     }
 
     public boolean isLaunchedMapToolTip () {
@@ -76,7 +76,7 @@ public class AppPreferences {
     public void mapToolTipLaunched() {
         SharedPreferences.Editor localEditor = this.mPrefs.edit();
         localEditor.putBoolean(PREF_LAUNCH_MAP_TOOLTIP, true);
-        localEditor.commit();
+        localEditor.apply();
     }
 
 
@@ -87,7 +87,7 @@ public class AppPreferences {
     public void broadcastToolTipLaunched() {
         SharedPreferences.Editor localEditor = this.mPrefs.edit();
         localEditor.putBoolean(PREF_LAUNCH_BROADCAST_TOOLTIP, true);
-        localEditor.commit();
+        localEditor.apply();
     }
 
 
@@ -108,7 +108,7 @@ public class AppPreferences {
     public void noticeboardToolTipLaunched() {
         SharedPreferences.Editor localEditor = this.mPrefs.edit();
         localEditor.putBoolean(PREF_LAUNCH_NOTICEBOARD_TOOLTIP, true);
-        localEditor.commit();
+        localEditor.apply();
     }
 
     public boolean isBroadcastNotificationOn () {
@@ -118,13 +118,13 @@ public class AppPreferences {
     public void setBroadcastNotificationOn() {
         SharedPreferences.Editor localEditor = this.mPrefs.edit();
         localEditor.putBoolean(PREF_BROADCAST_NOTIFICATION_SETTING, true);
-        localEditor.commit();
+        localEditor.apply();
     }
 
     public void setBroadcastNotificationOff() {
         SharedPreferences.Editor localEditor = this.mPrefs.edit();
         localEditor.putBoolean(PREF_BROADCAST_NOTIFICATION_SETTING, false);
-        localEditor.commit();
+        localEditor.apply();
     }
 
     public boolean isMobiruckPostBack() {
@@ -134,14 +134,14 @@ public class AppPreferences {
     public void setMobiruckSignupPostback(boolean postback) {
         SharedPreferences.Editor localEditor = this.mPrefs.edit();
         localEditor.putBoolean(PREF_MOBIRUCK_SIGNUP_POSTBACK, postback);
-        localEditor.commit();
+        localEditor.apply();
     }
 
 
     public void setUtm_source (String source) {
         SharedPreferences.Editor localEditor = this.mPrefs.edit();
         localEditor.putString(PREF_UTM_SOURCE, source);
-        localEditor.commit();
+        localEditor.apply();
     }
 
     public String getUtmSource() {

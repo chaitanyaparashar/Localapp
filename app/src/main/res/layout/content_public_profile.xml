@@ -23,7 +23,7 @@
                 android:layout_margin="8dp"
                 android:textColor="@color/titleColor"
                 android:fontFamily="@string/font_family_regular"
-                android:text="About"
+                android:text="@string/label_about"
                 android:textStyle="bold"
                 android:textSize="16sp"
                 android:layout_width="match_parent"
@@ -51,7 +51,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
-                        android:text="Brief Intro" />
+                        android:text="@string/label_brief_intro" />
 
                     <TextView
                         android:id="@+id/_brief_intro"
@@ -81,7 +81,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
-                        android:text="Details Description" />
+                        android:text="@string/label_detail_description" />
 
                     <TextView
                         android:id="@+id/_details"
@@ -114,7 +114,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
-                        android:text="Professions" />
+                        android:text="@string/label_profession" />
 
                     <TextView
                         android:id="@+id/_profession"
@@ -151,7 +151,7 @@
                 android:layout_margin="8dp"
                 android:textColor="@color/titleColor"
                 android:fontFamily="@string/font_family_regular"
-                android:text="Contact"
+                android:text="@string/label_contact"
                 android:textStyle="bold"
                 android:textSize="16sp"
                 android:layout_width="match_parent"

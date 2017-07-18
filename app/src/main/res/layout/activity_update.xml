@@ -17,7 +17,7 @@
             android:orientation="horizontal"
             android:elevation="3dp"
             android:id="@+id/header"
-            android:background="#FFFFFF"
+            android:background="@color/white"
             android:layout_width="match_parent"
             android:layout_height="50dp">
             <ImageButton
@@ -28,7 +28,6 @@
                 android:layout_height="40dp"
                 android:background="@null"
                 android:onClick="onBack"
-
                 android:src="@drawable/ic_cross"/>
 
             <TextView
@@ -40,11 +39,11 @@
                 android:layout_centerVertical="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Edit Profile"/>
+                android:text="@string/label_edit_profile"/>
 
             <ImageButton
                 android:layout_margin="8dp"
-                android:tint="#2196f3"
+                android:tint="@color/colorAccent"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_width="40dp"
@@ -78,7 +77,7 @@
                     android:drawablePadding="10dp"
                     android:inputType="textPersonName"
                     android:drawableStart="@drawable/ic_name"
-                    android:hint="Name" />
+                    android:hint="@string/hint_name" />
             </android.support.design.widget.TextInputLayout>
 
             <!--  Phone Number Label -->
@@ -95,15 +94,15 @@
                     android:drawablePadding="10dp"
                     android:drawableStart="@drawable/ic_phone"
                     android:drawableEnd="@drawable/ic_password_visible"
-                    android:hint="Phone Number" />
+                    android:hint="@string/hint_phone_number" />
             </android.support.design.widget.TextInputLayout>
             <TextView
                 android:fontFamily="@string/font_family_regular"
-                android:layout_gravity="right"
-                android:textColor="#2196f3"
+                android:layout_gravity="end"
+                android:textColor="@color/colorAccent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="We need your number for one cool feature"/>
+                android:text="@string/label_need_number"/>
 
 
             <!--  Email Label -->
@@ -119,7 +118,7 @@
                     android:drawablePadding="10dp"
                     android:editable="false"
                     android:drawableStart="@drawable/ic_email"
-                    android:hint="Email" />
+                    android:hint="@string/hint_email" />
             </android.support.design.widget.TextInputLayout>
         </LinearLayout>
 
@@ -147,7 +146,7 @@
                     android:editable="false"
                     android:drawableStart="@drawable/ic_profession"
                     android:drawableEnd="@android:drawable/arrow_down_float"
-                    android:hint="Select Profession" />
+                    android:hint="@string/hint_select_profession" />
             </android.support.design.widget.TextInputLayout>
 
 
@@ -166,16 +165,16 @@
                     android:maxLines="2"
                     android:drawablePadding="10dp"
                     android:drawableStart="@drawable/ic_brief_intro"
-                    android:hint="Brief Intro" />
+                    android:hint="@string/hint_brief_intro" />
             </android.support.design.widget.TextInputLayout>
             <TextView
                 android:fontFamily="@string/font_family_regular"
-                android:layout_gravity="right"
+                android:layout_gravity="end"
                 android:textColor="#2196f3"
                 android:layout_marginBottom="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Maximum 10 words"/>
+                android:text="@string/label_maximum_10_words"/>
 
 
             <!--  Details Label -->
@@ -191,17 +190,17 @@
                     android:inputType="textMultiLine"
                     android:drawablePadding="10dp"
                     android:drawableStart="@drawable/ic_detail_description"
-                    android:hint="Detail Description" />
+                    android:hint="@string/hint_detail_description" />
             </android.support.design.widget.TextInputLayout>
 
             <TextView
                 android:fontFamily="@string/font_family_regular"
-                android:layout_gravity="right"
-                android:textColor="#2196f3"
+                android:layout_gravity="end"
+                android:textColor="@color/colorAccent"
                 android:layout_marginBottom="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Optional"/>
+                android:text="@string/label_optional"/>
 
         </LinearLayout>
 

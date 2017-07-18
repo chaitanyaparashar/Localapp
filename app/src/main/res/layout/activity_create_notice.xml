@@ -10,11 +10,11 @@
         android:orientation="horizontal"
         android:elevation="3dp"
         android:id="@+id/header"
-        android:background="#FFFFFF"
+        android:background="@color/white"
         android:layout_width="match_parent"
         android:layout_height="50dp">
         <ImageButton
-            android:backgroundTint="#2196f3"
+            android:backgroundTint="@color/colorAccent"
             android:layout_margin="5dp"
             android:layout_centerVertical="true"
             android:layout_width="wrap_content"
@@ -23,7 +23,7 @@
             android:background="@drawable/ic_arrow_back"/>
 
         <TextView
-            android:textColor="#2196f3"
+            android:textColor="@color/colorAccent"
             android:textStyle="bold"
             android:textAllCaps="true"
             android:layout_centerVertical="true"
@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:fontFamily="@string/font_family_regular"
             android:layout_height="wrap_content"
-            android:text="Create New Board"/>
+            android:text="@string/label_create_new_board"/>
 
     </RelativeLayout>
 
@@ -53,7 +53,7 @@
                 android:textSize="22sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Name"/>
+                android:text="@string/label_name"/>
 
             <EditText
                 android:fontFamily="@string/font_family_regular"
@@ -74,7 +74,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Notice"/>
+                android:text="@string/label_notice"/>
 
             <EditText
                 android:fontFamily="@string/font_family_regular"
@@ -84,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:minHeight="150dp"
                 android:layout_marginBottom="16dp"
-                android:hint="write your notice"
+                android:hint="@string/hint_write_your_notice"
                 android:textStyle="italic"
                 android:padding="10dp"
                 android:gravity="start"
@@ -102,8 +102,8 @@
                 android:textColor="#FFFFFF"
                 android:textAllCaps="false"
                 android:onClick="onSubmit"
-                android:background="#2196f3"
-                android:text="Submit"/>
+                android:background="@color/colorAccent"
+                android:text="@string/btn_submit"/>
 
         </LinearLayout>
 

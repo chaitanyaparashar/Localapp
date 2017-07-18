@@ -55,8 +55,8 @@ import com.localapp.models.GetFeedRequestData;
 import com.localapp.models.Message;
 import com.localapp.models.NotificationData;
 import com.localapp.fcm.FcmNotificationRequest;
-import com.localapp.feedback.AppPreferences;
-import com.localapp.login_session.SessionManager;
+import com.localapp.preferences.AppPreferences;
+import com.localapp.preferences.SessionManager;
 import com.localapp.network.helper.CommonRequest;
 import com.localapp.network.EmergencyMsgAcceptRequest;
 import com.localapp.network.GetFeedRequest;
@@ -64,6 +64,7 @@ import com.localapp.network.PicUrlRequest;
 import com.localapp.ui.activities.HomeActivity;
 import com.localapp.ui.activities.VideoPlay;
 import com.localapp.ui.adapters.ThreadAdapter;
+import com.localapp.utils.Constants;
 import com.localapp.utils.NetworkUtil;
 import com.localapp.utils.Utility;
 import com.squareup.picasso.Picasso;
@@ -117,7 +118,8 @@ import static com.localapp.ui.adapters.ThreadAdapter.getEmojiResourceIdByMsgType
 public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequestCallback,PicUrlRequest.PicUrlResponseCallback,
         EmergencyMsgAcceptRequest.EmergencyMsgAcceptResponseCallback, ConnectivityReceiver.ConnectivityReceiverListener {
 
-    private final String TAG = "FeedFragment";
+    private final String TAG = FeedFragment.class.getSimpleName();
+
     private static final String sAddress = "tcp://13.56.50.98:1883";
 //    private final String sAddress = "tcp://192.172.2.178:1883";//localhost
 //    private final String sAddress = "tcp://192.172.3.23:2883";
@@ -161,8 +163,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
     ImageView sendImageViewBtn, camShoutImgBtn,emoticImgBtn;
     public static int selectedMessageTypeInt = 0;
     public static int selectedEmojiResourceID = R.drawable.emoji_staright;
-    public final String[]  emoji_name = {"Straight","Shout","Whisper","Gossip","Murmur","Mumble","Emergency"};
-    public static int[] emojiResourceID = {R.drawable.emoji_staright,R.drawable.emoji_shout,R.drawable.emoji_whisper,R.drawable.emoji_gossip,R.drawable.emoji_murmer,R.drawable.emoji_mumble,R.drawable.emoji_emergency};
+
 
     @Override
     public void EmergencyMsgAcceptResponse(CommonRequest.ResponseCode responseCode) {
@@ -244,7 +245,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
         //Initializing recyclerView
         swipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(onRefreshListener);
-        swipeRefreshLayout.setColorSchemeColors(Color.parseColor("#2196f3"));
+        swipeRefreshLayout.setColorSchemeColors(ContextCompat.getColor(getContext(),R.color.colorAccent));
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         emojiGridView = (GridView) view.findViewById(R.id.shout_emiji);
         chatText = (EmojiconEditText) view.findViewById(R.id.chat_text);
@@ -308,7 +309,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
         recyclerView.setAdapter(adapter);
 
 
-        EmojiGridAdapter adapter1  =  new EmojiGridAdapter(getContext(),android.R.layout.simple_gallery_item,emoji_name);
+        EmojiGridAdapter adapter1  =  new EmojiGridAdapter(getContext(),android.R.layout.simple_gallery_item, Constants.emoji_name);
         emojiGridView.setAdapter(adapter1);
         emojiGridView.setOnItemClickListener(selectMsgTypeEmojiListener);
 
@@ -552,10 +553,10 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
         @Override
         public void onClick(View v) {
             if (HomeActivity.mUserId == null || HomeActivity.mUserId.equals("")) {
-                Toast.makeText(getContext(), "Please login first...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getText(R.string.message_login_first), Toast.LENGTH_SHORT).show();
             }else {
                 typeMessageAreaPreventClickView.setVisibility(View.GONE);
-                Toast.makeText(getContext(), "Please click again...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getText(R.string.message_click_again), Toast.LENGTH_SHORT).show();
             }
         }
     };
@@ -735,7 +736,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             selectedMessageTypeInt = position;
-            selectedEmojiResourceID = emojiResourceID[position];
+            selectedEmojiResourceID = Constants.emojiResourceID[position];
             camShoutImgBtn.setImageResource(selectedEmojiResourceID);
             emojiGridView.setVisibility(View.GONE);
             Utility.showSoftKeyboard(chatText);
@@ -744,7 +745,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
 
     void initMsgTypeEmoji() {
         selectedMessageTypeInt = 0;
-        selectedEmojiResourceID = emojiResourceID[0];
+        selectedEmojiResourceID = Constants.emojiResourceID[0];
         camShoutImgBtn.setImageResource(R.drawable.ic_camera);
     }
 
@@ -925,7 +926,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
             ImageView imageView = (ImageView)view.findViewById(R.id.emoji_icon);
             TextView textView = (TextView) view.findViewById(R.id.emoji_text);
             textView.setText(emojiName[position]);
-            imageView.setImageResource(emojiResourceID[position]);
+            imageView.setImageResource(Constants.emojiResourceID[position]);
 
             return view;
         }
@@ -1276,7 +1277,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
         recImage = (ImageView) view.findViewById(R.id.rec_img);
         slideText = view.findViewById(R.id.slideText);
         TextView textView = (TextView) view.findViewById(R.id.slideToCancelTextView);
-        textView.setText("Slide to cancel");
+        textView.setText(R.string.message_slide_to_cancel);
     }
 
     View.OnTouchListener audioSendOnTouchListener = new View.OnTouchListener() {
@@ -1614,7 +1615,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
                 case 0:
                     overlayVoiceLL.setVisibility(View.GONE);
                     overlayCamMediaLL.setVisibility(View.VISIBLE);
-                    textHelp.setText("Got It");
+                    textHelp.setText(R.string.btn_got_it);
                     tipCount++;
                     break;
 

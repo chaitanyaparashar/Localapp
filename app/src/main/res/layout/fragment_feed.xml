@@ -16,7 +16,7 @@
             android:visibility="gone"
             android:layout_alignParentTop="true"
             android:id="@+id/emergency_ListView"
-            android:background="#FFF"
+            android:background="@color/white"
             android:layout_width="match_parent"
             android:layout_height="150dp">
 
@@ -31,7 +31,7 @@
             
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerView"
-                android:background="#ffffff"
+                android:background="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scrollbars="vertical">
@@ -55,7 +55,7 @@
 
             <include
                 layout="@layout/type_message_area"
-                android:background="#FFFFFF"
+                android:background="@color/white"
                 android:gravity="bottom"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
@@ -99,7 +99,7 @@
                 android:textSize="28sp"
                 android:gravity="center"
                 android:fontFamily="cursive"
-                android:text="Try different mode"/>
+                android:text="@string/label_try_different_mode"/>
 
             <ImageView
                 android:layout_gravity="end"
@@ -145,7 +145,7 @@
                 android:textSize="28sp"
                 android:gravity="center"
                 android:fontFamily="cursive"
-                android:text="Tap and hold to send Voice message"/>
+                android:text="@string/label_send_voice_message"/>
 
             <ImageView
                 android:layout_gravity="end"
@@ -175,7 +175,7 @@
                 android:textColor="@android:color/white"
                 android:textSize="28sp"
                 android:fontFamily="cursive"
-                android:text="Send media files"/>
+                android:text="@string/label_send_media_file"/>
 
             <ImageView
                 android:layout_gravity="right"
@@ -196,7 +196,7 @@
             android:layout_centerInParent="true"
             android:layout_marginEnd="16dp"
             android:fontFamily="cursive"
-            android:text="Next"
+            android:text="@string/label_next"
             android:textColor="@android:color/white"
             android:textSize="28sp" />
 

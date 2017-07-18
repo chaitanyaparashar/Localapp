@@ -11,8 +11,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingRight="10dp"
-        android:paddingLeft="5dp"
+        android:paddingEnd="10dp"
+        android:paddingStart="5dp"
         android:layout_margin="2dp">
 
         <RelativeLayout
@@ -27,10 +27,10 @@
                 android:layout_height="60dp"
                 android:layout_marginTop="10dp"
                 android:scaleType="centerCrop"
-                android:src="@mipmap/ic_launcher" />
+                android:src="@drawable/ic_user" />
 
             <ImageView
-                android:layout_alignRight="@+id/msg_pic"
+                android:layout_alignEnd="@+id/msg_pic"
                 android:id="@+id/msg_emoji"
                 android:layout_width="30dp"
                 android:layout_height="30dp" />
@@ -56,7 +56,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_margin="12dp"
-                android:text="Android charting application xml ui design. Android charting application xml ui design tutorial with example. Android charting application xml ui design. Android charting application xml ui design. "
                 android:textColor="#000" />
 
         </android.support.v7.widget.CardView>
@@ -68,8 +67,8 @@
     <Button
         android:id="@+id/accept_btn"
         android:layout_gravity="end"
-        android:text="Accept"
-        android:textColor="#fff"
+        android:text="@string/btn_accept"
+        android:textColor="@color/white"
         android:layout_margin="10dp"
         android:background="@drawable/signup_upload_pic_btn_shap"
         android:layout_width="wrap_content"

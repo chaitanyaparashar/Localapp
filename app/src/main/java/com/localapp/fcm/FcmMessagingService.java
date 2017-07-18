@@ -19,8 +19,8 @@ import com.localapp.R;
 import com.localapp.appcontroller.AppController;
 import com.localapp.models.MessageNotificationData;
 
-import com.localapp.feedback.AppPreferences;
-import com.localapp.login_session.SessionManager;
+import com.localapp.preferences.AppPreferences;
+import com.localapp.preferences.SessionManager;
 import com.localapp.ui.activities.HomeActivity;
 import com.localapp.utils.NotificationUtils;
 

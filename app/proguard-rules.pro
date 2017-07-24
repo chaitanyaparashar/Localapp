@@ -52,6 +52,7 @@
 
 #-------------------------
 -keepattributes Signature
+-keepattributes SourceFile,LineNumberTable
 
 
 #--------- butterknife ------

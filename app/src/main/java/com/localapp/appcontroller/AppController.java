@@ -46,7 +46,7 @@ public class AppController extends Application {
                     new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
         }
 
-        Thread.setDefaultUncaughtExceptionHandler(new AppExceptionHandler(getAppContext()));
+//        Thread.setDefaultUncaughtExceptionHandler(new AppExceptionHandler(getAppContext()));
     }
 
     /**

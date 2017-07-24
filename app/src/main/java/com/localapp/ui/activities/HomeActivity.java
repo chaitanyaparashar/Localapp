@@ -28,6 +28,7 @@ import android.widget.RatingBar;
 
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
+import com.localapp.appcontroller.AppExceptionHandler;
 import com.localapp.background.ConnectivityReceiver;
 import com.localapp.models.MessageNotificationData;
 import com.localapp.preferences.AppPreferences;
@@ -74,6 +75,9 @@ public class HomeActivity extends AppCompatActivity implements ConnectivityRecei
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Thread.setDefaultUncaughtExceptionHandler(new AppExceptionHandler(this)); //DefaultUncaughtException
+
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -130,6 +134,11 @@ public class HomeActivity extends AppCompatActivity implements ConnectivityRecei
             }
         });
 
+
+
+
+        Intent intent = getIntent();
+
         NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
 
@@ -142,10 +151,28 @@ public class HomeActivity extends AppCompatActivity implements ConnectivityRecei
         notificationList.clear();
         numMessage = 0;
 
-        String notification = getIntent().getStringExtra("noti");
-        if ( notification != null) {
-            actionNotification(notification);
+        try {
+            String notification = intent.getStringExtra("noti");
+            if ( notification != null) {
+                actionNotification(notification);
+            }
+        }catch (NullPointerException e) {
+            e.printStackTrace();
         }
+
+
+        //send crash report to server if crash app
+        try {
+            final String errorReport = intent.getStringExtra(Constants.ERROR_REPORT);
+            final String errorMessage = intent.getStringExtra(Constants.ERROR_MESSAGE);
+
+            if (errorMessage != null || errorReport != null) {
+                NetworkUtil.CrashReport(this,errorMessage,errorReport);
+            }
+        }catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
 
 
 

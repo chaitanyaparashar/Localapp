@@ -71,8 +71,12 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppThemeFullScreen" />
         <activity android:name=".ui.activities.VideoPlay" />
-        <activity android:name=".ui.activities.SignUpActivity" />
-        <activity android:name=".ui.activities.UpdateActivity" />
+
+        <activity android:name=".ui.activities.SignUpActivity"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".ui.activities.UpdateActivity"
+            android:screenOrientation="portrait"/>
 
         <service android:name=".fcm.FcmInstanceIdService">
             <intent-filter>
@@ -95,6 +99,7 @@
         <activity
             android:name=".ui.activities.InviteActivity"
             android:label="@string/title_activity_invite"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <receiver

@@ -54,6 +54,10 @@ public final class Constants {
     public static final String FB_PERMISSION_RELATIONSHIP = "user_relationships";
     public static final String FB_PERMISSION_WORK_HISTORY = "user_work_history";
 
+    //------------------------- Error Reporting Keys -----------------//
+    public static final String ERROR_REPORT = "ERROR_REPORT";
+    public static final String ERROR_MESSAGE = "ERROR_MESSAGE";
+
 
 
 

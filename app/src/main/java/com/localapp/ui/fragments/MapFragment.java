@@ -921,6 +921,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         GetUsersRequest usersRequest = new GetUsersRequest(getActivity(), latLng, HomeActivity.mLoginToken, MapFragment.this);
         usersRequest.executeRequest();
 
+
+        //check location
         try {
             if (AppPreferences.getInstance(getActivity()).isMobiruckPostBack()) {
                 Geocoder geocoder = new Geocoder(getActivity(), Locale.getDefault());
@@ -967,7 +969,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 } catch (IOException e) {
                     e.printStackTrace();
                 } catch (Exception e) {
-
+                    e.printStackTrace();
                 }
 
             }
@@ -990,7 +992,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 case "Bengaluru":
                 case "Noida":
                 case "Gurgaon":
-                    mobiRuckPostBack(cityName);
+
+                    String utm_source = AppPreferences.getInstance(getActivity()).getUtmSource();
+                    if (utm_source.equals(Constants.UTM_SOURCE_EXPLETUS)) {
+                        mobiRuckPostBack(cityName);
+                    }else {
+                        Log.d(TAG,utm_source+" not mobiRuckPostBack");
+                        AppPreferences.getInstance(getActivity()).setMobiruckSignupPostback(false);
+                    }
                     Log.d("state1", cityName);
 
                     return true;
@@ -1004,7 +1013,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             case "Delhi":
             case "Mumbai":
             case "Bengaluru":
-                mobiRuckPostBack(cityName);
+
+                String utm_source = AppPreferences.getInstance(getActivity()).getUtmSource();
+                if (utm_source.equals(Constants.UTM_SOURCE_EXPLETUS)) {
+                    mobiRuckPostBack(cityName);
+                }else {
+                    Log.d(TAG,utm_source+" not mobiRuckPostBack");
+                    AppPreferences.getInstance(getActivity()).setMobiruckSignupPostback(false);
+                }
                 Log.d("state2", cityName);
                 return true;
             default:

@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 
 import com.localapp.R;
 import com.localapp.background.ConnectivityReceiver;
+import com.localapp.network.CrashReportRequest;
 
 /**
  * Created by 4 way on 17-07-2017.
@@ -42,5 +43,10 @@ public class NetworkUtil {
             alertDialog.show();
             isShowing = true;
         }
+    }
+
+    public static void CrashReport(Context mContext, String errorMessage, String errorReport) {
+        CrashReportRequest request = new CrashReportRequest(mContext,errorMessage,errorReport);
+        request.executeRequest();
     }
 }

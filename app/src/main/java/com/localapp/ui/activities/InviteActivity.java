@@ -21,6 +21,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Toast;
 
 import com.localapp.R;
+import com.localapp.appcontroller.AppExceptionHandler;
 import com.localapp.network.helper.CommonRequest;
 import com.localapp.network.LocalappInviteRequest;
 import com.localapp.utils.Constants;
@@ -38,6 +39,9 @@ public class InviteActivity extends AppCompatActivity implements LocalappInviteR
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Thread.setDefaultUncaughtExceptionHandler(new AppExceptionHandler(this)); //DefaultUncaughtException
+
         setContentView(R.layout.activity_invite);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(ContextCompat.getColor(this, R.color.titleColor));

@@ -299,7 +299,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         emergencyBtn = (ImageView) view.findViewById(R.id.emergency_iv);
         notice_boardBtn = (ImageView) view.findViewById(R.id.notice_board_iv);
         searchBtn = (ImageButton) view.findViewById(R.id.search_btn);
-        searchCameraBtn = (ImageButton) view.findViewById(R.id.search_camera_btn);
+//        searchCameraBtn = (ImageButton) view.findViewById(R.id.search_camera_btn);//TODO: remove image search image button from everywhere
         searchBoxView = (AutoCompleteTextView) view.findViewById(R.id.autoCompleteTextView);
         uDetailLayout = (RelativeLayout) view.findViewById(R.id.user_detail_rl);
         botomFilter = (LinearLayout) view.findViewById(R.id.bottom_filter_lt);
@@ -357,7 +357,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
 
         searchBtn.setOnClickListener(searchOnClickListener);
-        searchCameraBtn.setOnClickListener(searchOnClickListener);
+//        searchCameraBtn.setOnClickListener(searchOnClickListener); //removed search listener
         studentBtn.setOnClickListener(filterClickListener);
         professionalBtn.setOnClickListener(filterClickListener);
         repairBtn.setOnClickListener(filterClickListener);
@@ -1479,11 +1479,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
             if (TextUtils.isEmpty(searchBoxView.getText()) && profileList != null) {
                 addMarkerByProfile(false, null);
-                searchCameraBtn.setVisibility(View.VISIBLE);
+//                searchCameraBtn.setVisibility(View.VISIBLE);
 
-            } else {
+            } /*else {
                 searchCameraBtn.setVisibility(View.GONE);
-            }
+            }*/
 
 
         }
@@ -1493,11 +1493,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         public void afterTextChanged(Editable s) {
             if (TextUtils.isEmpty(searchBoxView.getText()) && profileList != null) {
                 addMarkerByProfile(false, null);
-                searchCameraBtn.setVisibility(View.VISIBLE);
+//                searchCameraBtn.setVisibility(View.VISIBLE);
 
-            } else {
+            } /*else {
                 searchCameraBtn.setVisibility(View.GONE);
-            }
+            }*/
         }
     };
 
@@ -1511,14 +1511,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         public void onClick(View v) {
             if (v.getId() == R.id.search_btn) {
                 performSearch(null);
-            } else {
+            } /*else {                                  //removed image search button listener
                 if (isCameraPermissionGrated()) {
                     openCamera();
                 } else {
                     requestPermissions(CAMERA_PERMISSIONS, REQUEST_CAMERA_PERMISSION_CODE);
                 }
 
-            }
+            }*/
 
         }
     };
@@ -1583,12 +1583,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 break;
 
             case REQUEST_CAMERA_PERMISSION_CODE:
-                if (grantResults.length > 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                //commented code to disable open camera for image search
+                /*if (grantResults.length > 2 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED
                         && grantResults[2] == PackageManager.PERMISSION_GRANTED) {
                     openCamera();
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
-                }
+                }*/
                 break;
 
             case REQUEST_CALL_PHONE_PERMISSION_CODE:
@@ -1926,7 +1927,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         switch (requestCode) {
             case 20:
                 if (resultCode == 20) {
-                    Uri resultData = Uri.parse(data.getStringExtra("result"));
+                    //disable image search request
+                   /* Uri resultData = Uri.parse(data.getStringExtra("result"));
 
                     File imgFile = new File(resultData.getPath());
                     int file_size = Integer.parseInt(String.valueOf(imgFile.length()/1024));
@@ -1939,7 +1941,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                     mProgressDialog = new ProgressDialog(getContext());
                     mProgressDialog.setMessage(getString(R.string.message_please_wait_getting_result));
                     mProgressDialog.setCancelable(false);
-                    mProgressDialog.show();
+                    mProgressDialog.show();*/
                 }
                 break;
 

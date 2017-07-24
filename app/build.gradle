@@ -15,7 +15,7 @@ android {
         applicationId "com.localapp"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 55
+        versionCode 56
         versionName "1.1.04"
         multiDexEnabled true
 
@@ -54,7 +54,7 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile project(':mobiruck')
-    testCompile 'junit:junit:4.12'
+
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.volley:volley:1.0.0'
     compile 'com.android.support:design:25.3.1'
@@ -63,6 +63,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-location:11.0.2'
     compile 'com.google.android.gms:play-services-analytics:11.0.2'
     compile 'com.google.firebase:firebase-messaging:11.0.2'
+    compile 'com.google.firebase:firebase-core:11.0.2'
     compile 'com.android.support:support-vector-drawable:25.3.1'
     compile 'hani.momanii.supernova_emoji_library:supernova-emoji-library:0.0.2'
     compile 'com.google.maps.android:android-maps-utils:0.5'
@@ -82,5 +83,6 @@ dependencies {
     compile 'com.android.support:multidex:1.0.1'
 
     testCompile 'junit:junit:4.12'
+
 }
 apply plugin: 'com.google.gms.google-services'

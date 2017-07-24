@@ -297,7 +297,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         listDataChild = new HashMap<String, List<String>>();
         listDrawableChild = new HashMap<>();
 
-        // Adding child data
+        // Adding header data
         listDataHeader.add(Constants.PROFESSION_GROUP_STUDENT);
         listDataHeader.add(Constants.PROFESSION_GROUP_PROFESSIONALS);
         listDataHeader.add(Constants.PROFESSION_GROUP_SKILLS);

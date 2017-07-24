@@ -77,6 +77,7 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterItem;
 import com.google.maps.android.clustering.ClusterManager;
@@ -187,6 +188,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
     private LinearLayout botomFilter;
     private Button inviteButton;
+
+
+    private FirebaseAnalytics mFirebaseAnalytics;
 
 
     DialogNoticeBoardMessageAdapter messageAdapter;
@@ -305,6 +309,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         botomFilter.setVisibility(View.GONE);
         inviteButton.setVisibility(View.VISIBLE);
         //=======================//
+
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getContext());
 
 
 
@@ -984,7 +990,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 case "Bengaluru":
                 case "Noida":
                 case "Gurgaon":
-                    mobiRuckPostBack();
+                    mobiRuckPostBack(cityName);
                     Log.d("state1", cityName);
 
                     return true;
@@ -998,7 +1004,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             case "Delhi":
             case "Mumbai":
             case "Bengaluru":
-                mobiRuckPostBack();
+                mobiRuckPostBack(cityName);
                 Log.d("state2", cityName);
                 return true;
             default:
@@ -1025,19 +1031,23 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     }
 
 
-    private void mobiRuckPostBack(){
+    String postBackLocation;
+    private void mobiRuckPostBack(String location){
+        postBackLocation = location;
         if (ActivityCompat.checkSelfPermission(getApplicationContext(),
                 Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED){
 
             String source = AppPreferences.getInstance(getActivity()).getUtmSource();
 
-            if (AppPreferences.getInstance(getActivity()).isMobiruckPostBack() && source.equals("expletus")) {
-                Mobiruck mMobiruck = new Mobiruck(getActivity());
-                mMobiruck.triggerConversion();
+            if (AppPreferences.getInstance(getActivity()).isMobiruckPostBack() && source.equals(Constants.UTM_SOURCE_EXPLETUS)) {
 
                 postBackUpdate();//update in db
 
+                Mobiruck mMobiruck = new Mobiruck(getActivity());
+                mMobiruck.triggerConversion();
+                AppPreferences.getInstance(getActivity()).setUtm_source(Constants.BLANK_STRING);
                 AppPreferences.getInstance(getActivity()).setMobiruckSignupPostback(false);
+                recordFirebaseSignupEvent(location);
                 Log.d("mobiRuckPostBack", "called");
             }else {
                 AppPreferences.getInstance(getActivity()).setMobiruckSignupPostback(false);
@@ -1048,6 +1058,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             requestPermissions(READ_PHONE_STATE_PERMISSIONS, REQUEST_READ_PHONE_STATE_CODE);
         }
 
+    }
+
+
+    private void recordFirebaseSignupEvent(String location) {
+        String id =  HomeActivity.mUserId;
+        String name = HomeActivity.mUserName;
+
+        Bundle bundle = new Bundle();
+        bundle.putString(FirebaseAnalytics.Param.ITEM_ID, id);
+        bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, name);
+        bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "signup");
+        bundle.putString(FirebaseAnalytics.Param.LOCATION, location);
+
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
     }
 
     private void postBackUpdate() {
@@ -1576,7 +1600,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 break;
             case REQUEST_READ_PHONE_STATE_CODE:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    mobiRuckPostBack();
+                    mobiRuckPostBack(postBackLocation);
                 }else {
 //                    Toast.makeText(getApplicationContext(), R.string.permission_denied, Toast.LENGTH_LONG).show();
                 }

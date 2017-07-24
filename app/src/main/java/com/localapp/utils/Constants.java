@@ -23,6 +23,10 @@ public final class Constants {
     public static final String WHATSAPP_PACKAGE = "com.whatsapp";
     public static final String WHATSAPP_MARKET_URL = "market://details?id=com.whatsapp";
 
+    public static final String UTM_SOURCE_EXPLETUS = "expletus";  // sign up utm source
+
+    public static final String BLANK_STRING = "";
+
 
     //--------------------------- MapFragment ------------------------//
     public static final int REQUEST_CHECK_SETTINGS = 0x1;
@@ -106,7 +110,7 @@ public final class Constants {
         PROFESSION_GROUP_SKILLS_LIST.add("Guitar");
         PROFESSION_GROUP_SKILLS_LIST.add("Zumba");
 
-        PROFESSION_GROUP_HEALTH_LIST.add("Dietician");
+        PROFESSION_GROUP_HEALTH_LIST.add("Dietitian");
         PROFESSION_GROUP_HEALTH_LIST.add("Fitness Trainer");
         PROFESSION_GROUP_HEALTH_LIST.add("Nurse");
         PROFESSION_GROUP_HEALTH_LIST.add("Physiotherapy");
@@ -117,7 +121,7 @@ public final class Constants {
         PROFESSION_GROUP_REPAIR_LIST.add("Electrician");
         PROFESSION_GROUP_REPAIR_LIST.add("House Painter");
         PROFESSION_GROUP_REPAIR_LIST.add("Laptop Repair");
-        PROFESSION_GROUP_REPAIR_LIST.add("Loundry");
+        PROFESSION_GROUP_REPAIR_LIST.add("Laundry");
         PROFESSION_GROUP_REPAIR_LIST.add("Plumber");
 
         PROFESSION_GROUP_WEDDING_LIST.add("Decor");

@@ -608,7 +608,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
                 try {
                     JSONObject errorObject = new JSONObject(data.getmErrorMessage());
                     if (errorObject.getInt("status") == 2) {
-                        onSignUpFailed(getString(R.string.error_face_image));
+//                        onSignUpFailed(getString(R.string.error_face_image)); //remove face error
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

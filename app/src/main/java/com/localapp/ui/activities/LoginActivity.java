@@ -390,7 +390,10 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         mProgressDialog.show();
     }
 
-
+    /**
+     * @deprecated
+     */
+    @Deprecated
     private void fbSignUpErrorDialog (){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setPositiveButton(R.string.btn_upload, new DialogInterface.OnClickListener() {
@@ -648,7 +651,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
             case COMMON_RES_SERVER_ERROR_WITH_MESSAGE:
                 if (FbLoginError.ERROR_FB_FACE_NOT_FOUND == data.getFbLoginError().getStatusCode()){
                     tempSignUpData = data;
-                    fbSignUpErrorDialog();
+//                    fbSignUpErrorDialog();  //disable face error dialog
                 }else if (FbLoginError.ERROR_FB_FACE_SERVER_PROBLEM == data.getFbLoginError().getStatusCode()){
                     toast(getString(R.string.error_something_went_wrong));
                 }

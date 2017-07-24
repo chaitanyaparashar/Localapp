@@ -24,6 +24,11 @@ import java.util.List;
  * Created by 4 way on 06-04-2017.
  */
 
+/**
+ * @deprecated Do not use this class.
+ *    This request not working due to python API removed from server.
+ */
+@Deprecated
 public class ImageSearchRequest {
 
     Context mContext;

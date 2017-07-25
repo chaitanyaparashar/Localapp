@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.SphericalUtil;
-import com.localapp.ui.adapters.ExpandableListAdapter;
 import com.localapp.ui.activities.HomeActivity;
 import com.localapp.ui.activities.PublicProfileActivity;
 
@@ -21,7 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
-
 
 import static android.support.test.espresso.core.deps.guava.base.Preconditions.checkArgument;
 

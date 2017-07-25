@@ -8,8 +8,12 @@ import android.net.ConnectivityManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.multidex.MultiDex;
+import android.text.TextUtils;
 import android.util.Log;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.analytics.GoogleAnalytics;
 import com.google.android.gms.analytics.HitBuilders;
 import com.google.android.gms.analytics.StandardExceptionParser;
@@ -26,9 +30,14 @@ import static com.localapp.background.ConnectivityReceiver.connectivityReceiverL
 
 public class AppController extends Application {
 
+    public static final String TAG = AppController.class
+            .getSimpleName();
+
     @SuppressLint("StaticFieldLeak")
     private static AppController mInstance;
     private static Context mAppContext;
+
+    private RequestQueue mRequestQueue;
 
     @Override
     public void onCreate() {
@@ -71,6 +80,39 @@ public class AppController extends Application {
         AnalyticsTrackers analyticsTrackers = AnalyticsTrackers.getInstance();
         return analyticsTrackers.get(AnalyticsTrackers.Target.APP);
     }
+
+
+
+
+    /**
+     *  volley request
+     * @return {@link RequestQueue}
+     */
+    public RequestQueue getRequestQueue() {
+        if (mRequestQueue == null) {
+            mRequestQueue = Volley.newRequestQueue(getApplicationContext());
+        }
+
+        return mRequestQueue;
+    }
+
+    public <T> void addToRequestQueue(Request<T> req, String tag) {
+        // set the default tag if tag is empty
+        req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
+        getRequestQueue().add(req);
+    }
+
+    public <T> void addToRequestQueue(Request<T> req) {
+        req.setTag(TAG);
+        getRequestQueue().add(req);
+    }
+
+    public void cancelPendingRequests(Object tag) {
+        if (mRequestQueue != null) {
+            mRequestQueue.cancelAll(tag);
+        }
+    }
+
 
 
 
@@ -152,6 +194,7 @@ public class AppController extends Application {
         // Build and send an Event.
         t.send(new HitBuilders.EventBuilder().setCategory(category).setAction(action).setLabel(label).build());
     }
+
 
 
 

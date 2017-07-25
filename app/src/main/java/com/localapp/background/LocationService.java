@@ -25,8 +25,8 @@ import java.util.HashMap;
 public class LocationService extends Service {
     private static final String TAG = "LocationService";
     private LocationManager mLocationManager = null;
-    private static final int LOCATION_INTERVAL = 1000;
-    private static final float LOCATION_DISTANCE = 10f;
+    private static final int LOCATION_INTERVAL = 1000*10;
+    private static final float LOCATION_DISTANCE = 50f;
 
     private class LocationListener implements android.location.LocationListener {
 
@@ -37,14 +37,13 @@ public class LocationService extends Service {
 //            criteria.setAccuracy(Criteria.ACCURACY_FINE);
 //            String provider = mLocationManager.getBestProvider(criteria, true);
 
-            Log.e(TAG, "LocationListener " + provider);
+            Log.i(TAG, "LocationListener " + provider);
             mLastLocation = new Location(provider);
         }
 
         @Override
         public void onLocationChanged(Location location) {
-            Log.i(TAG, "onLocationChanged: " + location.getProvider());
-            Log.i(TAG, "onLocationChanged: " + location);
+            Log.i(TAG, "onLocationChanged: " + location.getProvider() + "  "+ location);
             mLastLocation.set(location);
 
             if (SessionManager.getInstance(AppController.getAppContext()).isLoggedIn() && NotificationUtils.isAppIsInBackground(AppController.getAppContext())) {

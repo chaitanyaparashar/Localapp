@@ -38,6 +38,8 @@ public class LocationUpdateBackgroundRequest extends CommonRequest {
 
         super.setParams(mParams);
         super.setPostHeader(mHeader);
+
+        super.setShouldCache(false);
     }
 
     @Override

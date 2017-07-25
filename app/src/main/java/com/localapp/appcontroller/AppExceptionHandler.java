@@ -10,6 +10,7 @@ import android.util.Log;
 
 import com.localapp.ui.activities.HomeActivity;
 import com.localapp.utils.Constants;
+import com.localapp.utils.NotificationUtils;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -99,7 +100,10 @@ public class AppExceptionHandler implements UncaughtExceptionHandler {
         crashedIntent.putExtra(Constants.ERROR_REPORT, report.toString());
         crashedIntent.putExtra(Constants.ERROR_MESSAGE, e.getMessage());
         crashedIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        context.startActivity(crashedIntent);
+
+        if (!NotificationUtils.isAppIsInBackground(context)) {       //if app is open (not run in background) restart HomeActivity
+            context.startActivity(crashedIntent);
+        }
 
 
         android.os.Process.killProcess(android.os.Process.myPid());

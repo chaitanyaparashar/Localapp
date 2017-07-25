@@ -30,6 +30,7 @@ import com.localapp.R;
 import com.localapp.appcontroller.AppController;
 import com.localapp.appcontroller.AppExceptionHandler;
 import com.localapp.background.ConnectivityReceiver;
+import com.localapp.background.LocationService;
 import com.localapp.models.MessageNotificationData;
 import com.localapp.preferences.AppPreferences;
 import com.localapp.preferences.SessionManager;
@@ -86,6 +87,11 @@ public class HomeActivity extends AppCompatActivity implements ConnectivityRecei
 
         if (!NetworkUtil.isConnected()) {
             NetworkUtil.ErrorAppDialog(this);
+        }
+
+        if (!Utility.isServiceRunning(this,LocationService.class) &&
+                (Build.VERSION.SDK_INT < Build.VERSION_CODES.M  || Utility.hasPermissionsGranted(this, MapFragment.LOCATION_PERMISSIONS))) {
+            startService(new Intent(AppController.getAppContext(), LocationService.class));
         }
 
         AppPreferences.getInstance(AppController.getAppContext()).incrementLaunchCount();

@@ -162,7 +162,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     private static final int REQUEST_READ_PHONE_STATE_CODE = 225;
     final static String[] CAMERA_PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO};
     public final static String[] CALL_PHONE_PERMISSIONS = {Manifest.permission.CALL_PHONE};
-    final static String[] LOCATION_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+    public final static String[] LOCATION_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
     final static String[] READ_PHONE_STATE_PERMISSIONS = {Manifest.permission.READ_PHONE_STATE};
 
 //    ToolTipRelativeLayout toolTipRelativeLayout;
@@ -199,7 +199,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     //******************************** tool tips *******************//
 
     private RelativeLayout overlayRL;
-    private LinearLayout overlaySerachLL, overlayCamSerachLL;
+    private LinearLayout overlaySerachLL;
     private TextView textHelp;
 
 
@@ -989,9 +989,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
                 case "Delhi":
                 case "New Delhi":
                 case "Mumbai":
-                case "Bengaluru":
+                case "Pune":
+                /*case "Bengaluru":
                 case "Noida":
-                case "Gurgaon":
+                case "Gurgaon":*/
 
                     String utm_source = AppPreferences.getInstance(getActivity()).getUtmSource();
                     if (utm_source.equals(Constants.UTM_SOURCE_EXPLETUS)) {
@@ -1012,7 +1013,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             case "New Delhi":
             case "Delhi":
             case "Mumbai":
-            case "Bengaluru":
+            case "Pune":
+//            case "Bengaluru":
 
                 String utm_source = AppPreferences.getInstance(getActivity()).getUtmSource();
                 if (utm_source.equals(Constants.UTM_SOURCE_EXPLETUS)) {
@@ -2535,11 +2537,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
 
 
-    private int tipCount = 0;
     private void toolTips (View view) {
         overlayRL = (RelativeLayout) view.findViewById(R.id.rlOverlay);
         overlaySerachLL = (LinearLayout) view.findViewById(R.id.rlSearchBox);
-        overlayCamSerachLL = (LinearLayout) view.findViewById(R.id.rlCamSearch);
         textHelp = (TextView) view.findViewById(R.id.textHelp);
 
         overlayRL.setVisibility(View.VISIBLE);
@@ -2551,17 +2551,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     private View.OnClickListener toolTipClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            switch (tipCount) {
-                case 0:
-                    overlaySerachLL.setVisibility(View.GONE);
-                    overlayCamSerachLL.setVisibility(View.VISIBLE);
-                    textHelp.setText(R.string.btn_got_it);
-                    tipCount++;
-                    break;
-                default:
-                    overlayRL.setVisibility(View.GONE);
-                    AppPreferences.getInstance(AppController.getAppContext()).mapToolTipLaunched();
-            }
+            overlayRL.setVisibility(View.GONE);
+            AppPreferences.getInstance(AppController.getAppContext()).mapToolTipLaunched();
         }
     };
 

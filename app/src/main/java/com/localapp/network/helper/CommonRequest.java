@@ -110,7 +110,10 @@ CommonRequest {
     private Map<String, String> mPostHeader;
     private JSONObject mJSONParams;
     private RequestType mRequestType;
+    /** Whether or not responses to this request should be cached. */
+    private boolean mShouldCache = true;
     private Context mContext;
+
 
 
     public CommonRequest (Context context,RequestType type,
@@ -150,6 +153,10 @@ CommonRequest {
 
     public void setRequestType(RequestType mRequestType) {
         this.mRequestType = mRequestType;
+    }
+
+    protected void setShouldCache(boolean shouldCache) {
+        mShouldCache = shouldCache;
     }
 
 
@@ -277,8 +284,9 @@ CommonRequest {
         };
 
 
+
 //        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
-        RequestQueue requestQueue = Volley.newRequestQueue(AppController.getAppContext());
+//        RequestQueue requestQueue = Volley.newRequestQueue(AppController.getAppContext());
 
         CustomRequest jsonObjRequest;
 
@@ -289,7 +297,10 @@ CommonRequest {
                     return ((mPostHeader != null)? mPostHeader : super.getHeaders());
                 }
             };
-            requestQueue.add(jsonObjRequest);
+
+            jsonObjRequest.setShouldCache(mShouldCache);
+            AppController.getInstance().addToRequestQueue(jsonObjRequest);
+
         }else {
             jsonObjRequest = new CustomRequest(Request.Method.POST, mURL, mParams,listener, errorListener) {
                 public String getBodyContentType() {
@@ -304,7 +315,7 @@ CommonRequest {
 
 
             try {
-                requestQueue.add(jsonObjRequest);
+                AppController.getInstance().addToRequestQueue(jsonObjRequest);
             }catch (Exception e){
                 e.printStackTrace();
             }

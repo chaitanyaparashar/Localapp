@@ -79,7 +79,10 @@ CommonRequest {
         COMMON_REQUEST_UPDATE_FCM_TOKEN,
         COMMON_REQUEST_LOCATION_UPDATE_IN_BACKGROUND,
         COMMON_REQUEST_REPORT_CRASH_ERROR,
-        COMMON_REQUEST_UPDATE_POSTBACK_STATUS
+        COMMON_REQUEST_UPDATE_POSTBACK_STATUS,
+
+
+        COMMON_REQUEST_END
 
 
     }
@@ -286,7 +289,7 @@ CommonRequest {
 
 
 //        RequestQueue requestQueue = Volley.newRequestQueue(mContext);
-//        RequestQueue requestQueue = Volley.newRequestQueue(AppController.getAppContext());
+        RequestQueue requestQueue = Volley.newRequestQueue(AppController.getAppContext());
 
         CustomRequest jsonObjRequest;
 
@@ -299,7 +302,8 @@ CommonRequest {
             };
 
             jsonObjRequest.setShouldCache(mShouldCache);
-            AppController.getInstance().addToRequestQueue(jsonObjRequest);
+
+            requestQueue.add(jsonObjRequest);
 
         }else {
             jsonObjRequest = new CustomRequest(Request.Method.POST, mURL, mParams,listener, errorListener) {
@@ -315,7 +319,7 @@ CommonRequest {
 
 
             try {
-                AppController.getInstance().addToRequestQueue(jsonObjRequest);
+                requestQueue.add(jsonObjRequest);
             }catch (Exception e){
                 e.printStackTrace();
             }

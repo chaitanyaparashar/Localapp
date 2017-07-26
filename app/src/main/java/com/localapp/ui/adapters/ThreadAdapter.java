@@ -225,7 +225,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
             @Override
             public void onClick(View v) {
                 if (user_id != null){
-                    Utility.openPublicProfile(context, user_id, userPicUrl);
+                    Utility.openPublicProfile(context, user_id, null);
                 }
             }
         });

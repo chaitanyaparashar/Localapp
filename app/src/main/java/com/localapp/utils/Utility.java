@@ -4,7 +4,11 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -75,6 +79,20 @@ public class Utility {
 
         return true;
     }
+
+
+    public static boolean hasPermissionsGranted(Context mContexts, String[] permissions) {
+        for (String permission : permissions) {
+            if (ActivityCompat.checkSelfPermission(mContexts, permission)
+                    != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+
 
     private static DateFormat sdfTime = new SimpleDateFormat("h:mm aa", Locale.ENGLISH);
     private static DateFormat sdfTimeDay = new SimpleDateFormat("EEEE,  h:mm aa", Locale.ENGLISH);

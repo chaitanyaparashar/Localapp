@@ -29,6 +29,15 @@
                 android:layout_gravity="center"
                 android:src="@drawable/ic_user" />
 
+            <ProgressBar
+                android:id="@+id/image_pic_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@android:style/Widget.Holo.ProgressBar.Large"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"/>
+
             <ImageButton
                 android:id="@+id/cam_btn"
                 android:layout_width="wrap_content"
@@ -42,8 +51,7 @@
                 android:padding="12dp"
                 android:scaleType="fitXY"
                 android:src="@drawable/ic_camera"
-                android:tint="#FFF"
-                android:visibility="gone" />
+                android:tint="#FFF" />
 
         </RelativeLayout>
 

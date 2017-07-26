@@ -3,9 +3,12 @@ package com.localapp.ui.fragments;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.graphics.Palette;
@@ -21,18 +24,23 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.facebook.login.LoginManager;
 import com.github.siyamed.shapeimageview.CircularImageView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
 import com.localapp.background.ConnectivityReceiver;
+import com.localapp.camera.Camera2Activity;
+import com.localapp.compressor.Compressor;
 import com.localapp.models.LoginData;
 import com.localapp.models.Profile;
+import com.localapp.network.UpdateProfilePicRequest;
 import com.localapp.preferences.AppPreferences;
 import com.localapp.preferences.SessionManager;
 import com.localapp.network.helper.CommonRequest;
@@ -44,9 +52,15 @@ import com.localapp.ui.activities.HomeActivity;
 import com.localapp.ui.activities.LoginActivity;
 import com.localapp.ui.activities.SignUpActivity;
 import com.localapp.ui.activities.UpdateActivity;
+import com.localapp.utils.Utility;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.io.File;
+
+import static com.localapp.ui.activities.SignUpActivity.CAMERA_PERMISSIONS;
+import static com.localapp.ui.activities.SignUpActivity.MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_AND_CAMERA;
+import static com.localapp.ui.activities.SignUpActivity.PICK_IMAGE_REQUEST;
 import static com.localapp.ui.activities.UpdateActivity.REQUEST_ABOUT;
 import static com.localapp.ui.activities.UpdateActivity.REQUEST_ALL;
 import static com.localapp.ui.activities.UpdateActivity.REQUEST_PERSONAL;
@@ -57,7 +71,7 @@ import static com.localapp.ui.activities.UpdateActivity.REQUEST_PERSONAL;
  */
 
 public class ProfileFragment extends Fragment implements LoginRequest.LoginResponseCallback,GetProfileRequest.GetProfileRequestCallback,UpdateProfileRequest.UpdateProfileResponseCallback,
-        ForgetPasswordRequest.ForgetPasswordRequestCallback, Target,ConnectivityReceiver.ConnectivityReceiverListener{
+        ForgetPasswordRequest.ForgetPasswordRequestCallback, Target,ConnectivityReceiver.ConnectivityReceiverListener,UpdateProfilePicRequest.UpdateProfilePicResponseCallback{
     private LinearLayout profileLayout;
     private RelativeLayout loginLayout;
     private CircularImageView userPic;
@@ -75,8 +89,11 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
     private EditText _email, _password;
     private Button _loginBtn, _signupBtn;
     private TextView _forgotPass;
+    private ProgressBar mPicProgressBar;
 
     public static Profile myProfile;
+
+    private File imgFile;
 
 
 
@@ -146,6 +163,7 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
         _forgotPass.setOnClickListener(onClickListener);
 
         //user profile
+        mPicProgressBar = (ProgressBar) view.findViewById(R.id.image_pic_progress);
         userPic = (CircularImageView) view.findViewById(R.id.image_pic);
         camButton = (ImageButton) view.findViewById(R.id.cam_btn);
         editPersonal = (ImageView) view.findViewById(R.id.edit_personal_info);
@@ -159,6 +177,7 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
         logoutBtn = (Button) view.findViewById(R.id._logout_btn);
         shareBtn = (Button) view.findViewById(R.id._share_btn);
         mBroadcastSwitch = (SwitchCompat) view.findViewById(R.id.set_broadcast_setting);
+        camButton.setOnClickListener(onClickListener);
         logoutBtn.setOnClickListener(onClickListener);
         shareBtn.setOnClickListener(onClickListener);
         editAbout.setOnClickListener(onClickListener);
@@ -193,7 +212,13 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
                     break;
                 case R.id.link_forgotPassword: onForgetPassword();
                     break;
-                case R.id.cam_btn:
+                case R.id.cam_btn: {
+                    if (Utility.hasPermissionsGranted(getActivity(),CAMERA_PERMISSIONS)) {
+                        openCamera();
+                    }else {
+                        requestPermissions(CAMERA_PERMISSIONS,MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_AND_CAMERA);
+                    }
+                }
                     break;
                 case R.id.edit_personal_info: startActivityForResult(new Intent(getContext(),UpdateActivity.class).putExtra("request",REQUEST_PERSONAL),UPDATE_REQUEST_CODE);
                     break;
@@ -207,6 +232,12 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
             }
         }
     };
+
+    private void openCamera(){
+        Intent intent = new Intent(getContext(),Camera2Activity.class);
+        intent.putExtra("requestCode", PICK_IMAGE_REQUEST);
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
 
     public void setProfileData(Profile profile) {
         Picasso.with(AppController.getAppContext()).load(profile.getuPictureURL()).placeholder(R.drawable.ic_user).into(userPic);
@@ -435,6 +466,57 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
                 }
                 break;
 
+            case PICK_IMAGE_REQUEST:
+                if (resultCode == PICK_IMAGE_REQUEST) {
+
+                    Uri resultData = Uri.parse(data.getStringExtra("result"));
+                    imgFile = new File(resultData.getPath());
+
+                    int file_size = Integer.parseInt(String.valueOf(imgFile.length()/1024));
+
+                    if (file_size > 80) {
+                        imgFile = Compressor.getDefault(getContext()).compressToFile(imgFile);
+                    }
+
+//                    Glide.with(this).load(imgFile).asBitmap().into(profilePic);
+                    profilePicUpdateRequest(imgFile);
+
+//                    startCropImageActivity(uri);
+
+
+                }
+                break;
+
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_AND_CAMERA: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 1
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                        && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+                    openCamera();
+
+                } else {
+
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(getContext(), getText(R.string.error_permission_denied), Toast.LENGTH_SHORT).show();
+                }
+                return;
+            }
+
+            // other 'case' lines to check for other
+            // permissions this app might request
         }
     }
 
@@ -462,6 +544,7 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
     }
 
     private void profileRequest() {
+        mPicProgressBar.setVisibility(View.VISIBLE);
         Profile mProfile = new Profile(HomeActivity.mUserId);
         mProfile.setuToken(HomeActivity.mLoginToken);
 
@@ -479,6 +562,12 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
             request.executeRequest();
         }
 
+    }
+
+    private void profilePicUpdateRequest(File imgFile) {
+        UpdateProfilePicRequest request = new UpdateProfilePicRequest(getContext(),imgFile, this);
+        request.executeRequest();
+        mPicProgressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -563,6 +652,7 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
 
     @Override
     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+        mPicProgressBar.setVisibility(View.GONE);
         setPallet(bitmap);
     }
 
@@ -580,5 +670,28 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
     @Override
     public void onNetworkConnectionChanged(boolean isConnected) {
         if (isConnected) profileRequest();
+    }
+
+    @Override
+    public void UpdateProfilePicResponse(CommonRequest.ResponseCode responseCode, String picUrl) {
+        switch (responseCode) {
+            case COMMON_RES_SUCCESS: {
+                HomeActivity.mPicUrl = picUrl;
+                Picasso.with(AppController.getAppContext()).load(HomeActivity.mPicUrl).placeholder(R.drawable.ic_user).into(userPic);
+                Picasso.with(AppController.getAppContext()).load(HomeActivity.mPicUrl).placeholder(R.drawable.ic_user).into(this);
+
+
+                if (HomeActivity.mUserName == null || HomeActivity.mUserName.equals("")) {
+                    session.createLoginSession(HomeActivity.mLoginToken,HomeActivity.mUserId, HomeActivity.mUserName, HomeActivity.mPicUrl, HomeActivity.mLastKnownLocation);
+                }
+            }
+            break;
+
+            default:
+                mPicProgressBar.setVisibility(View.GONE);
+                Toast.makeText(getContext(), "Update failed", Toast.LENGTH_SHORT).show();
+
+
+        }
     }
 }

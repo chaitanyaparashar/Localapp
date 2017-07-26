@@ -73,11 +73,11 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class SignUpActivity extends AppCompatActivity implements SignUpRequest.SignUpResponseCallback{
-    private static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_AND_CAMERA = 111;
+    public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE_AND_CAMERA = 111;
     public static final int PICK_IMAGE_REQUEST = 100;
 
     SessionManager session;
-    final static String[] CAMERA_PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA};
+    public final static String[] CAMERA_PERMISSIONS = {Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA};
 
     EditText mNameView, mNumberView, mEmailView,
             mPasswordView, cPasswordView, mInfoView,

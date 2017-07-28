@@ -11,7 +11,7 @@ import android.widget.LinearLayout;
 import com.localapp.R;
 
 /**
- * Created by 4 way on 20-05-2017.
+ * Created by Vijay Kumar on 20-05-2017.
  */
 
 public class ViewPagerAdapter extends PagerAdapter {

@@ -7,7 +7,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 /**
- * Created by 4 way on 24-03-2017.
+ * Created by Vijay Kumar on 24-03-2017.
  */
 
 

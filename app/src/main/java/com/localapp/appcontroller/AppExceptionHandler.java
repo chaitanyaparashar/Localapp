@@ -17,7 +17,8 @@ import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
 
 /**
- * Created by 4 way on 13-06-2017.
+ * Created by Vijay Kumar on 13-06-2017.
+ * @author Vijay Kumar
  */
 
 public class AppExceptionHandler implements UncaughtExceptionHandler {

@@ -8,7 +8,7 @@ import java.io.File;
 
 
 /**
- * Created by 4 way on 01-05-2017.
+ * Created by Vijay Kumar on 01-05-2017.
  */
 public class Compressor {
     private static volatile Compressor INSTANCE;

@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.google.android.gms.analytics.CampaignTrackingReceiver;
 import com.localapp.preferences.AppPreferences;
+import com.localapp.utils.Constants;
 import com.mobiruck.ReferrerReceiver;
 
 import java.io.UnsupportedEncodingException;
@@ -17,7 +18,8 @@ import java.util.Map;
 
 
 /**
- * Created by 4 way on 20-06-2017.
+ * Created by Vijay Kumar on 20-06-2017.
+ * @author Vijay
  */
 
 public class CustomTrackingReceiver extends BroadcastReceiver {
@@ -30,22 +32,27 @@ public class CustomTrackingReceiver extends BroadcastReceiver {
 
         Bundle extras = intent.getExtras();
         String referrerString = extras.getString("referrer");
-        Log.d(TAG, referrerString);
 
         new CampaignTrackingReceiver().onReceive(context, intent);
 
-        try {
-            Map receiver = getHashMapFromQuery(referrerString);
+        if (referrerString != null) {
 
-            String source = (String)receiver.get(UTM_SOURCE);
-            AppPreferences.getInstance(context).setUtm_source(source);
+            Log.d(TAG, referrerString);
 
-            if (source.equals("expletus")) {
-                new ReferrerReceiver().onReceive(context, intent);
+            try {
+                Map receiver = getHashMapFromQuery(referrerString);
+
+                String utmSource = (String) receiver.get(UTM_SOURCE);
+                AppPreferences.getInstance(context).setUtm_source(utmSource);
+
+                if (utmSource.equals(Constants.UTM_SOURCE_EXPLETUS)) {
+                    new ReferrerReceiver().onReceive(context, intent);
+                }
+
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
             }
 
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
         }
 
     }

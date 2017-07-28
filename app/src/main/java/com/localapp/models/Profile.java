@@ -6,7 +6,7 @@ import com.google.maps.android.clustering.ClusterItem;
 import java.io.Serializable;
 
 /**
- * Created by 4 way on 20-02-2017.
+ * Created by Vijay Kumar on 20-02-2017.
  */
 
 public class Profile implements ClusterItem ,Serializable {

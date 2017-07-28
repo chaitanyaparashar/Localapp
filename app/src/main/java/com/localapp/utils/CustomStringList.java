@@ -3,7 +3,7 @@ package com.localapp.utils;
 import java.util.ArrayList;
 
 /**
- * Created by 4 way on 17-07-2017.
+ * Created by Vijay Kumar on 17-07-2017.
  */
 
 public class CustomStringList extends ArrayList<String> {

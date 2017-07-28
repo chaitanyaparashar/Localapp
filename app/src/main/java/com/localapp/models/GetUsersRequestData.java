@@ -3,7 +3,7 @@ package com.localapp.models;
 import java.util.ArrayList;
 
 /**
- * Created by 4 way on 20-02-2017.
+ * Created by Vijay Kumar on 20-02-2017.
  */
 
 public class GetUsersRequestData {

@@ -10,7 +10,7 @@ import com.localapp.network.UpdateFcmTokenRequest;
 import com.localapp.ui.activities.HomeActivity;
 
 /**
- * Created by 4 way on 24-04-2017.
+ * Created by Vijay Kumar on 24-04-2017.
  */
 
 public class FcmInstanceIdService extends FirebaseInstanceIdService{

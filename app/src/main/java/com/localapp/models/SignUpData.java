@@ -5,7 +5,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.io.File;
 
 /**
- * Created by 4 way on 17-02-2017.
+ * Created by Vijay Kumar on 17-02-2017.
  */
 
 public class SignUpData {

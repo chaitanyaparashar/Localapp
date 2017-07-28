@@ -18,7 +18,7 @@ import static com.localapp.network.helper.CommonRequest.ResponseCode.*;
 import static com.localapp.network.SignUpRequest.*;
 
 /**
- * Created by 4 way on 19-04-2017.
+ * Created by Vijay Kumar on 19-04-2017.
  */
 
 public class UpdateProfileRequest extends CommonRequest {

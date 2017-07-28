@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by 4 way on 19-04-2017.
+ * Created by Vijay Kumar on 19-04-2017.
  */
 
 public class GetProfileRequest extends CommonRequest {

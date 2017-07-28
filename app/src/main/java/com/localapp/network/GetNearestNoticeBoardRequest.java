@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by 4 way on 08-04-2017.
+ * Created by Vijay Kumar on 08-04-2017.
  */
 
 public class GetNearestNoticeBoardRequest extends CommonRequest {

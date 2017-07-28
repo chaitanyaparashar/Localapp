@@ -25,7 +25,7 @@ import static com.localapp.background.ConnectivityReceiver.connectivityReceiverL
 import static com.localapp.background.ConnectivityReceiver.connectivityReceiverListeners;
 
 /**
- * Created by 4 way on 12-04-2017.
+ * Created by Vijay Kumar on 12-04-2017.
  */
 
 public class AppController extends Application {

@@ -30,7 +30,7 @@ import static com.localapp.utils.NotificationUtils.notificationList;
 
 
 /**
- * Created by 4 way on 24-04-2017.
+ * Created by Vijay Kumar on 24-04-2017.
  */
 
 public class FcmMessagingService extends FirebaseMessagingService {

@@ -23,7 +23,7 @@ import static com.localapp.fcm.FcmMessagingService.NotiEmergency;
 
 
 /**
- * Created by 4 way on 25-04-2017.
+ * Created by Vijay Kumar on 25-04-2017.
  */
 
 public class FcmNotificationRequest {

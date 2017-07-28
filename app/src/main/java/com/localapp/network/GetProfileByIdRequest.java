@@ -16,7 +16,7 @@ import org.json.JSONObject;
 import java.util.Map;
 
 /**
- * Created by 4 way on 29-04-2017.
+ * Created by Vijay Kumar on 29-04-2017.
  */
 
 public class GetProfileByIdRequest extends CommonRequest {

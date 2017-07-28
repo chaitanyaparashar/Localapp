@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by 4 way on 19-06-2017.
+ * Created by Vijay Kumar on 19-06-2017.
  */
 
 public final class AnalyticsTrackers {

@@ -67,7 +67,7 @@ import static com.localapp.ui.activities.UpdateActivity.REQUEST_PERSONAL;
 
 
 /**
- * Created by 4 way on 02-03-2017.
+ * Created by Vijay Kumar on 02-03-2017.
  */
 
 public class ProfileFragment extends Fragment implements LoginRequest.LoginResponseCallback,GetProfileRequest.GetProfileRequestCallback,UpdateProfileRequest.UpdateProfileResponseCallback,

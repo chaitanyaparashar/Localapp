@@ -10,7 +10,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.github.siyamed.shapeimageview.CircularImageView;
 
 /**
- * Created by 4 way on 06-03-2017.
+ * Created by Vijay Kumar on 06-03-2017.
  */
 
 public class CircularNetworkImageView extends CircularImageView{

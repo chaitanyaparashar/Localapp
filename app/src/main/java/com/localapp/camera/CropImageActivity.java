@@ -23,7 +23,7 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Created by 4 way on 01-05-2017.
+ * Created by Vijay Kumar on 01-05-2017.
  */
 
 public class CropImageActivity extends AppCompatActivity implements CropImageView.OnSetImageUriCompleteListener, CropImageView.OnSaveCroppedImageCompleteListener {

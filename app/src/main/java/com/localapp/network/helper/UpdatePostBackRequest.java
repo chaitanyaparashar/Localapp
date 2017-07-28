@@ -15,7 +15,7 @@ import static com.localapp.network.helper.CommonRequest.ResponseCode.COMMON_RES_
 import static com.localapp.network.helper.CommonRequest.ResponseCode.COMMON_RES_SERVER_ERROR_WITH_MESSAGE;
 
 /**
- * Created by 4 way on 19-06-2017.
+ * Created by Vijay Kumar on 19-06-2017.
  */
 
 public class UpdatePostBackRequest extends CommonRequest {

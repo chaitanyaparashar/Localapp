@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * Created by 4 way on 17-05-2017.
+ * Created by Vijay Kumar on 17-05-2017.
  */
 
 class ImageUtil {

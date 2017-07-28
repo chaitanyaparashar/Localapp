@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by 4 way on 01-05-2017.
+ * Created by Vijay Kumar on 01-05-2017.
  */
 
 public final class CropImage {

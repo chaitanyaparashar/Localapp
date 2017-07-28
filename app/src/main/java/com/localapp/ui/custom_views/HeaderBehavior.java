@@ -12,7 +12,7 @@ import android.view.View;
 import com.localapp.R;
 
 /**
- * Created by 4 way on 06-07-2017.
+ * Created by Vijay Kumar on 06-07-2017.
  */
 
 public class HeaderBehavior extends CoordinatorLayout.Behavior<HeaderView> {

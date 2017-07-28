@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by 4 way on 08-04-2017.
+ * Created by Vijay Kumar on 08-04-2017.
  */
 
 public class SubscribeUnsubscribeNoticeBoardRequest extends CommonRequest {

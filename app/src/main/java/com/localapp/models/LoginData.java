@@ -3,7 +3,7 @@ package com.localapp.models;
 import com.facebook.login.LoginResult;
 
 /**
- * Created by 4 way on 03-03-2017.
+ * Created by Vijay Kumar on 03-03-2017.
  */
 
 public class LoginData {

@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by 4 way on 31-03-2017.
+ * Created by Vijay Kumar on 31-03-2017.
  */
 
 public class MyNoticeBoardRequest extends CommonRequest {

@@ -6,7 +6,7 @@ import android.view.Display;
 import android.view.WindowManager;
 
 /**
- * Created by 4 way on 07-07-2017.
+ * Created by Vijay Kumar on 07-07-2017.
  */
 
 public class ViewUtils {

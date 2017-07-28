@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by 4 way on 14-06-2017.
+ * Created by Vijay Kumar on 14-06-2017.
  */
 
 public class CrashReportRequest extends CommonRequest {

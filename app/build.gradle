@@ -15,8 +15,8 @@ android {
         applicationId "com.localapp"
         minSdkVersion 21
         targetSdkVersion 25
-        versionCode 56
-        versionName "1.1.04"
+        versionCode 58
+        versionName "1.1.05"
         multiDexEnabled true
 
         resConfigs "en"

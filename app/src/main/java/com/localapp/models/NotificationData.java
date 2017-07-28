@@ -3,7 +3,7 @@ package com.localapp.models;
 import com.google.android.gms.maps.model.LatLng;
 
 /**
- * Created by 4 way on 25-04-2017.
+ * Created by Vijay Kumar on 25-04-2017.
  */
 
 public class NotificationData {

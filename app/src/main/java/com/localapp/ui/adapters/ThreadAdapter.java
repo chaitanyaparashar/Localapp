@@ -38,7 +38,8 @@ import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
 
 
 /**
- * Created by 4 way on 21-02-2017.
+ * Created by Vijay Kumar on 21-02-2017.
+ * @author Vijay Kumar
  */
 
 public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder> {

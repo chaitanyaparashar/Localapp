@@ -23,7 +23,7 @@ import java.io.FileNotFoundException;
 import java.util.List;
 
 /**
- * Created by 4 way on 28-03-2017.
+ * Created by Vijay Kumar on 28-03-2017.
  */
 
 public class GalleryRecyclerViewAdapter extends RecyclerView.Adapter<GalleryRecyclerViewAdapter.ItemHolder> {

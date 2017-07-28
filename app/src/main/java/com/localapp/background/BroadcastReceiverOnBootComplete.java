@@ -10,7 +10,7 @@ import com.localapp.utils.Utility;
 
 
 /**
- * Created by 4 way on 12-06-2017.
+ * Created by Vijay Kumar on 12-06-2017.
  */
 
 public class BroadcastReceiverOnBootComplete extends BroadcastReceiver {

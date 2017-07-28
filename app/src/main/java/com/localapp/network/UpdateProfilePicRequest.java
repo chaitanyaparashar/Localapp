@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by 4 way on 25-07-2017.
+ * Created by Vijay Kumar on 25-07-2017.
  */
 
 public class UpdateProfilePicRequest {

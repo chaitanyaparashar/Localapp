@@ -10,7 +10,7 @@ import com.localapp.network.helper.VolleyErrorHelper;
 import org.json.JSONObject;
 
 /**
- * Created by 4 way on 06-03-2017.
+ * Created by Vijay Kumar on 06-03-2017.
  */
 
 public class ForgetPasswordRequest extends CommonRequest {

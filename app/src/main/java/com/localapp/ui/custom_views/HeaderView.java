@@ -17,7 +17,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
- * Created by 4 way on 06-07-2017.
+ * Created by Vijay Kumar on 06-07-2017.
  */
 
 public class HeaderView extends LinearLayout {

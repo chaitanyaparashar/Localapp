@@ -21,7 +21,7 @@ import java.util.Map;
 import static com.localapp.appcontroller.AppController.getAppContext;
 
 /**
- * Created by 4 way on 20-02-2017.
+ * Created by Vijay Kumar on 20-02-2017.
  */
 
 public class GetUsersRequest extends CommonRequest {

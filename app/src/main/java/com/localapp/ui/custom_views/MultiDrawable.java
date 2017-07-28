@@ -9,7 +9,7 @@ import android.support.annotation.NonNull;
 import java.util.List;
 
 /**
- * Created by 4 way on 28-02-2017.
+ * Created by Vijay Kumar on 28-02-2017.
  */
 
 public class MultiDrawable extends Drawable{

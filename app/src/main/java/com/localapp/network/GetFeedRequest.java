@@ -17,7 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * Created by 4 way on 21-02-2017.
+ * Created by Vijay Kumar on 21-02-2017.
  */
 
 public class GetFeedRequest extends CommonRequest {

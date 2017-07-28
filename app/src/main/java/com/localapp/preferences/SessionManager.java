@@ -7,7 +7,7 @@ import java.util.HashMap;
 
 
 /**
- * Created by 4 way on 04-03-2017.
+ * Created by Vijay Kumar on 04-03-2017.
  */
 
 public class SessionManager {

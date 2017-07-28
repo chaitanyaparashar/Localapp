@@ -5,7 +5,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.List;
 
 /**
- * Created by 4 way on 23-03-2017.
+ * Created by Vijay Kumar on 23-03-2017.
  */
 
 public class NoticeBoard {

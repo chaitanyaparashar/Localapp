@@ -9,7 +9,7 @@ import com.localapp.background.ConnectivityReceiver;
 import com.localapp.network.CrashReportRequest;
 
 /**
- * Created by 4 way on 17-07-2017.
+ * Created by Vijay Kumar on 17-07-2017.
  */
 
 public class NetworkUtil {

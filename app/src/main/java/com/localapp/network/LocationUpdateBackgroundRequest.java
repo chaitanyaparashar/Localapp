@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by 4 way on 13-06-2017.
+ * Created by Vijay Kumar on 13-06-2017.
  */
 
 public class LocationUpdateBackgroundRequest extends CommonRequest {

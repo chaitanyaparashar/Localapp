@@ -18,7 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Created by 4 way on 15-04-2017.
+ * Created by Vijay Kumar on 15-04-2017.
+ * @author Vijay Kumar
  */
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {

@@ -1,7 +1,7 @@
 package com.localapp.models;
 
 /**
- * Created by 4 way on 04-05-2017.
+ * Created by Vijay Kumar on 04-05-2017.
  */
 
 public class FbLoginError {

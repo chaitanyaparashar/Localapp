@@ -21,7 +21,7 @@ import java.util.List;
 import static android.content.Context.NOTIFICATION_SERVICE;
 
 /**
- * Created by 4 way on 07-06-2017.
+ * Created by Vijay Kumar on 07-06-2017.
  */
 
 public class NotificationUtils {

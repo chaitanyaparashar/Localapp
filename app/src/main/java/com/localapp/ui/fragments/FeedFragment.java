@@ -7,7 +7,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -26,8 +25,13 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.ActionMode;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,32 +49,33 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.siyamed.shapeimageview.CircularImageView;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.iid.FirebaseInstanceId;
-import com.localapp.background.ConnectivityReceiver;
-import com.localapp.compressor.Compressor;
+import com.localapp.R;
 import com.localapp.appcontroller.AppController;
 import com.localapp.audio.ViewProxy;
+import com.localapp.background.ConnectivityReceiver;
 import com.localapp.camera.Camera2Activity;
+import com.localapp.compressor.Compressor;
+import com.localapp.fcm.FcmNotificationRequest;
 import com.localapp.models.GetFeedRequestData;
 import com.localapp.models.Message;
 import com.localapp.models.NotificationData;
-import com.localapp.fcm.FcmNotificationRequest;
-import com.localapp.preferences.AppPreferences;
-import com.localapp.preferences.SessionManager;
-import com.localapp.network.helper.CommonRequest;
+import com.localapp.network.DeleteMessageRequest;
 import com.localapp.network.EmergencyMsgAcceptRequest;
 import com.localapp.network.GetFeedRequest;
 import com.localapp.network.PicUrlRequest;
+import com.localapp.network.helper.CommonRequest;
+import com.localapp.preferences.AppPreferences;
+import com.localapp.preferences.SessionManager;
 import com.localapp.ui.activities.HomeActivity;
 import com.localapp.ui.activities.VideoPlay;
 import com.localapp.ui.adapters.ThreadAdapter;
+import com.localapp.utils.AlertDialogHelper;
 import com.localapp.utils.Constants;
 import com.localapp.utils.NetworkUtil;
 import com.localapp.utils.Utility;
 import com.squareup.picasso.Picasso;
-import com.localapp.utils.RecyclerTouchListener;
-import com.google.android.gms.maps.model.LatLng;
-import com.localapp.R;
 
 import org.fusesource.mqtt.client.Callback;
 import org.fusesource.mqtt.client.FutureConnection;
@@ -102,10 +107,10 @@ import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
 
 import static com.localapp.network.helper.CommonRequest.ResponseCode.COMMON_RES_SUCCESS;
+import static com.localapp.ui.adapters.ThreadAdapter.getEmojiResourceIdByMsgType;
 import static com.localapp.ui.fragments.FeedFragment.MediaType.MEDIA_AUDIO;
 import static com.localapp.ui.fragments.FeedFragment.MediaType.MEDIA_IMAGE;
 import static com.localapp.ui.fragments.FeedFragment.MediaType.MEDIA_VIDEO;
-import static com.localapp.ui.adapters.ThreadAdapter.getEmojiResourceIdByMsgType;
 
 
 
@@ -116,7 +121,7 @@ import static com.localapp.ui.adapters.ThreadAdapter.getEmojiResourceIdByMsgType
  * create an instance of this fragment.
  */
 public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequestCallback,PicUrlRequest.PicUrlResponseCallback,
-        EmergencyMsgAcceptRequest.EmergencyMsgAcceptResponseCallback, ConnectivityReceiver.ConnectivityReceiverListener {
+        EmergencyMsgAcceptRequest.EmergencyMsgAcceptResponseCallback, ConnectivityReceiver.ConnectivityReceiverListener,AlertDialogHelper.AlertDialogListener,DeleteMessageRequest.DeleteMessageResponseCallback {
 
     private final String TAG = FeedFragment.class.getSimpleName();
 
@@ -138,11 +143,17 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
     private FutureConnection connection = null;
     private Map<String, String> mParams;
 
+    AlertDialogHelper alertDialogHelper;
+
     //Recyclerview objects
+    ActionMode mActionMode;
+    Menu context_menu;
+
+
     private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView recyclerView;
-    private RecyclerView.LayoutManager layoutManager;
-    private RecyclerView.Adapter adapter;
+    boolean isMultiSelect = false;
+    private ThreadAdapter adapter;
     private GridView emojiGridView;
 
     private ListView emergencyMessageListView;
@@ -200,6 +211,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
 
     //ArrayList of messages to store the thread messages
     private ArrayList<Message> messages;
+    ArrayList<Message> multiselect_list = new ArrayList<>();
 
 
     LinearLayout linearLayoutMsgArea;
@@ -238,6 +250,8 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
 
         sessionManager = new SessionManager(getContext());
 
+        alertDialogHelper = new AlertDialogHelper(getActivity(),this);
+
         linearLayoutMsgArea = (LinearLayout) view.findViewById(R.id.linear_layout_msg_area);
         typeMessageAreaPreventClickView = (View) view.findViewById(R.id.type_message_area_prevent_click_View);
         typeMessageAreaPreventClickView.setOnClickListener(typeMessageSurfaceClickListener);
@@ -254,11 +268,12 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
         sendImageViewBtn = (ImageView) view.findViewById(R.id.btn_send_speak);
         emoticImgBtn = (ImageView) view.findViewById(R.id.btn_emoticon);
 
-        recyclerView.addOnItemTouchListener(recyclerTouchListener);
+//        recyclerView.addOnItemTouchListener(recyclerTouchListener);
         recyclerView.setHasFixedSize(true);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setItemViewCacheSize(50);
-        layoutManager = new LinearLayoutManager(getContext());
+        final LinearLayoutManager  layoutManager = new LinearLayoutManager(AppController.getAppContext());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
 
         emergencyMessageListView = (ListView) view.findViewById(R.id.emergency_ListView);
         emergencyMessageList = new ArrayList<>();
@@ -305,7 +320,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
 
         //Initializing message arraylist
                 messages = new ArrayList<>();
-        adapter = new ThreadAdapter(getContext(),messages, HomeActivity.mUserId);//hardcoded token
+        adapter = new ThreadAdapter(getActivity(),messages,multiselect_list, HomeActivity.mUserId,recyclerViewListener);//hardcoded token
         recyclerView.setAdapter(adapter);
 
 
@@ -566,6 +581,9 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
     SwipeRefreshLayout.OnRefreshListener onRefreshListener = new SwipeRefreshLayout.OnRefreshListener() {
         @Override
         public void onRefresh() {
+            if (mActionMode != null) {
+                mActionMode.finish();
+            }
             request();
         }
     };
@@ -582,6 +600,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
                 messageData.setToken(HomeActivity.mLoginToken);
                 if (HomeActivity.mUserId != null) {
                     messageData.setmUserID(HomeActivity.mUserId);
+                    messageData.setId(HomeActivity.mUserId + System.currentTimeMillis());
                 } else {
                     messageData.setmUserID("");
                 }
@@ -639,6 +658,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
                 mParams.put("token",messageData.getToken());
                 mParams.put("fcmToken",messageData.getFcmToken());
                 mParams.put("userId",messageData.getmUserID());
+                mParams.put("messageId",messageData.getId());
                 mParams.put("userName", messageData.getName());
                 mParams.put("picUrl",messageData.getPicUrl());
                 mParams.put("mediaUrl","");
@@ -672,6 +692,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
         messageData.setToken(HomeActivity.mLoginToken);
         if (HomeActivity.mUserId != null) {
             messageData.setmUserID(HomeActivity.mUserId);
+            messageData.setId(HomeActivity.mUserId + System.currentTimeMillis());
         } else {
             messageData.setmUserID("");
         }
@@ -705,6 +726,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
             mParams =  new HashMap<>();
             mParams.put("token",messageData.getToken());
             mParams.put("userId",messageData.getmUserID());
+            mParams.put("messageId",messageData.getId());
             mParams.put("picUrl",messageData.getPicUrl());
             mParams.put("userName", messageData.getName());
             mParams.put("emergencyId","");
@@ -1203,38 +1225,126 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
     }
 
 
-    RecyclerTouchListener recyclerTouchListener = new RecyclerTouchListener(getContext(), recyclerView, new RecyclerTouchListener.ClickListener() {
+    ThreadAdapter.RecyclerViewListener recyclerViewListener = new ThreadAdapter.RecyclerViewListener() {
         @Override
         public void onClick(View view, int position) {
-            if (view.getTag() != null && view.getTag().equals("vdo")){
-                Message message = messages.get(position);
+            if (isMultiSelect) {
+                multi_select(position);
+            }else {
+                if (view.getTag() != null && view.getTag().equals("vdo")){
+                    Message message = messages.get(position);
 
-                Intent intent=new Intent(getActivity(), VideoPlay.class);
-                intent.putExtra("url",message.getMediaURL());
-                startActivity(intent);
+                    Intent intent=new Intent(getActivity(), VideoPlay.class);
+                    intent.putExtra("url",message.getMediaURL());
+                    startActivity(intent);
 
-                /*mProgressBar.setVisibility(View.VISIBLE);
-
-//                if (videoView.uri
-                videoView.setVideoURI(Uri.parse(message.getMediaURL()));
-//                holder.videoView.setMediaController(new MediaController(context));
-               videoView.requestFocus();
-                videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-                    @Override
-                    public void onPrepared(MediaPlayer mp) {
-                        mProgressBar.setVisibility(View.GONE);
-                        videoView.start();
-                    }
-                });*/
-
+                }
             }
         }
 
         @Override
         public void onLongClick(View view, int position) {
+            if (!isMultiSelect) {
+                multiselect_list = new ArrayList<Message>();
+                isMultiSelect = true;
+
+                if (mActionMode == null && getActivity() != null) {
+                    mActionMode = getActivity().startActionMode(mActionModeCallback);
+                }
+            }
+
+            multi_select(position);
+        }
+    };
+
+
+
+
+    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            // Inflate a menu resource providing context menu items
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.menu_multi_select, menu);
+            context_menu = menu;
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false; // Return false if nothing is done
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.action_delete:
+                    alertDialogHelper.showAlertDialog("",getString(R.string.message_delete),getString(R.string.btn_delete),getString(R.string.btn_cancel),1,false);
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            mActionMode = null;
+            isMultiSelect = false;
+            multiselect_list = new ArrayList<Message>();
+            refreshAdapter();
+        }
+    };
+
+    @Override
+    public void onPositiveClick(int from) {
+        if(from==1) {
+            if (multiselect_list.size() > 0) {
+                deleteMessageRequest(multiselect_list);
+            }
+        }
+    }
+
+    @Override
+    public void onNegativeClick(int from) {
+
+    }
+
+    @Override
+    public void onNeutralClick(int from) {
+
+    }
+
+    public void multi_select(int position) {
+        if (mActionMode != null) {
+            if (multiselect_list.contains(messages.get(position))) {
+                multiselect_list.remove(messages.get(position));
+
+                if (multiselect_list.size() == 0) {
+                    mActionMode.finish();
+                    refreshAdapter();
+                    return;
+                }
+
+            }
+            else
+                multiselect_list.add(messages.get(position));
+
+            if (multiselect_list.size() > 0)
+                mActionMode.setTitle("" + multiselect_list.size());
+            else
+                mActionMode.setTitle("");
+
+            refreshAdapter();
 
         }
-    });
+    }
+
+    public void refreshAdapter() {
+        adapter.selected_messageList = multiselect_list;
+        adapter.messages = messages;
+        adapter.notifyDataSetChanged();
+    }
 
 
 
@@ -1639,4 +1749,27 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
             }
         }
     };
+
+
+    private void deleteMessageRequest (ArrayList<Message> messageList) {
+        DeleteMessageRequest deleteMessageRequest = new DeleteMessageRequest(getContext(),messageList,this);
+        deleteMessageRequest.executeRequest();
+    }
+
+    @Override
+    public void onDeleteMessageResponse(CommonRequest.ResponseCode responseCode, String data) {
+        if (responseCode == COMMON_RES_SUCCESS) {
+            if (mActionMode != null) {
+                mActionMode.finish();
+            }
+            Toast toast = Toast.makeText(getContext(), R.string.message_deleted, Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+
+
+            request();
+        }else {
+            Toast.makeText(getContext(), R.string.error_something_went_wrong_try_again, Toast.LENGTH_SHORT).show();
+        }
+    }
 }

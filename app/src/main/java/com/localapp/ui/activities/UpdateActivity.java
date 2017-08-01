@@ -87,7 +87,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
 
         /*mProfessionView.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onItemClick(View v) {
                 showPopup(UpdateActivity.this);
             }
         });

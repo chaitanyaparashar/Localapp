@@ -25,6 +25,7 @@ public class Message {
     private String msgIdOnlyForFrontEnd;
     private FeedFragment.MediaType mediaType;
     private String mUserID;
+    private String id;
     private FeedFragment.MessageType messageType;
     private Bitmap imgBitmap;
     private String fcmToken;
@@ -180,5 +181,13 @@ public class Message {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

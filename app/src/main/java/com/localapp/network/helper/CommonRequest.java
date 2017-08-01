@@ -9,7 +9,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.localapp.appcontroller.AppController;
-import com.localapp.network.helper.CustomRequest;
 
 import org.json.JSONObject;
 
@@ -52,6 +51,7 @@ CommonRequest {
     private static final String LOCATION_UPDATE_IN_BACKGROUND_URL = DOMAIN + "/locationUpdate";
     private static final String REPORT_CRASH_ERROR_URL = DOMAIN + "/crash/add";
     private static final String UPDATE_POSTBACK_STATUS_URL = DOMAIN + "/updatePostBackStatus?";
+    private static final String DELETE_MESSAGE_URL = DOMAIN + "/deleteUserMessage";
 
     public enum RequestType {
         COMMON_REQUEST_LOGIN,
@@ -80,6 +80,7 @@ CommonRequest {
         COMMON_REQUEST_LOCATION_UPDATE_IN_BACKGROUND,
         COMMON_REQUEST_REPORT_CRASH_ERROR,
         COMMON_REQUEST_UPDATE_POSTBACK_STATUS,
+        COMMON_REQUEST_DELETE_MESSAGE,
 
 
         COMMON_REQUEST_END
@@ -262,7 +263,9 @@ CommonRequest {
             case COMMON_REQUEST_UPDATE_POSTBACK_STATUS:
                 url  = UPDATE_POSTBACK_STATUS_URL;
                 break;
-
+            case COMMON_REQUEST_DELETE_MESSAGE:
+                url  = DELETE_MESSAGE_URL;
+                break;
         }
 
         return url;

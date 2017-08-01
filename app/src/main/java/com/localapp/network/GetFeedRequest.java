@@ -61,6 +61,7 @@ public class GetFeedRequest extends CommonRequest {
                 JSONObject msgJsonObject = msgJsonArray.getJSONObject(i);
 
                 String mUserID = "";
+                String id = "";
                 String emergencyId = "";
                 String picUrl = "";
 
@@ -85,6 +86,7 @@ public class GetFeedRequest extends CommonRequest {
 
 
                 try {
+                    id = msgJsonObject.getString("id");
                     mUserID = msgJsonObject.getString("userId");
                     emergencyId = msgJsonObject.getString("emergencyId");
                     picUrl = msgJsonObject.getString("picUrl");
@@ -111,6 +113,7 @@ public class GetFeedRequest extends CommonRequest {
 
 
                 Message message = new Message();
+                message.setId(id);
                 message.setmUserID(mUserID);
                 message.setMsgIdOnlyForFrontEnd(emergencyId);
                 message.setPicUrl(picUrl);

@@ -3,6 +3,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="facebook_app_id">235015976963905</string>
+
+    <string name="menu_item_delete">Delete</string>
     
     
     <string name="message_please_wait">Please wait…</string>
@@ -22,6 +24,8 @@
     <string name="message_no_result_found_try_diffrent">No result found, try different keywords</string>
     <string name="message_please_wait_getting_result">Please wait we are getting results</string>
     <string name="message_no_result_found">No search result found</string>
+    <string name="message_delete">Delete Message</string>
+    <string name="message_deleted">Message deleted</string>
 
     <string name="error_enter_valid_name">enter a valid name</string>
     <string name="error_enter_valid_email">enter a valid email address</string>
@@ -60,6 +64,7 @@
     <string name="btn_accept">Accept</string>
     <string name="btn_invite">Invite Neighbors &amp; Have more fun</string>
     <string name="btn_logout">Logout</string>
+    <string name="btn_delete">Delete</string>
 
 
     <string name="title_select_picture">Select Picture</string>

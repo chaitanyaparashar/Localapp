@@ -13,6 +13,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.graphics.Palette;
@@ -24,6 +25,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -108,6 +110,9 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
     @Bind(R.id.card_about)
     CardView aboutCardView;
 
+    @Bind(R.id.image_pic_progress)
+    protected ProgressBar mPicProgressBar;
+
     private boolean isHideToolbarView = false;
 
     @Override
@@ -136,7 +141,10 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
         String uid = intent.getStringExtra("action_id");
         pic_url = intent.getStringExtra(Constants.PIC_URL);
 
+        collapsingToolbarLayout.setContentScrimColor(ContextCompat.getColor(this,R.color.colorAccent));
+
         if (pic_url != null) {
+            mPicProgressBar.setVisibility(View.VISIBLE);
             Picasso.with(AppController.getAppContext()).load(pic_url).placeholder(R.drawable.ic_user).into(mProfileImageView);
             Picasso.with(AppController.getAppContext()).load(pic_url).placeholder(R.drawable.ic_user).into(this);
         }
@@ -167,6 +175,7 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
     }
 
     private void profileRequest(String profileID) {
+        mPicProgressBar.setVisibility(View.VISIBLE);
         Profile mProfile = new Profile(profileID);
 
         GetProfileByIdRequest request = new GetProfileByIdRequest(this, mProfile, this);
@@ -324,6 +333,7 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
     @Override
     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
         Log.d(TAG,"onBitmapLoaded");
+        mPicProgressBar.setVisibility(View.GONE);
         setPallet(bitmap);
     }
 

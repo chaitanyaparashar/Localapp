@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.RatingBar;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.localapp.R;
 import com.localapp.appcontroller.AppController;
 import com.localapp.appcontroller.AppExceptionHandler;
@@ -34,7 +35,6 @@ import com.localapp.background.LocationService;
 import com.localapp.models.MessageNotificationData;
 import com.localapp.preferences.AppPreferences;
 import com.localapp.preferences.SessionManager;
-import com.google.android.gms.maps.model.LatLng;
 import com.localapp.ui.fragments.FeedFragment;
 import com.localapp.ui.fragments.MapFragment;
 import com.localapp.ui.fragments.NoticeBoardFragment;

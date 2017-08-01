@@ -2,21 +2,26 @@ package com.localapp.ui.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.util.LruCache;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.github.siyamed.shapeimageview.RoundedImageView;
 import com.localapp.R;
@@ -65,19 +70,29 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
 
 
     //ArrayList of messages object containing all the messages in the thread
-    private ArrayList<Message> messages;
+    public ArrayList<Message> messages;
+    public ArrayList<Message> selected_messageList=new ArrayList<>();
+    private RecyclerViewListener recyclerViewListener;
 
+
+    private  Drawable drawableSelected;
+    private  Drawable unSelected ;
     //Constructor
-    public ThreadAdapter(Context context, ArrayList<Message> messages, String uID){
+    public ThreadAdapter(Context context, ArrayList<Message> messages,ArrayList<Message> selectedList, String uID,RecyclerViewListener listener){
         this.uID = uID;
         this.messages = messages;
+        this.selected_messageList = selectedList;
         this.context = context;
+        this.recyclerViewListener = listener;
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
 
         // Use 1/8th of the available memory for this memory cache.
         final int cacheSize = maxMemory / 8;
 
         videoThumbnailCache = new LruCache<>(cacheSize);
+
+        drawableSelected = new ColorDrawable(ContextCompat.getColor(context,R.color.list_item_selected_state));
+        unSelected = new ColorDrawable(ContextCompat.getColor(context,android.R.color.transparent));
     }
 
     //IN this method we are tracking the self message
@@ -195,7 +210,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, final int position) {
         //Adding messages to the views
         final Message message = messages.get(position);
         FeedFragment.MediaType mediaType = message.getMediaType();
@@ -225,12 +240,21 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         holder.proPic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (user_id != null){
+                if (selected_messageList.size() == 0 && user_id != null){
                     Utility.openPublicProfile(context, user_id, null);
+                }else if (selected_messageList.size() > 0) {
+                    holder.itemView.performClick();
                 }
             }
         });
 
+        holder.proPic.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                holder.itemView.performLongClick();
+                return true;
+            }
+        });
 
 
         /*if (message.getMediaType()!= null && message.getMediaType() == FeedFragment.MediaType.MEDIA_IMAGE) {
@@ -277,6 +301,44 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
 
                 break;
         }
+
+
+
+
+
+
+
+
+        if(selected_messageList.contains(messages.get(position)))
+            holder.ll_listitem.setForeground(drawableSelected);
+        else
+            holder.ll_listitem.setForeground(unSelected);
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (uID.equals(user_id)) {
+                    recyclerViewListener.onClick(v, position);
+                }else {
+                    Toast.makeText(context, "Please select your message", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (uID.equals(user_id)) {
+                    recyclerViewListener.onLongClick(v, position);
+                    return true;
+                }else {
+                    Toast.makeText(context, "Please select your message", Toast.LENGTH_SHORT).show();
+                }
+
+
+                return false;
+            }
+        });
     }
 
 
@@ -293,6 +355,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
     public static MediaPlayer oldMediaPlayer;
     //Initializing views
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+        public FrameLayout ll_listitem;
         public EmojiconTextView textViewMessage;
         public CircularImageView proPic;
         public ImageView messageTypeImageView;
@@ -314,6 +377,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
 
         public ViewHolder(View itemView) {
             super(itemView);
+            ll_listitem = (FrameLayout) itemView.findViewById(R.id.ll_listitem);
             nameTextView = (TextView) itemView.findViewById(R.id.textViewName);
             timeTextView = (TextView) itemView.findViewById(R.id.sms_time);
             textViewMessage = (EmojiconTextView) itemView.findViewById(R.id.textViewMsg);
@@ -349,7 +413,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         @Override
         public void onClick(View v) {
 
-            if (v.getId() == R.id._audio_play) {
+            if (selected_messageList.size()== 0 && v.getId() == R.id._audio_play) {
                 if (mPlayer != null && !mPlayer.isPlaying()) {
                     startPlaying();
                 }else {
@@ -575,6 +639,11 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
     public Bitmap getBitmapFromMemCache(String key) {
         return (Bitmap) videoThumbnailCache.get(key);
 
+    }
+
+    public interface RecyclerViewListener{
+        void onClick(View view, int position);
+        void onLongClick(View view, int position);
     }
 
 

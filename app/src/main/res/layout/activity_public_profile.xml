@@ -32,6 +32,15 @@
                     android:scaleType="centerCrop"
                     app:layout_collapseMode="parallax" />
 
+                <ProgressBar
+                    android:id="@+id/image_pic_progress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style="@android:style/Widget.Holo.ProgressBar.Large"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"/>
+
                 <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"

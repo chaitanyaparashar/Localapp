@@ -8,7 +8,7 @@
 
 
     <RelativeLayout
-        android:background="#F5F5F5"
+        android:background="@drawable/title_bg"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -31,7 +31,6 @@
             
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/recyclerView"
-                android:background="@color/white"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scrollbars="vertical">
@@ -65,7 +64,9 @@
             <GridView
                 android:visibility="gone"
                 android:numColumns="4"
+                android:background="#b7bac4cc"
                 android:padding="5dp"
+                android:elevation="1dp"
                 android:layout_gravity="center"
                 android:id="@+id/shout_emiji"
                 android:verticalSpacing="10dp"

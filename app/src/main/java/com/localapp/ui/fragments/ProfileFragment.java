@@ -52,6 +52,7 @@ import com.localapp.ui.activities.HomeActivity;
 import com.localapp.ui.activities.LoginActivity;
 import com.localapp.ui.activities.SignUpActivity;
 import com.localapp.ui.activities.UpdateActivity;
+import com.localapp.utils.NetworkUtil;
 import com.localapp.utils.Utility;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -586,6 +587,7 @@ public class ProfileFragment extends Fragment implements LoginRequest.LoginRespo
             case COMMON_RES_INTERNAL_ERROR:
                 break;
             case COMMON_RES_SERVER_ERROR_WITH_MESSAGE:
+                NetworkUtil.CrashReport(getContext(),mProfile.getErrorMsg(),"\n\nuserid: " + mProfile.getuId() +"\nuserToken: " + mProfile.getuToken());
                 onLogout();
                 break;
         }

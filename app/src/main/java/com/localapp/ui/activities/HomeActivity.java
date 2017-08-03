@@ -123,6 +123,10 @@ public class HomeActivity extends AppCompatActivity implements ConnectivityRecei
                     tab.getIcon().setColorFilter(ContextCompat.getColor(HomeActivity.this,R.color.titleColor), PorterDuff.Mode.SRC_IN);
                 }
 
+                if (FeedFragment.mActionMode != null && tab.getPosition() != 1) {
+                    FeedFragment.mActionMode.finish();
+                }
+
                 Utility.hideSoftKeyboard(HomeActivity.this);
 
             }

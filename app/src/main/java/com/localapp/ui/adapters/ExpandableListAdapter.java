@@ -78,7 +78,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         if(getChecked != null) {
             for (int j = 0; j < getChecked.length; ++j) {
                 if (getChecked[j])
-                    iteam = iteam+ (String) getChild(mGroupPosition, j)+",";
+                    iteam = iteam+ (String) getChild(mGroupPosition, j)+", ";
             }
         }
 

@@ -19,13 +19,14 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.ActionMode;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -146,7 +147,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
     AlertDialogHelper alertDialogHelper;
 
     //Recyclerview objects
-    ActionMode mActionMode;
+    public static ActionMode mActionMode;
     Menu context_menu;
 
 
@@ -966,6 +967,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
         MUMBLE,
         EMERGENCY
     }
+
     public static MessageType getMessageType(int type) {
         switch (type) {
             case 0: return MessageType.STRAIGHT;
@@ -982,7 +984,15 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
     private boolean isMessageForMe(MessageType messageType, LatLng latLng) {
         if (latLng == null) return false;
 
-        double distance = Double.valueOf(Utility.calcDistance(HomeActivity.mLastKnownLocation,latLng,"km",false));
+        double distance;
+
+        try {
+            distance = Double.valueOf(Utility.calcDistance(HomeActivity.mLastKnownLocation,latLng,"km",false));
+        }catch (NullPointerException e) {
+            e.printStackTrace();
+            return false;
+        }
+
         switch (messageType) {
             case STRAIGHT:
                 if (distance <= 2)
@@ -1249,7 +1259,12 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
                 isMultiSelect = true;
 
                 if (mActionMode == null && getActivity() != null) {
-                    mActionMode = getActivity().startActionMode(mActionModeCallback);
+//                    mActionMode = HomeActivity.homeActivityActionBar.startActionMode(mActionModeCallback);
+                    try {
+                        mActionMode = ((AppCompatActivity) getActivity()).startSupportActionMode(mActionModeCallback);
+                    }catch (NullPointerException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
 
@@ -1331,7 +1346,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
                 multiselect_list.add(messages.get(position));
 
             if (multiselect_list.size() > 0)
-                mActionMode.setTitle("" + multiselect_list.size());
+                mActionMode.setTitle(multiselect_list.size() + " selected");
             else
                 mActionMode.setTitle("");
 

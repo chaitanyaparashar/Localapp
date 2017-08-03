@@ -91,7 +91,8 @@
 
         <activity
             android:name=".ui.activities.LoginActivity"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppThemeFullScreen"/>
         <activity
             android:name=".camera.CropImageActivity"
             android:screenOrientation="portrait"

@@ -320,7 +320,9 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
                 if (uID.equals(user_id)) {
                     recyclerViewListener.onClick(v, position);
                 }else {
-                    Toast.makeText(context, "Please select your message", Toast.LENGTH_SHORT).show();
+                    if (selected_messageList.size() > 0) {
+                        Toast.makeText(context, "Please select your message", Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
         });

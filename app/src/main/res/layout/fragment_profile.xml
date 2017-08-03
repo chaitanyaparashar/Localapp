@@ -16,7 +16,7 @@
             android:id="@+id/rl_fm_profile"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:background="@color/colorAccent"
+            android:background="@color/list_item_selected_state"
             android:elevation="2dp">
 
 

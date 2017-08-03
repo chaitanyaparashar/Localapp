@@ -167,6 +167,7 @@
         <android.support.v7.widget.CardView
             android:layout_margin="20dp"
             android:layout_width="match_parent"
+            app:cardElevation="0.8dp"
             android:layout_height="50dp">
 
             <LinearLayout

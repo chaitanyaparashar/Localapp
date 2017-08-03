@@ -15,5 +15,5 @@
     <color name="black_overlay">#66000000</color>
     <color name="lighter_gray">#ddd</color>
     <color name="white">#ffffff</color>
-    <color name="list_item_selected_state">#962196f3</color>
+    <color name="list_item_selected_state">#642196f3</color>
 </resources>

@@ -184,8 +184,11 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
 
     @Override
     public void onProfileIdResponse(CommonRequest.ResponseCode responseCode, Profile mProfile) {
+        mPicProgressBar.setVisibility(View.GONE);
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
             setProfileData(mProfile);
+        }else {
+            Toast.makeText(this, R.string.error_something_went_wrong_try_again, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -200,7 +203,14 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
         String uPrivacy = mProfile.getuPrivacy();
         String profession = mProfile.getProfession();
         LatLng mLatLng = mProfile.getuLatLng();
-        String distance = Utility.calcDistance(HomeActivity.mLastKnownLocation, mLatLng, null, false);
+        String distance = null;
+
+        try {
+            distance = Utility.calcDistance(HomeActivity.mLastKnownLocation, mLatLng, null, false);
+        }catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+
 
         boolean availableAbout = false;
 
@@ -289,6 +299,7 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
     }
 
 
+    static float factor = 0.85f;
 
     private void setPallet(final Bitmap bitmap) {
         Palette.from(bitmap)
@@ -296,31 +307,32 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
                     @Override
                     public void onGenerated(Palette palette) {
                         Palette.Swatch textSwatch = palette.getVibrantSwatch();
-                        if (textSwatch != null) {
-                            collapsingToolbarLayout.setContentScrimColor(textSwatch.getRgb());
-                            Log.d(TAG,"rgb set");
-                        }else {
-                            Log.d(TAG,"rgb null");
-                            new DoInBackground().execute(bitmap);
-                        }
-
                         Palette.Swatch textSwatch1 = palette.getDarkVibrantSwatch();
 
-                        if (textSwatch1 != null) {
-                            setStatuseBarColor(textSwatch1.getRgb());
-                            Log.d(TAG,"rgb set");
-                        }/*else {
-                            Log.d(TAG,"rgb null");
-                            new DoInBackground().execute(bitmap);
-                        }*/
+                        if (textSwatch != null) {
 
+                            collapsingToolbarLayout.setContentScrimColor(textSwatch.getRgb());
+                            setStatusBarColor(ColorUtils.manipulateColor(textSwatch.getRgb(), factor));
+                            Log.d(TAG,"rgb set");
+
+                        }else if (textSwatch1 != null) {
+
+                            collapsingToolbarLayout.setContentScrimColor(textSwatch1.getRgb());
+                            setStatusBarColor(ColorUtils.manipulateColor(textSwatch1.getRgb(), factor));
+
+                        }else {
+                            new DoInBackground().execute(bitmap);
+                        }
                     }
 
 
                 });
     }
 
-    private void setStatuseBarColor(int color) {
+
+
+
+    private void setStatusBarColor(int color) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
@@ -333,7 +345,6 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
     @Override
     public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
         Log.d(TAG,"onBitmapLoaded");
-        mPicProgressBar.setVisibility(View.GONE);
         setPallet(bitmap);
     }
 
@@ -358,8 +369,9 @@ public class PublicProfileActivity extends AppCompatActivity implements AppBarLa
         }
 
         @Override
-        protected void onPostExecute(Integer integer) {
-            collapsingToolbarLayout.setContentScrimColor(integer);
+        protected void onPostExecute(Integer color) {
+            collapsingToolbarLayout.setContentScrimColor(color);
+            setStatusBarColor(ColorUtils.manipulateColor(color, factor));
             Log.d(TAG,"Dominant set");
         }
     }

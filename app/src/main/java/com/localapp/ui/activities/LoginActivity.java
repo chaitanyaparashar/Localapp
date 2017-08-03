@@ -109,29 +109,35 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
 
-        if (hasFocus) {
+        /*if (hasFocus) {
             getWindow().getDecorView().setSystemUiVisibility(
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                             | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_FULLSCREEN // hide status bar
-                            | View.SYSTEM_UI_FLAG_IMMERSIVE);}
+                            | View.SYSTEM_UI_FLAG_IMMERSIVE);}*/
 
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        View decorView = getWindow().getDecorView();
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+
         setContentView(R.layout.activity_login);
 
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+        /*getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         ActionBar actionBar = getActionBar();
 
         if (actionBar != null) {
             actionBar.hide();
-        }
+        }*/
 
         session = new SessionManager(this);
 
@@ -324,7 +330,7 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
     private void onForgetPassword() {
         String mEmail = _email.getText().toString();
         if (mEmail.isEmpty() || !Patterns.EMAIL_ADDRESS.matcher(mEmail).matches()) {
-            _email.setError(getString(R.string.error_enter_valid_password));
+            _email.setError(getString(R.string.error_enter_valid_email));
             return;
         }
 
@@ -387,7 +393,11 @@ public class LoginActivity extends AppCompatActivity implements LoginRequest.Log
         mProgressDialog = new ProgressDialog(this);
         mProgressDialog.setCancelable(false);
         mProgressDialog.setMessage(getString(R.string.message_verifying_credentials));
-        mProgressDialog.show();
+        try {
+            mProgressDialog.show();
+        }catch (WindowManager.BadTokenException e) {
+            e.printStackTrace();
+        }
     }
 
     /**

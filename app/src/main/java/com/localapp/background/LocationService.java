@@ -25,7 +25,7 @@ import java.util.HashMap;
 public class LocationService extends Service {
     private static final String TAG = "LocationService";
     private LocationManager mLocationManager = null;
-    private static final int LOCATION_INTERVAL = 1000*10;
+    private static final int LOCATION_INTERVAL = 1000*60*5;
     private static final float LOCATION_DISTANCE = 50f;
 
     private class LocationListener implements android.location.LocationListener {

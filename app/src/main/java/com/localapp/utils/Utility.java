@@ -108,12 +108,23 @@ public class Utility {
 
 
 
-            if (now.get(Calendar.DATE) == smsTime.get(Calendar.DATE) ) {
-                return "Today, " + sdfTime.format(smsTime.getTime());
-            } else if (now.get(Calendar.DATE) - smsTime.get(Calendar.DATE) == 1  ){
-                return "Yesterday, " + sdfTime.format(smsTime.getTime());
-            }else if(now.get(Calendar.DATE) - smsTime.get(Calendar.DATE) < 7  ){
-                return sdfTimeDay.format(smsTime.getTime());
+            if (String.valueOf(smsTime.get(Calendar.YEAR)).equals("1970")) {
+                return "";
+            }
+
+            boolean isCurrentMonthAndYear = (now.get(Calendar.MONTH) == smsTime.get(Calendar.MONTH))
+                    &&  (now.get(Calendar.YEAR) == smsTime.get(Calendar.YEAR));
+
+            if (isCurrentMonthAndYear) {
+                if (now.get(Calendar.DATE) == smsTime.get(Calendar.DATE) ) {
+                    return "Today, " + sdfTime.format(smsTime.getTime());
+                } else if (now.get(Calendar.DATE) - smsTime.get(Calendar.DATE) == 1  ){
+                    return "Yesterday, " + sdfTime.format(smsTime.getTime());
+                }else if(now.get(Calendar.DATE) - smsTime.get(Calendar.DATE) < 7  ){
+                    return sdfTimeDay.format(smsTime.getTime());
+                }else {
+                    return sdf.format(smsTime.getTime());
+                }
             } else if (now.get(Calendar.YEAR) == smsTime.get(Calendar.YEAR)) {
                 return sdf.format(smsTime.getTime());
             } else {
@@ -168,7 +179,7 @@ public class Utility {
      * @param showUnit
      * @return
      */
-    public static String calcDistance(LatLng from, LatLng to, String unit, boolean showUnit) {
+    public static String calcDistance(@NonNull LatLng from, @NonNull LatLng to, String unit, boolean showUnit) throws NullPointerException {
         double distance = SphericalUtil.computeDistanceBetween(from, to);
         if (unit != null){
             return formatNumber(distance,unit,showUnit);

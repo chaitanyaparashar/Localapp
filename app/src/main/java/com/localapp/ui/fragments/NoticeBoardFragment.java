@@ -3,9 +3,7 @@ package com.localapp.ui.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.design.widget.FloatingActionButton;
@@ -14,19 +12,15 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -37,8 +31,6 @@ import com.localapp.appcontroller.AppController;
 import com.localapp.background.ConnectivityReceiver;
 import com.localapp.models.NoticeBoard;
 import com.localapp.models.NoticeBoardMessage;
-import com.localapp.preferences.AppPreferences;
-import com.localapp.network.helper.CommonRequest;
 import com.localapp.network.DeleteNoticeBoardMessageRequest;
 import com.localapp.network.DeleteNoticeBoardRequest;
 import com.localapp.network.GetNearestNoticeBoardRequest;
@@ -46,8 +38,13 @@ import com.localapp.network.GetNoticeBoardMessageRequest;
 import com.localapp.network.MyNoticeBoardRequest;
 import com.localapp.network.PostNoticeBoardMessageRequest;
 import com.localapp.network.SubscribeUnsubscribeNoticeBoardRequest;
-import com.localapp.ui.activities.HomeActivity;
+import com.localapp.network.helper.CommonRequest;
+import com.localapp.preferences.AppPreferences;
 import com.localapp.ui.activities.CreateNoticeActivity;
+import com.localapp.ui.activities.HomeActivity;
+import com.localapp.ui.adapters.DialogNoticeBoardMessageAdapter;
+import com.localapp.ui.adapters.NoticeBoardAdapter;
+import com.localapp.ui.adapters.NoticeBoardAdapterNearYou;
 import com.localapp.utils.Utility;
 
 import java.util.ArrayList;
@@ -66,8 +63,8 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
     private RecyclerView recyclerView, recyclerViewNearYou;
     private List<NoticeBoard> noticeBoardList;
     private List<NoticeBoard> nearestNoticeBoardList;
-    private NoticeAdapter noticeAdapter;
-    private NoticeAdapterNearYou noticeAdapterNearYou;
+    private NoticeBoardAdapter noticeAdapter;
+    private NoticeBoardAdapterNearYou noticeBoardAdapterNearYou;
     DialogNoticeBoardMessageAdapter messageAdapter;
     private FloatingActionButton noticeCreateFab;
     RecyclerView noticeMessageRecyclerView;
@@ -131,11 +128,11 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
         recyclerViewNearYou.setItemAnimator(new DefaultItemAnimator());
 
 //        dummyData();
-        noticeAdapter = new NoticeAdapter(getContext(), noticeBoardList);
-        noticeAdapterNearYou = new NoticeAdapterNearYou(getContext(), nearestNoticeBoardList);
+        noticeAdapter = new NoticeBoardAdapter(getContext(), noticeBoardList,this);
+        noticeBoardAdapterNearYou = new NoticeBoardAdapterNearYou(getContext(), nearestNoticeBoardList,this);
 
         recyclerView.setAdapter(noticeAdapter);
-        recyclerViewNearYou.setAdapter(noticeAdapterNearYou);
+        recyclerViewNearYou.setAdapter(noticeBoardAdapterNearYou);
 
 
         noticeCreateFab = (FloatingActionButton) fView.findViewById(R.id.fab);
@@ -273,7 +270,16 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
 
 
 
-        messageAdapter = new DialogNoticeBoardMessageAdapter(getContext(),noticeBoard);
+        messageAdapter = new DialogNoticeBoardMessageAdapter(getContext(), noticeBoard, new DialogNoticeBoardMessageAdapter.OnMessageClickListener() {
+            @Override
+            public void onClick(View view, int position) {
+                if (view.getId()== R.id.msg_delete && HomeActivity.mLoginToken != null && !HomeActivity.mLoginToken.equals("")) {
+                    NoticeBoardMessage message = noticeBoard.getMessagesList().get(position);
+                    requestDeleteNoticeBoardMessage(message, HomeActivity.mLoginToken);
+                    noticeBoard.getMessagesList().remove(position);
+                }
+            }
+        });
 
         noticeMessageRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         noticeMessageRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -328,17 +334,17 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
         }
     }
 
-    private void requestForNoticeBoardMsg(NoticeBoard mNoticeBoard,boolean hasSubscribed) {
+    public void requestForNoticeBoardMsg(NoticeBoard mNoticeBoard,boolean hasSubscribed) {
         GetNoticeBoardMessageRequest getNoticeBoardMessageRequest = new GetNoticeBoardMessageRequest(getContext(),mNoticeBoard, hasSubscribed,this);
         getNoticeBoardMessageRequest.executeRequest();
     }
 
-    private void requestSubscribeAndUnsub(NoticeBoard mNoticeBoard, CommonRequest.RequestType requestType) {
+    public void requestSubscribeAndUnsub(NoticeBoard mNoticeBoard, CommonRequest.RequestType requestType) {
         SubscribeUnsubscribeNoticeBoardRequest request = new SubscribeUnsubscribeNoticeBoardRequest(getContext(),mNoticeBoard.getId(),HomeActivity.mUserId,requestType,NoticeBoardFragment.this);
         request.executeRequest();
     }
 
-    private void requestDeleteNoticeBoard (NoticeBoard mNoticeBoard) {
+    public void requestDeleteNoticeBoard (NoticeBoard mNoticeBoard) {
         DeleteNoticeBoardRequest request = new DeleteNoticeBoardRequest(getContext(),mNoticeBoard,this);
         request.executeRequest();
     }
@@ -383,10 +389,10 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
 
             if (mNoticeBoards.size() != 0){
                 nearestNoticeBoardList.addAll(mNoticeBoards);
-                noticeAdapterNearYou.notifyDataSetChanged();
+                noticeBoardAdapterNearYou.notifyDataSetChanged();
             }
 
-            noticeAdapterNearYou.notifyDataSetChanged();
+            noticeBoardAdapterNearYou.notifyDataSetChanged();
         }
     }
 
@@ -450,6 +456,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
     public void deleteNoticeBoardMessageResponse(CommonRequest.ResponseCode responseCode) {
         if (responseCode == CommonRequest.ResponseCode.COMMON_RES_SUCCESS) {
             toast("Message deleted");
+            messageAdapter.notifyDataSetChanged();
             requestForMyNoticeBoard();
         }
     }
@@ -474,246 +481,7 @@ public class NoticeBoardFragment extends Fragment implements MyNoticeBoardReques
         if (isConnected) requestForMyNoticeBoard();
     }
 
-    /**
-     * Adapters
-     */
-    class NoticeAdapter extends RecyclerView.Adapter<NoticeAdapter.ViewHolder> {
-        private Context mContext;
-        private List<NoticeBoard> noticeBoardList;
 
-        public NoticeAdapter(Context mContext, List<NoticeBoard> noticeBoardList) {
-            this.mContext = mContext;
-            this.noticeBoardList = noticeBoardList;
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.notic_card, parent, false);
-            return new ViewHolder(itemView);
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            NoticeBoard noticeBoard = noticeBoardList.get(position);
-            int size = noticeBoard.getMessagesList().size();
-            if (size>0) {
-                NoticeBoardMessage message = noticeBoard.getMessagesList().get(size-1);
-                if (message.getId() != null) {
-                    holder.noticeLastMsg.setText(message.getMsg());
-                    holder.noticeTime.setText(Utility.getTimeAndDate(message.getTimestamp()));
-                }else {
-                    holder.noticeLastMsg.setText("");
-                    holder.noticeTime.setText("");
-                }
-            }else {
-                holder.noticeLastMsg.setText("");
-                holder.noticeTime.setText("");
-            }
-
-
-            holder.noticeName.setText(noticeBoard.getName());
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return noticeBoardList.size();
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
-            public TextView noticeName,noticeLastMsg,noticeTime;
-            public ImageView dotsButton;
-
-            public ViewHolder(View itemView) {
-                super(itemView);
-                noticeName = (TextView) itemView.findViewById(R.id.notice_name_TextView);
-                noticeLastMsg = (TextView) itemView.findViewById(R.id.notice_lastMsg_TextView);
-                noticeTime = (TextView) itemView.findViewById(R.id.notice_Msg_time_TextView);
-                dotsButton = (ImageView) itemView.findViewById(R.id.notice_menu);
-                dotsButton.setOnClickListener(this);
-                itemView.setOnClickListener(this);
-            }
-
-            @Override
-            public void onClick(View v) {
-                int position = getAdapterPosition();
-
-                if (v.getId() == R.id.notice_menu) {
-                    showPopupMenu(v,position);
-                }else {
-                    NoticeBoard noticeBoard = noticeBoardList.get(position);
-                    requestForNoticeBoardMsg(noticeBoard, true);
-                }
-            }
-        }
-
-
-
-        /**
-         * Showing popup menu when tapping on 3 dots
-         */
-        private void showPopupMenu(View view,int position) {
-
-            int menuId;
-
-            NoticeBoard noticeBoard = noticeBoardList.get(position);
-
-            if (HomeActivity.mUserId !=null && HomeActivity.mUserId.equals(noticeBoard.getAdminId())){
-                menuId = R.menu.menu_my_notice;
-            }else {
-                menuId = R.menu.menu_subscribe_notice;
-            }
-
-            // inflate menu
-            PopupMenu popup = new PopupMenu(mContext, view);
-            MenuInflater inflater = popup.getMenuInflater();
-            inflater.inflate(menuId, popup.getMenu());
-            popup.setOnMenuItemClickListener(new MyMenuItemClickListener(position));
-            popup.show();
-        }
-
-        /**
-         * Click listener for popup menu items
-         */
-        class MyMenuItemClickListener implements PopupMenu.OnMenuItemClickListener {
-            int adapterPosition;
-
-            public MyMenuItemClickListener(int position) {
-                adapterPosition = position;
-            }
-
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                switch (menuItem.getItemId()) {
-
-                    case R.id.action_delete:
-                        requestDeleteNoticeBoard(noticeBoardList.get(adapterPosition));
-                        return true;
-                    case R.id.action_unsubscribe:
-                        requestSubscribeAndUnsub(noticeBoardList.get(adapterPosition), CommonRequest.RequestType.COMMON_REQUEST_UNSUBSCRIBE_NOTICE_BOARD);
-                        return true;
-                    default:
-                }
-                return false;
-            }
-        }
-
-
-
-    }
-
-    class NoticeAdapterNearYou extends RecyclerView.Adapter<NoticeAdapterNearYou.ViewHolder>{
-        private Context mContext;
-        private List<NoticeBoard> noticeBoardList;
-
-        public NoticeAdapterNearYou(Context mContext, List<NoticeBoard> noticeBoardList) {
-            this.mContext = mContext;
-            this.noticeBoardList = noticeBoardList;
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.notice_near_you_card, parent, false);
-            return new NoticeAdapterNearYou.ViewHolder(itemView);
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
-            NoticeBoard noticeBoard = noticeBoardList.get(position);
-
-            holder.noticeName.setText(noticeBoard.getName());
-
-        }
-
-        @Override
-        public int getItemCount() {
-            return noticeBoardList.size();
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-            public TextView noticeName;
-            public ViewHolder(View itemView) {
-                super(itemView);
-                noticeName = (TextView) itemView.findViewById(R.id.notice_name_nearyou_TextView);
-
-                itemView.setOnClickListener(this);
-            }
-
-            @Override
-            public void onClick(View v) {
-                try {
-                    NoticeBoard noticeBoard = noticeBoardList.get(getAdapterPosition());
-                    requestForNoticeBoardMsg(noticeBoard, false);
-                }catch (IndexOutOfBoundsException e) {
-                    e.printStackTrace();
-                }
-
-            }
-        }
-    }
-
-    class DialogNoticeBoardMessageAdapter extends RecyclerView.Adapter<DialogNoticeBoardMessageAdapter.ViewHolder>{
-        private Context mContext;
-        private NoticeBoard mNoticeBoard;
-
-        public DialogNoticeBoardMessageAdapter(Context mContext, NoticeBoard mNoticeBoard) {
-            this.mContext = mContext;
-            this.mNoticeBoard = mNoticeBoard;
-        }
-
-        public void setNoticeBoard(NoticeBoard mNoticeBoard){
-            this.mNoticeBoard = mNoticeBoard;
-        }
-
-        @Override
-        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.noticeboard_message_card, parent, false);
-            return new DialogNoticeBoardMessageAdapter.ViewHolder(itemView);
-        }
-
-        @Override
-        public void onBindViewHolder(ViewHolder holder, final int position) {
-            final NoticeBoardMessage noticeBoardMessage = mNoticeBoard.getMessagesList().get(position);
-            holder.noticeMessage.setText(noticeBoardMessage.getMsg());
-            holder.timestamp.setText(Utility.getTimeAndDate(noticeBoardMessage.getTimestamp()));
-
-            if (HomeActivity.mUserId!=null && HomeActivity.mUserId.equals(mNoticeBoard.getAdminId())) {
-                holder.deleteImageView.setVisibility(View.VISIBLE);
-            }
-
-            holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (HomeActivity.mLoginToken != null && !HomeActivity.mLoginToken.equals("")) {
-                        requestDeleteNoticeBoardMessage(noticeBoardMessage, HomeActivity.mLoginToken);
-                        mNoticeBoard.getMessagesList().remove(position);
-                        messageAdapter.notifyDataSetChanged();
-                    }
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return mNoticeBoard.getMessagesList().size();
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public TextView noticeMessage;
-            public TextView timestamp;
-            public ImageView deleteImageView;
-            public ViewHolder(View itemView) {
-                super(itemView);
-                noticeMessage = (TextView) itemView.findViewById(R.id.notice_Msg_TextView);
-                timestamp = (TextView) itemView.findViewById(R.id.notice_Msg_time_TextView);
-                deleteImageView = (ImageView) itemView.findViewById(R.id.msg_delete);
-                deleteImageView.setVisibility(View.GONE);
-            }
-        }
-    }
 
     private class CountDownTimerTask extends CountDownTimer {
 

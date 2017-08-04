@@ -106,6 +106,7 @@ import com.localapp.network.ImageSearchRequest;
 import com.localapp.network.SubscribeUnsubscribeNoticeBoardRequest;
 import com.localapp.network.helper.UpdatePostBackRequest;
 import com.localapp.ui.activities.HomeActivity;
+import com.localapp.ui.adapters.DialogNoticeBoardMessageAdapter;
 import com.localapp.ui.custom_views.MultiDrawable;
 import com.localapp.ui.activities.InviteActivity;
 import com.localapp.utils.AnimationUtility;
@@ -137,7 +138,7 @@ import static android.app.Activity.RESULT_OK;
 public class MapFragment extends Fragment implements OnMapReadyCallback, GetUsersRequest.GetUsersResponseCallback,
         ClusterManager.OnClusterClickListener<Profile>, ClusterManager.OnClusterInfoWindowClickListener<Profile>, ClusterManager.OnClusterItemClickListener<Profile>, ClusterManager.OnClusterItemInfoWindowClickListener<Profile>,
         ImageSearchRequest.ImageSearchResponseCallback, GetNearestNoticeBoardRequest.GetNearestNoticeBoardRequestCallback, GetNoticeBoardMessageRequest.GetNoticeBoardMessageRequestCallback, SubscribeUnsubscribeNoticeBoardRequest.SubscribeUnsubscribeNoticeBoardCallback,
-        GetProfileByIdRequest.GetProfileByIdRequestCallback, LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,ConnectivityReceiver.ConnectivityReceiverListener,GoogleMap.OnCameraMoveStartedListener,GoogleMap.OnCameraMoveCanceledListener{
+        GetProfileByIdRequest.GetProfileByIdRequestCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,ConnectivityReceiver.ConnectivityReceiverListener,GoogleMap.OnCameraMoveStartedListener,GoogleMap.OnCameraMoveCanceledListener{
 
 
     //==============================================//
@@ -281,16 +282,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         mMapView.onCreate(savedInstanceState);
         mMapView.getMapAsync(this);
 
-//        mLocationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !isPermissionGrated()) {
-            requestPermissions(LOCATION_PERMISSIONS, REQUEST_LOCATION_PERMISSION_CODE);
-        } else {
-            requestLocation(); //requesting for location update
-        }
-
-        if (!isLocationEnabled()) {
-            showAlertForLocationSetting(1);
-        }*/
 
         if (!AppPreferences.getInstance(AppController.getAppContext()).isLaunchedMapToolTip()) {
             toolTips(view);
@@ -384,16 +375,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
 
 
-        /*toolTipRelativeLayout = (ToolTipRelativeLayout) view.findViewById(R.id.activity_main_tooltipRelativeLayout);
-
-        ToolTip toolTip = new ToolTip()
-                .withText("hi this is a test").withColor(Color.RED).withShadow().withAnimationType(ToolTip.AnimationType.FROM_MASTER_VIEW);
-        */
-
-
 
     }
-
 
 
 
@@ -478,38 +461,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     }
 
 
-    /*private void addItems() {
-        *//*************** data for testing ***********//*
-        for (int i = 0; i < 10; i++) {
-            mClusterManager.addItem(new Profile(position(), "Walter"));
-        }
-        for (int i = 0; i < 10; i++) {
-            mClusterManager.addItem(new Profile(position(), "Gran"));
-        }
-        for (int i = 0; i < 10; i++) {
-            mClusterManager.addItem(new Profile(position(), "Ruth"));
-        }
-        for (int i = 0; i < 10; i++) {
-            mClusterManager.addItem(new Profile(position(), "Stefan"));
-        }
-        for (int i = 0; i < 10; i++) {
-            mClusterManager.addItem(new Profile(position(), "Yeats"));
-        }
-
-        for (int i = 0; i < 10; i++) {
-            mClusterManager.addItem(new Profile(position(), "Mechanic"));
-        }
-
-        for (int i = 0; i < 10; i++) {
-            mClusterManager.addItem(new Profile(position(), "John"));
-        }
-
-        for (int i = 0; i < 10; i++) {
-            mClusterManager.addItem(new Profile(position(), "Teach"));
-        }
-
-
-    }*/
 
     /**
      * set potion of myLocationButton
@@ -678,100 +629,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     }
 
 
-    /**
-     * locationListener
-     */
-    /*LocationListener locationListener = new LocationListener() {
-        @Override
-        public void onLocationChanged(Location location) {
-            Log.v(TAG, "onLocationChanged");
 
-            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-//            addMarkerAtLocation(latLng);
-            HomeActivity.mLastKnownLocation = latLng;
-//            Toast.makeText(getApplicationContext(), "" + latLng, Toast.LENGTH_SHORT).show();
-//            if (isActivityVisible()) {
-                session.saveLastLocation(latLng);
-                request(latLng);
-//            }
-
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-            Log.v(TAG, "onStatusChanged");
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-            Log.v(TAG, "onProviderEnabled");
-        }
-
-        @Override
-        public void onProviderDisabled(String provider) {
-            Log.v(TAG, "onProviderDisabled");
-        }
-    };*/
-    @Override
-    public void onLocationChanged(Location location) {
-       /* Log.v(TAG, "onLocationChanged");
-
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());;
-        HomeActivity.mLastKnownLocation = latLng;
-        session.saveLastLocation(latLng);
-        request(latLng);*/
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-        Log.v(TAG, "onStatusChanged");
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-        Log.v(TAG, "onStatusChanged");
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-        Log.v(TAG, "onStatusChanged");
-    }
-
-    /**
-     * request for update location based on distance and time
-     */
-    /*private void requestLocation() {
-        Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
-        String provider = mLocationManager.getBestProvider(criteria, true);
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        mLocationManager.requestLocationUpdates(provider, 1000 * 5, 100, this);
-        Log.v(TAG, "requestLocation");
-    }
-
-    *//**
-     * check location provider enabled or not
-     * @return
-     *//*
-    private boolean isLocationEnabled() {
-        return mLocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-                mLocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
-    }*/
-
-    /**
-     * check all required permission is granted or not
-     * @return
-     */
     private boolean isPermissionGrated() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if ((getActivity().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -1893,11 +1751,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         protected void onBeforeClusterItemRendered(Profile profile, MarkerOptions markerOptions) {
             // Draw a single person.
             // Set the info window to show their name.
-//            mImageView.setImageResource(profile.profilePhoto);
-//            mImageLoader = VolleySingleton.getInstance(getApplicationContext()).getImageLoader();
-//            mImageLoader.get(profile.getuPictureURL(),ImageLoader.getImageListener(mImageView,R.mipmap.ic_launcher,android.R.drawable.ic_dialog_alert));
-//            mImageView.setImageResource(R.mipmap.ic_launcher);
-//            mImageView.setImageUrl(profile.getuPictureURL(), mImageLoader);
             Picasso.with(AppController.getAppContext()).load(profile.getuPictureURL()).into(mImageView);
 
 
@@ -2119,43 +1972,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     }
 
 
-    /*@Override
-    public void ImageSearchResponse(CommonRequest.ResponseCode res, Profile uProfile, String errorMsg) {
-        mProgressDialog.dismiss();
-        switch (res) {
-            case COMMON_RES_SUCCESS:
-                ArrayList<Integer> indexs = new ArrayList<>();
-                for (Profile p : profileList) {
-                    if (p.getuId() != null && p.getuId().contentEquals(uProfile.getuId())) {
-                        indexs.add(profileList.indexOf(p));
-
-                        break;
-                    }
-
-                }
-
-                if (indexs.size() > 0) {
-                    addMarkerByProfile(true, indexs);
-                } else {
-                    Toast.makeText(getContext(), "No search result found", Toast.LENGTH_SHORT).show();
-                }
-                break;
-            case COMMON_RES_CONNECTION_TIMEOUT:
-                Toast.makeText(getContext(), "Something went wrong please try again", Toast.LENGTH_SHORT).show();
-                break;
-            case COMMON_RES_FAILED_TO_CONNECT:
-                Toast.makeText(getContext(), R.string.no_internet_msg, Toast.LENGTH_SHORT).show();
-                break;
-            case COMMON_RES_INTERNAL_ERROR:
-                break;
-            case COMMON_RES_SERVER_ERROR_WITH_MESSAGE:
-                Toast.makeText(getContext(), "No search result found", Toast.LENGTH_SHORT).show();
-                addMarkerByProfile(false, null);
-                break;
-        }
-    }*/
-
-
     @Override
     public void ImageSearchResponse(CommonRequest.ResponseCode responseCode, List<Profile> uProfile, String errorMsg) {
         mProgressDialog.dismiss();
@@ -2272,63 +2088,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     };
 
 
-    class DialogNoticeBoardMessageAdapter extends RecyclerView.Adapter<DialogNoticeBoardMessageAdapter.ViewHolder> {
-        private Context mContext;
-        private NoticeBoard mNoticeBoard;
-
-        public DialogNoticeBoardMessageAdapter(Context mContext, NoticeBoard mNoticeBoard) {
-            this.mContext = mContext;
-            this.mNoticeBoard = mNoticeBoard;
-        }
-
-        @Override
-        public DialogNoticeBoardMessageAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View itemView = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.noticeboard_message_card, parent, false);
-            return new DialogNoticeBoardMessageAdapter.ViewHolder(itemView);
-        }
-
-
-        @Override
-        public void onBindViewHolder(DialogNoticeBoardMessageAdapter.ViewHolder holder, final int position) {
-            final NoticeBoardMessage noticeBoardMessage = mNoticeBoard.getMessagesList().get(position);
-            holder.noticeMessage.setText(noticeBoardMessage.getMsg());
-            holder.timestamp.setText(Utility.getTimeAndDate(noticeBoardMessage.getTimestamp()));
-
-            if (HomeActivity.mUserId != null && HomeActivity.mUserId.equals(mNoticeBoard.getAdminId())) {
-                holder.deleteImageView.setVisibility(View.VISIBLE);
-            }
-
-            holder.deleteImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    /*requestDeleteNoticeBoardMessage(noticeBoardMessage);
-                    mNoticeBoard.getMessagesList().remove(position);
-                    messageAdapter.notifyDataSetChanged();*/
-                }
-            });
-        }
-
-        @Override
-        public int getItemCount() {
-            return mNoticeBoard.getMessagesList().size();
-        }
-
-        public class ViewHolder extends RecyclerView.ViewHolder {
-            public TextView noticeMessage;
-            public TextView timestamp;
-            public ImageView deleteImageView;
-
-            public ViewHolder(View itemView) {
-                super(itemView);
-                noticeMessage = (TextView) itemView.findViewById(R.id.notice_Msg_TextView);
-                timestamp = (TextView) itemView.findViewById(R.id.notice_Msg_time_TextView);
-                deleteImageView = (ImageView) itemView.findViewById(R.id.msg_delete);
-                deleteImageView.setVisibility(View.GONE);
-            }
-        }
-    }
-
 
     private class CountDownTimerTask extends CountDownTimer {
 
@@ -2381,30 +2140,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     }
 
 
-    private void updateValuesFromBundle(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            // Update the value of mRequestingLocationUpdates from the Bundle, and make sure that
-            // the Start Updates and Stop Updates buttons are correctly enabled or disabled.
-            if (savedInstanceState.keySet().contains(KEY_REQUESTING_LOCATION_UPDATES)) {
-                mRequestingLocationUpdates = savedInstanceState.getBoolean(
-                        KEY_REQUESTING_LOCATION_UPDATES);
-            }
-
-            // Update the value of mCurrentLocation from the Bundle and update the UI to show the
-            // correct latitude and longitude.
-            if (savedInstanceState.keySet().contains(KEY_LOCATION)) {
-                // Since KEY_LOCATION was found in the Bundle, we can be sure that mCurrentLocation
-                // is not null.
-                mCurrentLocation = savedInstanceState.getParcelable(KEY_LOCATION);
-            }
-
-            // Update the value of mLastUpdateTime from the Bundle and update the UI.
-            if (savedInstanceState.keySet().contains(KEY_LAST_UPDATED_TIME_STRING)) {
-                mLastUpdateTime = savedInstanceState.getString(KEY_LAST_UPDATED_TIME_STRING);
-            }
-            updateUI();
-        }
-    }
 
     private void updateUI() {
 
@@ -2640,19 +2375,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
     }
 
 
-
-
     /**
-     * Stores activity data in the Bundle.
+     *  Draw circle in the map
+     * @param mLatLng
      */
-    /*public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
-        savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
-        savedInstanceState.putString(KEY_LAST_UPDATED_TIME_STRING, mLastUpdateTime);
-        super.onSaveInstanceState(savedInstanceState);
-    }*/
-
-
     public void drawCircle(LatLng mLatLng) {
         Circle circle = mMap.addCircle(new CircleOptions()
                 .center(mLatLng)

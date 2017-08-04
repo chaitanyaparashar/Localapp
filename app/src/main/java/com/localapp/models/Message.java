@@ -27,7 +27,6 @@ public class Message {
     private String mUserID;
     private String id;
     private FeedFragment.MessageType messageType;
-    private Bitmap imgBitmap;
     private String fcmToken;
 
     public String getFcmToken() {
@@ -78,13 +77,7 @@ public class Message {
     public void setmUserID(String mUserID) {
         this.mUserID = mUserID;
     }
-    public Bitmap getImgBitmap() {
-        return imgBitmap;
-    }
 
-    public void setImgBitmap(Bitmap imgBitmap) {
-        this.imgBitmap = imgBitmap;
-    }
 
     public String getPicUrl() {
         return picUrl;

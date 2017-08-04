@@ -71,6 +71,8 @@ import com.localapp.preferences.AppPreferences;
 import com.localapp.preferences.SessionManager;
 import com.localapp.ui.activities.HomeActivity;
 import com.localapp.ui.activities.VideoPlay;
+import com.localapp.ui.adapters.EmergencyListAdapter;
+import com.localapp.ui.adapters.EmojiGridAdapter;
 import com.localapp.ui.adapters.ThreadAdapter;
 import com.localapp.utils.AlertDialogHelper;
 import com.localapp.utils.Constants;
@@ -647,14 +649,6 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
                 }
 
 
-                /*****/
-                /*Drawable d = getResources().getDrawable(R.drawable.aaa); // the drawable (Captain Obvious, to the rescue!!!)
-                Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-                byte[] bitmapdata = stream.toByteArray();*/
-                /******/
-
 
                 mParams =  new HashMap<>();
                 mParams.put("token",messageData.getToken());
@@ -932,33 +926,6 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
     }
 
 
-    private class EmojiGridAdapter extends ArrayAdapter {
-        Context mContext;
-        String[] emojiName;
-
-        public EmojiGridAdapter(Context context, int resource, String[] emoji_name) {
-            super(context, resource, emoji_name);
-            mContext = context;
-            this.emojiName = emoji_name;
-        }
-
-        @NonNull
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            View view = LayoutInflater.from(mContext).inflate(R.layout.emoticon_grid_layout,null);
-            ImageView imageView = (ImageView)view.findViewById(R.id.emoji_icon);
-            TextView textView = (TextView) view.findViewById(R.id.emoji_text);
-            textView.setText(emojiName[position]);
-            imageView.setImageResource(Constants.emojiResourceID[position]);
-
-            return view;
-        }
-    }
-
-
-
-
     public enum MessageType {
         STRAIGHT,
         SHOUT,
@@ -1080,39 +1047,8 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
 
     /*********** calculate distance by GeoDataSource.com**********/
 
-    /*private double distance(double lat1, double lon1, double lat2, double lon2, String unit){
 
-        double theta = lon1 - lon2;
-        double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
-        dist = Math.acos(dist);
-        dist = rad2deg(dist);
-        dist = dist * 60 * 1.1515;
-        if (unit == "K") {
-            dist = dist * 1.609344;
-        } else if (unit == "N") {
-            dist = dist * 0.8684;
-        }
-
-        return (dist);
-
-    }
-
-    *//*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*//*
-	*//*::	This function converts decimal degrees to radians						 :*//*
-	*//*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*//*
-    private double deg2rad(double deg) {
-        return (deg * Math.PI / 180.0);
-    }
-
-    *//*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*//*
-	*//*::	This function converts radians to decimal degrees						 :*//*
-	*//*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*//*
-    private double rad2deg(double rad) {
-        return (rad * 180 / Math.PI);
-    }*/
-
-
-    class EmergencyListAdapter extends BaseAdapter{
+    /*class EmergencyListAdapter extends BaseAdapter{
         private Activity context;
         private List<Message> emergencyMessageList;
         private LayoutInflater inflater = null;
@@ -1167,7 +1103,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
 
             return vi;
         }
-    }
+    }*/
 
     public static final int CAMERA_REQUEST = 55;
     public static final int VIDEO_REQUEST = 56;

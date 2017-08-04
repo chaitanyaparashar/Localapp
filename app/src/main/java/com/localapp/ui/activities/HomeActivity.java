@@ -12,9 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -35,10 +32,9 @@ import com.localapp.background.LocationService;
 import com.localapp.models.MessageNotificationData;
 import com.localapp.preferences.AppPreferences;
 import com.localapp.preferences.SessionManager;
+import com.localapp.ui.adapters.SectionsPagerAdapter;
 import com.localapp.ui.fragments.FeedFragment;
 import com.localapp.ui.fragments.MapFragment;
-import com.localapp.ui.fragments.NoticeBoardFragment;
-import com.localapp.ui.fragments.ProfileFragment;
 import com.localapp.utils.Constants;
 import com.localapp.utils.NetworkUtil;
 import com.localapp.utils.Utility;
@@ -233,46 +229,6 @@ public class HomeActivity extends AppCompatActivity implements ConnectivityRecei
     }
 
 
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
-     * one of the sections/tabs/pages.
-     */
-    public class SectionsPagerAdapter extends FragmentPagerAdapter {
-
-//        int totalPage = 2;
-
-
-        public SectionsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            switch (position) {
-                case 0:
-                    return new MapFragment();
-                case 1:
-                    return new FeedFragment();
-                case 2:
-                    return new NoticeBoardFragment();
-                case 3:
-                    return new ProfileFragment();
-
-            }
-            return null;
-        }
-
-
-        @Override
-        public int getCount() {
-            // Show 3 total pages.
-            return 4;
-        }
-
-
-    }
-
 
     void getLastLoginDetails() {
 
@@ -309,21 +265,6 @@ public class HomeActivity extends AppCompatActivity implements ConnectivityRecei
             case Constants.REQUEST_CHECK_SETTINGS:
                 MapFragment mapFragment = MapFragment.getInstance();
                 mapFragment.onActivityResult(requestCode,resultCode,data);
-                /*switch (resultCode) {
-                    case Activity.RESULT_OK:
-                        Log.i(TAG, "User agreed to make required location settings changes.");
-                        // Nothing to do. startLocationupdates() gets called in onResume again.
-                        break;
-                    case Activity.RESULT_CANCELED:
-                        Log.i(TAG, "User chose not to make required location settings changes.");
-                        MapFragment mapFragment = MapFragment.getInstance();
-                        mapFragment.showAlertForLocationSetting(1);
-                        mapFragment.onActivityResult(requestCode,);
-//                        finish();
-                        *//*mRequestingLocationUpdates = false;
-                        updateUI();*//*
-                        break;
-                }*/
                 break;
         }
     }

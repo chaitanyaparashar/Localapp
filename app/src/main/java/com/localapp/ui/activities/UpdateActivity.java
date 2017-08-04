@@ -205,39 +205,6 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
 
 
 
-        /*// Creating the PopupWindow
-        final PopupWindow popup = new PopupWindow(context);
-        popup.setContentView(layout);
-        popup.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                String items = "";
-                for(int mGroupPosition =0; mGroupPosition < listAdapter.getGroupCount(); mGroupPosition++)
-                {
-                    items = items +  listAdapter.getItemAtPostion(mGroupPosition);
-
-                }
-                if (items.length() > 2) {
-                    mProfessionView.setText(items.substring(0,items.length()-1));
-                }
-
-            }
-        });
-
-
-        popup.setFocusable(true);
-
-
-        // Clear the default translucent background
-        popup.setBackgroundDrawable(new BitmapDrawable());
-
-
-        popup.showAsDropDown(mProfessionView);*/
-
-
-
-
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(layout);
         builder.setTitle(R.string.title_select_profession);
@@ -564,28 +531,6 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
             }
         }
 
-        /*if (spinner.getSelectedItemPosition() == 0){
-            onSignUpFailed("Please select your profession");
-            valid = false;
-            return valid;
-        }*/
-
-
-        /*if (password.isEmpty() || password.length() < 6 || password.length() > 16) {
-            mPasswordView.setError("between 6 and 16 alphanumeric characters");
-            valid = false;
-            return valid;
-        } else {
-            mPasswordView.setError(null);
-        }
-
-        if (!cPassword.equals(password)) {
-            cPasswordView.setError("Password not matched");
-            valid = false;
-            return valid;
-        } else {
-            cPasswordView.setError(null);
-        }*/
 
 
 

@@ -28,9 +28,12 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -88,7 +91,6 @@ import com.localapp.appcontroller.AppController;
 import com.localapp.background.ConnectivityReceiver;
 import com.localapp.background.LocationService;
 import com.localapp.camera.Camera2Activity;
-import com.localapp.compressor.Compressor;
 import com.localapp.models.GetUsersRequestData;
 import com.localapp.models.NoticeBoard;
 import com.localapp.models.NoticeBoardMessage;
@@ -106,6 +108,7 @@ import com.localapp.network.helper.UpdatePostBackRequest;
 import com.localapp.ui.activities.HomeActivity;
 import com.localapp.ui.custom_views.MultiDrawable;
 import com.localapp.ui.activities.InviteActivity;
+import com.localapp.utils.AnimationUtility;
 import com.localapp.utils.Constants;
 import com.localapp.utils.CustomStringList;
 import com.localapp.utils.NetworkUtil;
@@ -113,7 +116,6 @@ import com.localapp.utils.Utility;
 import com.mobiruck.Mobiruck;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -125,6 +127,9 @@ import java.util.Random;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 import static android.app.Activity.RESULT_OK;
 
 
@@ -132,7 +137,7 @@ import static android.app.Activity.RESULT_OK;
 public class MapFragment extends Fragment implements OnMapReadyCallback, GetUsersRequest.GetUsersResponseCallback,
         ClusterManager.OnClusterClickListener<Profile>, ClusterManager.OnClusterInfoWindowClickListener<Profile>, ClusterManager.OnClusterItemClickListener<Profile>, ClusterManager.OnClusterItemInfoWindowClickListener<Profile>,
         ImageSearchRequest.ImageSearchResponseCallback, GetNearestNoticeBoardRequest.GetNearestNoticeBoardRequestCallback, GetNoticeBoardMessageRequest.GetNoticeBoardMessageRequestCallback, SubscribeUnsubscribeNoticeBoardRequest.SubscribeUnsubscribeNoticeBoardCallback,
-        GetProfileByIdRequest.GetProfileByIdRequestCallback, LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,ConnectivityReceiver.ConnectivityReceiverListener {
+        GetProfileByIdRequest.GetProfileByIdRequestCallback, LocationListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener,ConnectivityReceiver.ConnectivityReceiverListener,GoogleMap.OnCameraMoveStartedListener,GoogleMap.OnCameraMoveCanceledListener{
 
 
     //==============================================//
@@ -171,6 +176,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
     private GoogleMap mMap;
     private MapView mMapView;
+    private View locationButton;
 //    private LocationManager mLocationManager;
     public ArrayList<Profile> profileList;
     public ArrayList<Profile> noticeBoardProfileList;
@@ -188,6 +194,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
 
     private LinearLayout botomFilter;
     private Button inviteButton;
+
+    @Bind(R.id.searchCard)
+    protected CardView searchCard;
+
+
+    Toolbar toolbar;
+
+    private ActionBar actionBar;
 
 
     private FirebaseAnalytics mFirebaseAnalytics;
@@ -215,6 +229,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         Log.d(TAG,"onCreate");
         this.mapFragmentinstance = this;
 
+        actionBar = ((HomeActivity)getActivity()).getSupportActionBar();
+
         //===========================//
         mRequestingLocationUpdates = true;
 //        updateValuesFromBundle(savedInstanceState);
@@ -236,6 +252,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         View view = inflater.inflate(R.layout.fragment_map, container, false);
         MapsInitializer.initialize(this.getActivity());
 
+        ButterKnife.bind(this,view);
 
         Bundle extras = getActivity().getIntent().getExtras();
 
@@ -408,10 +425,27 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         mClusterManager = new ClusterManager<Profile>(getContext(), mMap);
         mClusterManager.setRenderer(new ProfileRenderer());
 
-        mMap.setOnCameraIdleListener(mClusterManager);
+
+        final CameraPosition[] mPreviousCameraPosition = {null};
+        mMap.setOnCameraIdleListener(new GoogleMap.OnCameraIdleListener() {
+            @Override
+            public void onCameraIdle() {
+                CameraPosition position = mMap.getCameraPosition();
+                if(mPreviousCameraPosition[0] == null || mPreviousCameraPosition[0].zoom != position.zoom) {
+                    mPreviousCameraPosition[0] = googleMap.getCameraPosition();
+                    mClusterManager.cluster();
+                }
+
+                showMapController();
+            }
+        });
         mMap.setOnMarkerClickListener(mClusterManager);
         mMap.setOnInfoWindowClickListener(mClusterManager);
         mMap.setOnMapClickListener(onMapClickListener);
+
+        mMap.setOnCameraMoveStartedListener(this);
+        mMap.setOnCameraMoveCanceledListener(this);
+//        mMap.setOnCameraIdleListener(this);
 
         mClusterManager.setOnClusterClickListener(this);
         mClusterManager.setOnClusterInfoWindowClickListener(this);
@@ -485,7 +519,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         if (mMapView != null &&
                 mMapView.findViewById(Integer.parseInt("1")) != null) {
             // Get the button view
-            View locationButton = ((View) mMapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
+            locationButton = ((View) mMapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 locationButton.setElevation(10f);
             }
@@ -1744,6 +1778,88 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
         }
     }
 
+    @Override
+    public void onCameraMoveStarted(int reason) {
+        if (reason == GoogleMap.OnCameraMoveStartedListener.REASON_GESTURE) { //hide map controller when user use gesture on map
+            hideMapController();
+        }
+    }
+
+    @Override
+    public void onCameraMoveCanceled() {
+        hideMapController();
+    }
+
+    /**
+     * hide all supporting view components
+     * from the map
+     * with animation
+     */
+    private void hideMapController() {
+        AnimationUtility.hideViewWithAnimation(inviteButton, AnimationUtility.Direction.DOWN);
+        AnimationUtility.hideViewWithAnimation(searchCard, AnimationUtility.Direction.UP);
+        AnimationUtility.hideViewWithAnimation(locationButton, AnimationUtility.Direction.LEFT);
+
+        if (uDetailLayout.getVisibility() == View.VISIBLE) {
+            AnimationUtility.hideViewWithAnimation(uDetailLayout, AnimationUtility.Direction.DOWN);
+        }
+
+
+        if (actionBar != null) {
+//            actionBar.hide();
+//            hideActionBar(actionBar);
+        }
+    }
+
+    /**
+     * show all supporting view components
+     * from the map
+     * with animation
+     */
+    private void showMapController() {
+        AnimationUtility.showViewWithAnimation(inviteButton, AnimationUtility.Direction.DOWN);
+        AnimationUtility.showViewWithAnimation(searchCard, AnimationUtility.Direction.UP);
+        AnimationUtility.showViewWithAnimation(locationButton, AnimationUtility.Direction.LEFT);
+
+        if (uDetailLayout.getVisibility() == View.INVISIBLE) {
+            AnimationUtility.showViewWithAnimation(uDetailLayout, AnimationUtility.Direction.DOWN);
+        }
+
+        if (actionBar != null) {
+//            actionBar.show();
+//            showActionBar(actionBar);
+        }
+    }
+
+
+    protected void hideActionBar(final ActionBar ab){
+
+        if (ab != null && ab.isShowing()) {
+            if(toolbar != null) {
+                toolbar.animate().translationY(-112).setDuration(600L)
+                        .withEndAction(new Runnable() {
+                            @Override
+                            public void run() {
+                                ab.hide();
+                            }
+                        }).start();
+            } else {
+                ab.hide();
+            }
+        }
+    }
+
+    protected void showActionBar(ActionBar ab){
+        if (ab != null && !ab.isShowing()) {
+            ab.show();
+            if(toolbar != null) {
+                toolbar.animate().translationY(0).setDuration(600L).start();
+            }
+        }
+    }
+
+
+
 
     private class ProfileRenderer extends DefaultClusterRenderer<Profile> {
 
@@ -1770,6 +1886,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GetUser
             mImageView.setPadding(padding, padding, padding, padding);
             mIconGenerator.setContentView(mImageView);
         }
+
+
 
         @Override
         protected void onBeforeClusterItemRendered(Profile profile, MarkerOptions markerOptions) {

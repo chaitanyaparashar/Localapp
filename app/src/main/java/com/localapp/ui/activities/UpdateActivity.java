@@ -253,7 +253,7 @@ public class UpdateActivity extends AppCompatActivity implements GetProfileReque
 
                 }
                 if (items.length() > 2) {
-                    mProfessionView.setText(items.substring(0,items.length()-1));
+                    mProfessionView.setText(items.substring(0,items.length()-2));
                 }
             }
         });

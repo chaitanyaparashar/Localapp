@@ -10,6 +10,7 @@
 
 
     <FrameLayout
+        android:id="@+id/controller_frame"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <RelativeLayout
@@ -78,93 +79,27 @@
 
             </LinearLayout>
 
-            <Button
+            <!--<Button
                 android:id="@+id/invite_btn"
                 android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
                 android:textColor="@color/white"
                 android:background="@drawable/submit_button_state"
-                android:text="@string/btn_invite"/>
+                android:text="@string/btn_invite"/>-->
 
 
 
 
 
-            <RelativeLayout
-                android:clickable="true"
-                android:id="@+id/user_detail_rl"
-                android:visibility="gone"
-                android:background="@color/white"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:elevation="10dp">
 
-                <com.github.siyamed.shapeimageview.CircularImageView
-                    android:layout_centerVertical="true"
-                    android:id="@+id/user_pic"
-                    android:layout_margin="16dp"
-                    android:layout_width="68dp"
-                    android:layout_height="68dp"
-                    android:src="@drawable/ic_user"/>
-
-                <TextView
-                    android:id="@+id/user_name"
-                    android:layout_margin="8dp"
-                    android:layout_toEndOf="@+id/user_pic"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:textColor="@android:color/background_dark" />
-                <TextView
-                    android:id="@+id/user_title"
-                    android:layout_marginStart="8dp"
-                    android:textSize="18sp"
-                    android:layout_toEndOf="@+id/user_pic"
-                    android:layout_below="@+id/user_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-                <RatingBar
-                    android:visibility="gone"
-                    android:layout_toEndOf="@+id/user_pic"
-                    android:layout_below="@+id/user_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <LinearLayout
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentEnd="true"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-
-                    <ImageView
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
-                        android:src="@drawable/ic_email"
-                        android:id="@+id/action_email"
-                        android:layout_marginEnd="5dp"
-                        android:layout_marginTop="8dp" />
-
-                    <ImageView
-                        android:id="@+id/action_call"
-                        android:layout_width="45dp"
-                        android:layout_height="45dp"
-                        android:layout_marginEnd="8dp"
-                        android:src="@drawable/ic_phone"
-                        android:layout_marginTop="8dp" />
-
-
-                </LinearLayout>
-
-
-            </RelativeLayout>
 
 
         </RelativeLayout>
 
 
         <android.support.v7.widget.CardView
+            android:id="@+id/searchCard"
             android:layout_margin="20dp"
             android:layout_width="match_parent"
             app:cardElevation="0.8dp"
@@ -219,6 +154,88 @@
             </LinearLayout>
 
         </android.support.v7.widget.CardView>
+
+
+
+        <RelativeLayout
+            android:clickable="true"
+            android:id="@+id/user_detail_rl"
+            android:visibility="gone"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:elevation="10dp">
+
+            <com.github.siyamed.shapeimageview.CircularImageView
+                android:layout_centerVertical="true"
+                android:id="@+id/user_pic"
+                android:layout_margin="16dp"
+                android:layout_width="68dp"
+                android:layout_height="68dp"
+                android:src="@drawable/ic_user"/>
+
+            <TextView
+                android:id="@+id/user_name"
+                android:layout_margin="8dp"
+                android:layout_toEndOf="@+id/user_pic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textColor="@android:color/background_dark" />
+            <TextView
+                android:id="@+id/user_title"
+                android:layout_marginStart="8dp"
+                android:textSize="18sp"
+                android:layout_toEndOf="@+id/user_pic"
+                android:layout_below="@+id/user_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <RatingBar
+                android:visibility="gone"
+                android:layout_toEndOf="@+id/user_pic"
+                android:layout_below="@+id/user_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:src="@drawable/ic_email"
+                    android:id="@+id/action_email"
+                    android:layout_marginEnd="5dp"
+                    android:layout_marginTop="8dp" />
+
+                <ImageView
+                    android:id="@+id/action_call"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_marginEnd="8dp"
+                    android:src="@drawable/ic_phone"
+                    android:layout_marginTop="8dp" />
+
+
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+
+        <Button
+            android:layout_gravity="bottom"
+            android:id="@+id/invite_btn"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:textColor="@color/white"
+            android:background="@drawable/submit_button_state"
+            android:text="@string/btn_invite"/>
 
 
 

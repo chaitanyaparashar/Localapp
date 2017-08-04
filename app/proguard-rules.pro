@@ -69,5 +69,12 @@
 -dontwarn butterknife.internal.**
 
 
+#----------- remove all Log.d code -----
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** i(...);
+}
+
+
 
 

@@ -322,7 +322,7 @@ public class SignUpActivity extends AppCompatActivity implements SignUpRequest.S
 
                 }
                 if (items.length() > 2) {
-                    mProfessionView.setText(items.substring(0,items.length()-1));
+                    mProfessionView.setText(items.substring(0,items.length()-2));
                 }
             }
         });

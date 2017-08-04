@@ -270,7 +270,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
         emoticImgBtn = (ImageView) view.findViewById(R.id.btn_emoticon);
 
 //        recyclerView.addOnItemTouchListener(recyclerTouchListener);
-        recyclerView.setHasFixedSize(true);
+//        recyclerView.setHasFixedSize(true);
         recyclerView.setDrawingCacheEnabled(true);
         recyclerView.setItemViewCacheSize(50);
         final LinearLayoutManager  layoutManager = new LinearLayoutManager(AppController.getAppContext());
@@ -317,6 +317,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
 //        sendImageViewBtn.setOnClickListener(sendVoiceClickListener);
         sendImageViewBtn.setOnTouchListener(audioSendOnTouchListener);
         chatText.addTextChangedListener(textWatcher);
+        chatText.setEmojiconSize(80);
         // Inflate the layout for this fragment
 
         //Initializing message arraylist
@@ -332,7 +333,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
 
 
         EmojIconActions  emojIcon=new EmojIconActions(getActivity(),view,chatText,emoticImgBtn);
-        emojIcon.setIconsIds(R.drawable.ic_action_keyboard,R.drawable.ic_smily);
+        emojIcon.setIconsIds(R.drawable.ic_keyboard,R.drawable.ic_smily);
         emojIcon.ShowEmojIcon();
 
 
@@ -1378,7 +1379,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
     public void initializationOfAudioObjects(View view) {
 
         // Record to the external cache directory for visibility
-        mAudioPath = getActivity().getExternalCacheDir().getAbsolutePath();
+//        mAudioPath = getActivity().getExternalCacheDir().getAbsolutePath();
         mAudioPath = Environment
                 .getExternalStorageDirectory() + "/Localapp";
         File folder = null;

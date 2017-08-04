@@ -5,11 +5,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.localapp.ui.fragments.NoticeBoardFragment">
 
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-    </FrameLayout>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -21,7 +16,26 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <LinearLayout
+            <android.support.v7.widget.Toolbar
+                android:elevation="2dp"
+                android:background="@color/white"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize">
+
+                <TextView
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:textAllCaps="true"
+                    android:textColor="@color/titleColor"
+                    android:textSize="22sp"
+                    android:fontFamily="@string/font_family_regular"
+                    android:textStyle="bold"
+                    android:text="@string/label_my_board"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </android.support.v7.widget.Toolbar>
+            <!--<LinearLayout
                 android:elevation="5dp"
                 android:background="@color/white"
                 android:layout_width="match_parent"
@@ -37,7 +51,7 @@
                     android:textSize="22sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
-            </LinearLayout>
+            </LinearLayout>-->
 
 
             <android.support.v4.widget.SwipeRefreshLayout
@@ -61,7 +75,6 @@
         <LinearLayout
             android:layout_marginTop="2dp"
             android:layout_marginBottom="2dp"
-            android:elevation="5dp"
             android:background="@color/white"
             android:orientation="vertical"
             android:id="@+id/layout_notice_near_you"
@@ -70,18 +83,24 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true">
 
-            <TextView
-                android:layout_margin="8dp"
-                android:gravity="center_horizontal"
-                android:textColor="@color/titleColor"
-                android:text="@string/label_notice_board_near_you"
-                android:textStyle="bold"
+            <android.support.v7.widget.CardView
+                app:cardElevation="1dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="0.5dp"
-                android:background="#c0c0c0" />
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_margin="8dp"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/titleColor"
+                    android:text="@string/label_notice_board_near_you"
+                    android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+            </android.support.v7.widget.CardView>
+
+
+
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/notice_board_near_you_recyclerView"
@@ -98,6 +117,7 @@
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         app:elevation="15dp"
+        android:background="?android:attr/selectableItemBackground"
         android:tint="@color/white"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

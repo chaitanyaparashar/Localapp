@@ -171,7 +171,7 @@ public class HomeActivity extends AppCompatActivity implements ConnectivityRecei
         }
 
 
-        //send crash report to server if crash app
+        //send crash report to server if crashed app
         try {
             final String errorReport = intent.getStringExtra(Constants.ERROR_REPORT);
             final String errorMessage = intent.getStringExtra(Constants.ERROR_MESSAGE);
@@ -182,8 +182,6 @@ public class HomeActivity extends AppCompatActivity implements ConnectivityRecei
         }catch (NullPointerException e) {
             e.printStackTrace();
         }
-
-
 
 
     }

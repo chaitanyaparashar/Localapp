@@ -7,6 +7,7 @@
 
     <com.android.volley.toolbox.NetworkImageView
             android:id="@+id/cluster_image"
+        android:background="?android:attr/selectableItemBackground"
             android:layout_width="@dimen/custom_profile_image"
             android:layout_height="@dimen/custom_profile_image"/>
 

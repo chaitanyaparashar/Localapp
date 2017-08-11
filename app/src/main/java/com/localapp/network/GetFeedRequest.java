@@ -6,6 +6,7 @@ import android.util.Log;
 import com.android.volley.VolleyError;
 import com.localapp.models.GetFeedRequestData;
 import com.localapp.models.Message;
+import com.localapp.models.ReplyMessage;
 import com.localapp.network.helper.CommonRequest;
 import com.localapp.network.helper.VolleyErrorHelper;
 import com.localapp.ui.fragments.FeedFragment;
@@ -79,6 +80,9 @@ public class GetFeedRequest extends CommonRequest {
                 String speciality = "";
                 String accepted = "";
 
+                String replyMessageId = null;
+                ReplyMessage replyMessage = null;
+
                 int emoji;
 
                 JSONArray latlngJsonArray = new JSONArray(msgJsonObject.getString("longLat"));
@@ -111,8 +115,22 @@ public class GetFeedRequest extends CommonRequest {
                     e.printStackTrace();
                 }
 
+                //for reply message
+                try {
+                    replyMessageId = msgJsonObject.getString("replyId");
+                    JSONObject replyMessageObject = msgJsonObject.getJSONObject("replyMessage");
+                    replyMessage = new ReplyMessage();
+                    replyMessage.setId(replyMessageObject.getString("id"));
+                    replyMessage.setName(replyMessageObject.getString("name"));
+                    replyMessage.setTextMessage(replyMessageObject.getString("text"));
+                }catch (JSONException je) {
+                    je.printStackTrace();
+                }
+
 
                 Message message = new Message();
+                message.setReplyMessageId(replyMessageId);
+                message.setReplyMessage(replyMessage);
                 message.setId(id);
                 message.setmUserID(mUserID);
                 message.setMsgIdOnlyForFrontEnd(emergencyId);

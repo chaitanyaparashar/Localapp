@@ -531,7 +531,7 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
                     Toast.makeText(Camera2Activity.this, "Configuration change", Toast.LENGTH_SHORT).show();
                 }
             }, null);
-        } catch (CameraAccessException e) {
+        } catch (CameraAccessException | NullPointerException e) {
             e.printStackTrace();
         }
     }
@@ -813,11 +813,16 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
         protected List<Uri> doInBackground(Void... params) {
             List<Uri> imageList = new ArrayList<>();
 
-            ArrayList<File> files = getFilePaths();
-            for (File file:files) {
-                imageList.add(Uri.fromFile(file));
+            try {
+                ArrayList<File> files = getFilePaths();
+                for (File file : files) {
+                    imageList.add(Uri.fromFile(file));
+                }
+                return imageList;
+            }catch (NullPointerException npe) {
+                npe.printStackTrace();
+                return null;
             }
-            return imageList;
         }
 
 
@@ -836,7 +841,12 @@ public class Camera2Activity extends AppCompatActivity implements View.OnClickLi
         protected void onPostExecute(List<Uri> uris) {
             super.onPostExecute(uris);
 
-            prepareGallery(uris);
+            if (uris != null) {
+                prepareGallery(uris);
+            }else {
+                Toast.makeText(Camera2Activity.this, "Camera open failed", Toast.LENGTH_SHORT).show();
+                Camera2Activity.this.finish();
+            }
         }
     }
 

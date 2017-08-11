@@ -53,38 +53,99 @@
 
 
             <LinearLayout
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <hani.momanii.supernova_emoji_library.Helper.EmojiconEditText
-                    android:background="@android:color/transparent"
-                    android:layout_weight="8.5"
-                    android:inputType="textMultiLine"
-                    android:id="@+id/chat_text"
-                    emojicon:emojiconSize="28sp"
-                    android:scrollbars="vertical"
-                    android:fadeScrollbars="false"
-                    android:maxLines="4"
-                    android:hint="@string/hint_type_a_message"
-                    android:textColorHint="#cdcdcd"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:visibility="gone"
+                    android:id="@+id/replay_layout"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/msg_reply_shape_bg"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:minHeight="45dp"
-                    android:paddingLeft="15dp"
-                    android:paddingRight="6dp" />
+                    android:orientation="vertical">
 
-                <ImageView
-                    android:layout_marginRight="5dp"
-                    android:id="@+id/btn_cam_shout"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_camera"
-                    android:layout_weight="1.5"
-                    android:padding="2dp"
-                    android:layout_width="0dp"
-                    android:layout_height="32dp" />
+                    <LinearLayout
+                        android:padding="4dp"
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:weightSum="1">
+
+                        <TextView
+                            android:layout_weight="1"
+                            android:textSize="12sp"
+                            android:fontFamily="@string/font_family_regular"
+                            android:textStyle="bold"
+                            android:layout_gravity="start"
+                            android:id="@+id/textViewNameOld"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content" />
+
+                        <ImageButton
+                            android:id="@+id/close_reply"
+                            android:layout_gravity="end"
+                            android:layout_width="12dp"
+                            android:layout_height="12dp"
+                            android:src="@drawable/ic_cross"
+                            style="@android:style/Widget.Material.Light.Button.Borderless"/>
+
+                    </LinearLayout>
+
+
+
+                    <hani.momanii.supernova_emoji_library.Helper.EmojiconTextView
+                        android:layout_gravity="start"
+                        android:id="@+id/textViewMsgOld"
+                        android:layout_width="wrap_content"
+                        emojicon:emojiconSize="25sp"
+                        android:textSize="12sp"
+                        android:minWidth="180dp"
+                        android:maxWidth="250dp"
+                        android:fontFamily="@string/font_family_regular"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="4dp"
+                        android:layout_marginBottom="2dp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <hani.momanii.supernova_emoji_library.Helper.EmojiconEditText
+                        android:background="@android:color/transparent"
+                        android:layout_weight="8.5"
+                        android:inputType="textMultiLine"
+                        android:id="@+id/chat_text"
+                        emojicon:emojiconSize="28sp"
+                        android:scrollbars="vertical"
+                        android:fadeScrollbars="false"
+                        android:maxLines="4"
+                        android:hint="@string/hint_type_a_message"
+                        android:textColorHint="#cdcdcd"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:minHeight="45dp"
+                        android:paddingLeft="15dp"
+                        android:paddingRight="6dp" />
+
+                    <ImageView
+                        android:layout_marginRight="5dp"
+                        android:id="@+id/btn_cam_shout"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_camera"
+                        android:layout_weight="1.5"
+                        android:padding="2dp"
+                        android:layout_width="0dp"
+                        android:layout_height="32dp" />
+                </LinearLayout>
 
             </LinearLayout>
 

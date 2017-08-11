@@ -1,7 +1,5 @@
 package com.localapp.models;
 
-import android.graphics.Bitmap;
-
 import com.localapp.ui.fragments.FeedFragment;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -29,6 +27,11 @@ public class Message {
     private FeedFragment.MessageType messageType;
     private String fcmToken;
 
+
+    private ReplyMessage replyMessage;
+    private String replyMessageId;
+
+
     public String getFcmToken() {
         return fcmToken;
     }
@@ -47,8 +50,6 @@ public class Message {
 
     private String accepted;
 
-
-
     public Message() {
 
     }
@@ -59,13 +60,15 @@ public class Message {
         return mediaType;
     }
 
+
+
     public void setMediaType(FeedFragment.MediaType mediaType) {
         this.mediaType = mediaType;
     }
+
     public FeedFragment.MessageType getMessageType() {
         return messageType;
     }
-
     public void setMessageType(FeedFragment.MessageType messageType) {
         this.messageType = messageType;
     }
@@ -78,18 +81,18 @@ public class Message {
         this.mUserID = mUserID;
     }
 
-
     public String getPicUrl() {
         return picUrl;
     }
 
+
     public void setPicUrl(String picUrl) {
         this.picUrl = picUrl;
     }
+
     public String getMsgIdOnlyForFrontEnd() {
         return msgIdOnlyForFrontEnd;
     }
-
     public void setMsgIdOnlyForFrontEnd(String msgIdOnlyForFrontEnd) {
         this.msgIdOnlyForFrontEnd = msgIdOnlyForFrontEnd;
     }
@@ -106,10 +109,10 @@ public class Message {
         this.mEmail = mEmail;
     }
 
-
     public void setName(String name) {
         this.name = name;
     }
+
 
     public void setTimeStamp(String timeStamp) {
         this.timeStamp = timeStamp;
@@ -143,10 +146,10 @@ public class Message {
         return mText;
     }
 
-
     public String getName() {
         return name;
     }
+
 
     public String getTimeStamp() {
         return timeStamp;
@@ -182,5 +185,21 @@ public class Message {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public ReplyMessage getReplyMessage() {
+        return replyMessage;
+    }
+
+    public void setReplyMessage(ReplyMessage replyMessage) {
+        this.replyMessage = replyMessage;
+    }
+
+    public String getReplyMessageId() {
+        return replyMessageId;
+    }
+
+    public void setReplyMessageId(String replyMessageId) {
+        this.replyMessageId = replyMessageId;
     }
 }

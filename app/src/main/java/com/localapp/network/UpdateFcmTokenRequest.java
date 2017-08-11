@@ -39,8 +39,12 @@ public class UpdateFcmTokenRequest extends CommonRequest {
 
     @Override
     public void onErrorHandler(VolleyError error) {
-        String errorMsg = VolleyErrorHelper.getMessage(error, mContext);
-        Log.d("UpdateFcmTokenRequest",errorMsg);
-        Log.d("UpdateFcmTokenRequest",error.getMessage());
+        try {
+            String errorMsg = VolleyErrorHelper.getMessage(error, mContext);
+            Log.d("UpdateFcmTokenRequest",errorMsg);
+            Log.d("UpdateFcmTokenRequest",error.getMessage());
+        }catch (NullPointerException e) {
+            e.printStackTrace();
+        }
     }
 }

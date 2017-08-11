@@ -28,6 +28,7 @@ import com.localapp.R;
 import com.localapp.appcontroller.AppController;
 import com.localapp.models.Message;
 import com.github.siyamed.shapeimageview.CircularImageView;
+import com.localapp.models.ReplyMessage;
 import com.localapp.ui.fragments.FeedFragment;
 import com.localapp.ui.activities.HomeActivity;
 import com.localapp.utils.Constants;
@@ -64,9 +65,14 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
     private static final int SELF_AUDIO = 561;
     private static final int OTHER_AUDIO = 562;
 
+    private static final int SELF_TEXT_REPLY = 563;
+    private static final int OTHER_TEXT_REPLY = 564;
+
     private static final String IMAGE = "img";
     private static final String VIDEO = "vdo";
     private static final String AUDIO = "ado";
+
+    private static final String TEXT_REPLY_TAG = "text_reply";
 
 
     //ArrayList of messages object containing all the messages in the thread
@@ -101,6 +107,7 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         //getting message object of current position
         Message message = messages.get(position);
         String msgUserID = message.getmUserID();
+        String msgReplyId = message.getReplyMessageId();
         FeedFragment.MediaType mediaType = message.getMediaType();
         if (msgUserID == null) {
             msgUserID = "";
@@ -111,7 +118,11 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
             if (msgUserID.equals(uID)) {
                 switch (mediaType) {
                     case MEDIA_TEXT:
-                        return SELF_TEXT;
+                        if (msgReplyId == null || msgReplyId.equals("null")) {
+                            return SELF_TEXT;
+                        }else {
+                            return SELF_TEXT_REPLY;
+                        }
 
                     case MEDIA_IMAGE:
                         return SELF_IMAGE;
@@ -125,7 +136,11 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
             } else {
                 switch (mediaType) {
                     case MEDIA_TEXT:
-                        return OTHER_TEXT;
+                        if (msgReplyId == null || msgReplyId.equals("null")) {
+                            return OTHER_TEXT;
+                        }else {
+                            return OTHER_TEXT_REPLY;
+                        }
 
                     case MEDIA_IMAGE:
                         return OTHER_IMAGE;
@@ -202,6 +217,18 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
                 itemView.setTag(AUDIO);
                 break;
 
+            case SELF_TEXT_REPLY:
+                itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.chat_thread_reply, parent, false);
+                itemView.setTag(TEXT_REPLY_TAG);
+                break;
+            case OTHER_TEXT_REPLY:
+                itemView = LayoutInflater.from(parent.getContext())
+                        .inflate(R.layout.chat_thread_reply_others, parent, false);
+                itemView.setTag(TEXT_REPLY_TAG);
+                break;
+
+
             default: itemView = LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.chat_thread_others, parent, false);
         }
@@ -216,13 +243,15 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         FeedFragment.MediaType mediaType = message.getMediaType();
         String text = message.getmText();
         String mURL = message.getMediaURL();
-        String userName = (message.getName() != null) ? message.getName() : "";
+        String userName = (message.getName() != null) ? "~" + message.getName() : "";
         String timeStamp = message.getTimeStamp();
+        String replyId = message.getReplyMessageId();
+        ReplyMessage replyMessage = message.getReplyMessage();
         final String user_id = message.getmUserID();
         final String userPicUrl = message.getPicUrl();//"https://s3-us-west-1.amazonaws.com/com.fourway.localapp.profileimage/vijay@gmail.com";
 
         if (holder.nameTextView != null) {
-            holder.nameTextView.setText("~" + userName);
+            holder.nameTextView.setText(userName);
         }
 
         if (holder.timeTextView != null){
@@ -271,6 +300,11 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
             case MEDIA_TEXT:
                 if (holder.textViewMessage != null) {
                     holder.textViewMessage.setText(text);
+
+                    if (replyId != null && !replyId.equals("null")) {  //reply message
+                        holder.nameTextViewOld.setText("~"+replyMessage.getName());
+                        holder.textViewMessageOld.setText(replyMessage.getTextMessage());
+                    }
                 }
                 break;
             case MEDIA_IMAGE:
@@ -317,13 +351,15 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (uID.equals(user_id)) {
+                recyclerViewListener.onClick(v, position);
+                /*if (uID.equals(user_id)) {
                     recyclerViewListener.onClick(v, position);
                 }else {
+                    recyclerViewListener.onClick(v, position);
                     if (selected_messageList.size() > 0) {
                         Toast.makeText(context, "Please select your message", Toast.LENGTH_SHORT).show();
                     }
-                }
+                }*/
             }
         });
 
@@ -334,11 +370,14 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
                     recyclerViewListener.onLongClick(v, position);
                     return true;
                 }else {
-                    Toast.makeText(context, "Please select your message", Toast.LENGTH_SHORT).show();
+                    //TODO: for testing
+                    recyclerViewListener.onLongClick(v, position);
+                    return true;
+//                    Toast.makeText(context, "Please select your message", Toast.LENGTH_SHORT).show();
                 }
 
 
-                return false;
+//                return false;
             }
         });
     }
@@ -358,10 +397,10 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
     //Initializing views
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         public FrameLayout ll_listitem;
-        public EmojiconTextView textViewMessage;
+        public EmojiconTextView textViewMessage, textViewMessageOld;
         public CircularImageView proPic;
         public ImageView messageTypeImageView;
-        public TextView nameTextView, timeTextView;
+        public TextView nameTextView, timeTextView,nameTextViewOld;
 
         public RoundedImageView imageMedia;
 
@@ -374,6 +413,10 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
         private double startTime = 0;
         private double finalTime = 0;
         public Handler mHandler = new Handler();
+
+
+        //for reply message
+
 
 
 
@@ -404,6 +447,12 @@ public class ThreadAdapter extends RecyclerView.Adapter<ThreadAdapter.ViewHolder
                 seekBar.setProgress(0);
                 mPlayer = new MediaPlayer();
                 mPlayer.setOnPreparedListener(onPreparedListener);
+            }
+
+
+            if (itemView.getTag() != null && itemView.getTag().equals(TEXT_REPLY_TAG)) {
+                nameTextViewOld = (TextView) itemView.findViewById(R.id.textViewNameOld);
+                textViewMessageOld = (EmojiconTextView) itemView.findViewById(R.id.textViewMsgOld);
             }
 
 

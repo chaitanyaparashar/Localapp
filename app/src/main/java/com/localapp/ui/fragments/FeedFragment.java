@@ -7,6 +7,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.net.Uri;
@@ -42,6 +43,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.GridView;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -62,6 +64,7 @@ import com.localapp.fcm.FcmNotificationRequest;
 import com.localapp.models.GetFeedRequestData;
 import com.localapp.models.Message;
 import com.localapp.models.NotificationData;
+import com.localapp.models.ReplyMessage;
 import com.localapp.network.DeleteMessageRequest;
 import com.localapp.network.EmergencyMsgAcceptRequest;
 import com.localapp.network.GetFeedRequest;
@@ -105,6 +108,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import hani.momanii.supernova_emoji_library.Actions.EmojIconActions;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconEditText;
 import hani.momanii.supernova_emoji_library.Helper.EmojiconTextView;
@@ -113,6 +118,7 @@ import static com.localapp.network.helper.CommonRequest.ResponseCode.COMMON_RES_
 import static com.localapp.ui.adapters.ThreadAdapter.getEmojiResourceIdByMsgType;
 import static com.localapp.ui.fragments.FeedFragment.MediaType.MEDIA_AUDIO;
 import static com.localapp.ui.fragments.FeedFragment.MediaType.MEDIA_IMAGE;
+import static com.localapp.ui.fragments.FeedFragment.MediaType.MEDIA_TEXT;
 import static com.localapp.ui.fragments.FeedFragment.MediaType.MEDIA_VIDEO;
 
 
@@ -177,6 +183,20 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
     ImageView sendImageViewBtn, camShoutImgBtn,emoticImgBtn;
     public static int selectedMessageTypeInt = 0;
     public static int selectedEmojiResourceID = R.drawable.emoji_staright;
+
+    private ReplyMessage replyMessage;
+
+    @Bind(R.id.replay_layout)
+    protected LinearLayout replyLayout;
+
+    @Bind(R.id.close_reply)
+    protected ImageButton replayClose;
+
+    @Bind(R.id.textViewNameOld)
+    protected TextView oldMsgName;
+
+    @Bind(R.id.textViewMsgOld)
+    protected EmojiconTextView oldTextMessageView;
 
 
     @Override
@@ -250,6 +270,7 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
 
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
 
+        ButterKnife.bind(this,view);
 
         sessionManager = new SessionManager(getContext());
 
@@ -359,8 +380,17 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
         if (!AppPreferences.getInstance(AppController.getAppContext()).isLaunchedSmsModeToolTip()) {
             smsModeToolTip(view);
         }
-//
-//
+
+
+        //close reply message layout
+        replayClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                replyLayout.setVisibility(View.GONE);
+                replyMessage = null;
+            }
+        });
+
         return view;
     }
 
@@ -474,6 +504,11 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
                             jsonObject = new JSONObject(messagePayLoad);
                             messageData.setmUserID(jsonObject.getString("userId"));
                             try {
+                                messageData.setId(jsonObject.getString("messageId"));
+                            }catch (JSONException e){
+                                e.printStackTrace();
+                            }
+                            try {
                                 messageData.setName(jsonObject.getString("userName"));
                             }catch (JSONException je) {
                                 je.printStackTrace();
@@ -489,6 +524,19 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
                             messageData.setMessageType(getMessageType(jsonObject.getInt("messageType")));
                             JSONArray latlngJsonArray = new JSONArray(jsonObject.getString("longlat"));
                             messageData.setmLatLng(new LatLng(Double.valueOf(latlngJsonArray.getString(0)),Double.valueOf(latlngJsonArray.getString(1))));
+
+                            //for reply message
+                            try {
+                                messageData.setReplyMessageId(jsonObject.getString("replyId"));
+                                JSONObject repyMessageObject = jsonObject.getJSONObject("replyMessage");
+                                ReplyMessage replyMessage = new ReplyMessage();
+                                replyMessage.setId(repyMessageObject.getString("id"));
+                                replyMessage.setName(repyMessageObject.getString("name"));
+                                replyMessage.setTextMessage(repyMessageObject.getString("textMessage"));
+                                messageData.setReplyMessage(replyMessage);
+                            }catch (JSONException je) {
+                                je.printStackTrace();
+                            }
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -633,6 +681,11 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
                 } else {
                     messageData.setMsgIdOnlyForFrontEnd("");
                 }
+                //reply message
+                if (replyMessage != null) {
+                    messageData.setReplyMessageId(replyMessage.getId());
+                    messageData.setReplyMessage(replyMessage);
+                }
 
                 messageData.setTimeStamp(String.valueOf(System.currentTimeMillis()));
                 messageData.setmText(text);
@@ -649,9 +702,24 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
                 }
 
 
+                Map<String, String> replyMessageMap = new HashMap<>();
+
 
                 mParams =  new HashMap<>();
+
+
+                if (messageData.getReplyMessage() != null) {
+                    replyMessageMap.put("id", messageData.getReplyMessage().getId());
+                    replyMessageMap.put("name", messageData.getReplyMessage().getName());
+                    replyMessageMap.put("textMessage", messageData.getReplyMessage().getTextMessage());
+
+                    replayClose.performClick();
+
+                }
+
                 mParams.put("token",messageData.getToken());
+                mParams.put("replyId",messageData.getReplyMessageId());
+
                 mParams.put("fcmToken",messageData.getFcmToken());
                 mParams.put("userId",messageData.getmUserID());
                 mParams.put("messageId",messageData.getId());
@@ -667,6 +735,15 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
                 String[] latlng = {""+messageData.getmLatLng().latitude,""+messageData.getmLatLng().longitude};
                 mParams.put("longlat",Arrays.toString(latlng));
                 JSONObject jsonObject = new JSONObject(mParams);
+                JSONObject jsonReplayMessage = new JSONObject(replyMessageMap);
+
+
+                try {
+                    jsonObject.put("replyMessage",jsonReplayMessage);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
                 if (connection.isConnected()) {
                     connection.publish(mTopic, jsonObject.toString().getBytes(), QoS.AT_LEAST_ONCE, false);
                 }else {
@@ -859,6 +936,13 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
         adapter.notifyDataSetChanged();
         if (adapter.getItemCount() > 1)
             recyclerView.scrollToPosition(adapter.getItemCount() - 1);
+    }
+
+
+    private void scrollToPosition(int position) {
+        adapter.notifyDataSetChanged();
+        if (position < adapter.getItemCount())
+            recyclerView.scrollToPosition(position);
     }
 
     private void setBroadcastHistory(GetFeedRequestData simpleMsgData, GetFeedRequestData emergencyMsgData) {
@@ -1175,15 +1259,32 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
     ThreadAdapter.RecyclerViewListener recyclerViewListener = new ThreadAdapter.RecyclerViewListener() {
         @Override
         public void onClick(View view, int position) {
+            Message message = messages.get(position);
             if (isMultiSelect) {
                 multi_select(position);
+                /*if (message.getmUserID().equals(HomeActivity.mUserId)) {
+                    multi_select(position);
+                }else {
+                    Toast.makeText(getContext(), "Please select your message", Toast.LENGTH_SHORT).show();
+                }*/
+
             }else {
                 if (view.getTag() != null && view.getTag().equals("vdo")){
-                    Message message = messages.get(position);
 
                     Intent intent=new Intent(getActivity(), VideoPlay.class);
                     intent.putExtra("url",message.getMediaURL());
                     startActivity(intent);
+
+                }
+
+                //scroll to original message
+                if (message.getReplyMessageId() != null && !message.getReplyMessageId().equals("null")) {
+                    for (Message message1:messages) {
+                        if (message1.getId().equals(message.getReplyMessageId())) {
+                            scrollToPosition(messages.indexOf(message1));
+                            break;
+                        }
+                    }
 
                 }
             }
@@ -1234,6 +1335,21 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
                 case R.id.action_delete:
                     alertDialogHelper.showAlertDialog("",getString(R.string.message_delete),getString(R.string.btn_delete),getString(R.string.btn_cancel),1,false);
                     return true;
+                case R.id.action_replay:
+                    if (replyMessage != null) {
+                        if (replyMessage.getMediaType() == MEDIA_TEXT) {
+                            replyLayout.setVisibility(View.VISIBLE);
+                            oldMsgName.setText(replyMessage.getName());
+                            oldTextMessageView.setText(replyMessage.getTextMessage());
+                        }else {
+                            Toast.makeText(getContext(), "Please select a text message for reply", Toast.LENGTH_SHORT).show();
+                        }
+
+                        if (mActionMode != null) {
+                            mActionMode.finish();
+                        }
+                    }
+                    return true;
                 default:
                     return false;
             }
@@ -1272,22 +1388,88 @@ public class FeedFragment extends Fragment implements GetFeedRequest.GetFeedRequ
             if (multiselect_list.contains(messages.get(position))) {
                 multiselect_list.remove(messages.get(position));
 
+
+                if (multiselect_list.size() == 1) {
+                    Message message = multiselect_list.get(0);
+                    replyMessage = new ReplyMessage(message.getId(), message.getName(), message.getmText());
+                    replyMessage.setMediaType(message.getMediaType());
+                }
+
+                if (multiselect_list.size() > 1) {
+                    context_menu.getItem(0).setVisible(false);
+                }else {
+                    context_menu.getItem(0).setVisible(true);
+                }
+
                 if (multiselect_list.size() == 0) {
                     mActionMode.finish();
                     refreshAdapter();
                     return;
                 }
 
-            }
-            else
-                multiselect_list.add(messages.get(position));
+            } else {
 
-            if (multiselect_list.size() > 0)
+
+               /* for (Message message : multiselect_list) {
+                    if (!message.getmUserID().equals(HomeActivity.mUserId)) {
+                        Toast.makeText(getContext(), "Please select your message", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }*/
+
+                if (multiselect_list.size() == 1 &&  !multiselect_list.get(0).getmUserID().equals(HomeActivity.mUserId)) {
+                    Toast.makeText(getContext(), "Please select only one message for reply", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+               if (multiselect_list.size() > 0 && !messages.get(position).getmUserID().equals(HomeActivity.mUserId)) {
+                   Toast.makeText(getContext(), "Please select your message for delete", Toast.LENGTH_SHORT).show();
+                   return;
+               }
+
+                multiselect_list.add(messages.get(position));
+                if (multiselect_list.size() == 1) {
+                    Message message = messages.get(position);
+                    replyMessage = new ReplyMessage(message.getId(), message.getName(), message.getmText());
+                    replyMessage.setMediaType(message.getMediaType());
+                }
+
+                if (multiselect_list.size() > 1) {
+                    context_menu.getItem(0).setVisible(false);
+                }else {
+                    context_menu.getItem(0).setVisible(true);
+                }
+            }
+
+            if (multiselect_list.size() == 1) {
+                if (multiselect_list.get(0).getmUserID().equals(HomeActivity.mUserId)) {
+                    context_menu.getItem(1).setVisible(true);
+                }else {
+                    context_menu.getItem(1).setVisible(false);
+                }
+            }
+
+
+            if (multiselect_list.size() > 0) {
                 mActionMode.setTitle(multiselect_list.size() + " selected");
+            }
             else
                 mActionMode.setTitle("");
 
             refreshAdapter();
+
+
+            /*if (multiselect_list.size() > 1) {
+
+                context_menu.getItem(0).setVisible(false);
+            }else {
+                context_menu.getItem(0).setVisible(true);
+                if (multiselect_list.get(0).getId().equals(HomeActivity.mUserId)) {
+                    context_menu.getItem(1).setVisible(true);
+                }else {
+                    context_menu.getItem(1).setVisible(false);
+                }
+            }*/
 
         }
     }
